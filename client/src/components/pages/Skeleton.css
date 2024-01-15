@@ -1,1 +1,65 @@
-/* Fill me in :) */
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Times New Roman', serif;
+    background-color: #fafafa;
+    color: #000000;
+    line-height: 1.6;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+}
+
+.header {
+    background: #333333;
+    color: #FFFFFF;
+    padding: 20px 0;
+    text-align: center;
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.navbar {
+    background: #555555;
+    color: #FFFFFF;
+    padding: 10px 0;
+    text-align: center;
+}
+
+.navbar a {
+    color: #FFFFFF;
+    text-decoration: none;
+    padding: 10px 20px;
+    font-weight: bold;
+}
+
+.content {
+    padding: 20px;
+    background: #FFFFFF;
+    border: 2px solid #D3D3D3;
+}
+
+.content h2,
+.content p {
+    margin-bottom: 20px;
+}
+
+.footer {
+    background: #333333;
+    color: #FFFFFF;
+    text-align: center;
+    padding: 10px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
