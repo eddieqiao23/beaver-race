@@ -4,7 +4,9 @@ import { Routes, Route } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 
 import NotFound from "./pages/NotFound.js";
-import Skeleton from "./pages/Skeleton.js";
+import Home from "./pages/Home.js";
+import Race from "./pages/Race.js";
+import Indiv from "./pages/Indiv.js";
 
 import "../utilities.css";
 
@@ -47,7 +49,7 @@ const App = () => {
       <Route
         path="/"
         element={
-          <Skeleton
+          <Home
             path="/"
             handleLogin={handleLogin}
             handleLogout={handleLogout}
@@ -55,6 +57,8 @@ const App = () => {
           />
         }
       />
+      <Route path="/race" element={<Race path="/race" />} />
+      <Route path="/indiv" element={<Indiv path="/indiv" />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
