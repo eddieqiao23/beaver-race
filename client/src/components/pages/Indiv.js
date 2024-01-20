@@ -40,7 +40,7 @@ const Indiv = (props) => {
     }
     
     let questions = [];
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 200; i++) {
         questions.push(getRandomProblem());
     }
 
