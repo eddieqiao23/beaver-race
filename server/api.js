@@ -23,8 +23,7 @@ const router = express.Router();
 //initialize socket
 const socketManager = require("./server-socket");
 
-router.post("/test", (req, res) => {
-  console.log(1);
+router.get("/test", (req, res) => {
   const newRound = new Round({
     id: '2',
     creator: '2',
@@ -36,23 +35,8 @@ router.post("/test", (req, res) => {
     public: true,
   });
   newRound.save().then((round) => res.send(round));
-//   const RoundSchema = new mongoose.Schema({
-//     id: String,
-//     creator: String, // _id of creator
-//     players: [String], // list of _ids of participants
-//     problems: Mixed,
-//     player_scores: Mixed,
-//     multiplayer: Boolean,
-//     started: Boolean,
-//     public: Boolean,
-// });
 
-  // const newUser = new User({
-  //   id: 1,
-  //   googleid: 1,
-  //   past_games: [],
-  // })
-  // newUser.save().then((user) => res.send(user));
+  // return res.send({});
 });
 
 router.post("/login", auth.login);
@@ -76,6 +60,24 @@ router.post("/initsocket", (req, res) => {
 // |------------------------------|
 // | write your API methods below!|
 // |------------------------------|
+
+
+// router.get("/test", (req, res) => {
+//   // console.log(1);
+//   // const newRound = new Round({
+//   //   id: '2',
+//   //   creator: '2',
+//   //   players: ['3', '2'],
+//   //   problems: '3',
+//   //   player_scores: [1, 2],
+//   //   multiplayer: true,
+//   //   started: true,
+//   //   public: true,
+//   // });
+//   // newRound.save().then((round) => res.send(round));
+//   return res.send({});
+// });
+
 
 // anything else falls to this "not found" case
 router.all("*", (req, res) => {
