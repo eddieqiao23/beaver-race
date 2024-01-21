@@ -104,7 +104,7 @@ const Indiv = (props) => {
     console.log("Round ID: " + newRoundID);
     return (
         <div className="Indiv-container">
-            { newRoundID === "" ? <div className="Indiv-preMatchTimer"> { preMatchTimer } </div> : 
+            { !gameStarted || newRoundID === "" ? <div className="Indiv-preMatchTimer"> { preMatchTimer } </div> : 
             <div>
                 <Timer /> 
                 <Question roundID = {newRoundID} /> 
