@@ -9,15 +9,10 @@
 // module.exports = mongoose.model("user", UserSchema);
 
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 
-const ProblemSchema = new Schema({
-  Problem: String,
-  Solution: String,
-});
-
-const ProblemSetSchema = new Schema({
-  problems: [ProblemSchema],
+const ProblemSetSchema = new mongoose.Schema({
+  questions: [String],
+  answers: [String],
 });
 
 module.exports = mongoose.model('problem_set', ProblemSetSchema);

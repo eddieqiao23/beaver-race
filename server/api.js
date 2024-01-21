@@ -23,20 +23,70 @@ const router = express.Router();
 //initialize socket
 const socketManager = require("./server-socket");
 
-router.get("/test", (req, res) => {
+// router.get("/test", (req, res) => {
+//   const newRound = new Round({
+//     id: '2',
+//     creator: '2',
+//     players: ['3', '2'],
+//     problems: '3',
+//     player_scores: [1, 2],
+//     multiplayer: true,
+//     started: true,
+//     public: true,
+//   });
+//   newRound.save().then((round) => res.send(round));
+
+//   // return res.send({});
+// });
+
+router.post("/create_problem_set", (req, res) => {
+  const newProblemSet = new ProblemSet({
+    questions: req.body.questions,
+    answers: req.body.answers,
+  });
+  newProblemSet.save().then((problem_set) => res.send(problem_set));
+});
+
+router.post("/create_indiv_round", (req, res) => {
+  let creatorUsername = "Guest";
+  let creatorName = "Guest";
+  if (req.user) {
+    creatorUsername = req.user._id;
+    creatorName = req.user.name;
+  }
   const newRound = new Round({
-    id: '2',
-    creator: '2',
-    players: ['3', '2'],
-    problems: '3',
-    player_scores: [1, 2],
-    multiplayer: true,
+    creator: creatorUsername, // _id of creator
+    players: [creatorName], // list of _ids of participants
+    problem_set_id: req.body.problem_set_id,
+    player_scores: [0],
+    multiplayer: false,
     started: true,
-    public: true,
+    public: false,
   });
   newRound.save().then((round) => res.send(round));
+});
 
-  // return res.send({});
+router.get("/get_round_by_id", (req, res) => {
+  // find round by id 
+  Round.findById(req.query.roundID).then((round) => {
+    if (!round) {
+      return res.send({ error: "Round not found" });
+    }
+    else {
+      return res.send(round);
+    }
+  });
+});
+
+router.get("/get_problem_set_by_id", (req, res) => {
+  ProblemSet.findById(req.query.problemSetID).then((problem_set) => {
+    if (!problem_set) {
+      return res.send({ error: "Problem set not found" });
+    }
+    else {
+      return res.send(problem_set);
+    }
+  });
 });
 
 router.post("/login", auth.login);

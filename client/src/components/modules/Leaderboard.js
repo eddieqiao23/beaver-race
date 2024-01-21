@@ -6,13 +6,7 @@ const Leaderboard = (props) => {
 
     return (
         <div className="Leaderboard-container">
-            <p>Leaderboard</p>
-            {user_ids.map((userId, index) => (
-                <div key={userId} className="Leaderboard-item">
-                    <span>User ID: {userId}</span>
-                    <span>Score: {scores[index]}</span>
-                </div>
-            ))}
+            show leaderboard here
         </div>
     )
 }

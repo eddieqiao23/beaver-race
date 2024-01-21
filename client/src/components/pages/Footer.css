@@ -1,0 +1,25 @@
+.Footer-container {
+    padding: var(--s) var(--m);
+    background-color: var(--primary);
+    color: var(--white);
+    font-family: "IBM Plex Sans";
+
+    text-align: center;
+    padding: 20px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    margin-top: 100%;
+}
+
+.Footer-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.Footer-content {
+    margin: auto;
+    font-size: 0.8em;
+}

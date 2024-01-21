@@ -15,16 +15,17 @@
 */
 
 /* TODO: REPLACE WITH YOUR OWN FONT! */
-@import url("https://fonts.googleapis.com/css?family=Roboto&display=swap");
+/* @import url("https://fonts.googleapis.com/css?family=Roboto&display=swap"); */
 @import url("https://fonts.googleapis.com/css?family=IBM+Plex+Sans&display=swap");
 
 :root {
-  --primary: #396dff;
-  --primary--dim: #6987db;
+  --primary: #758bfd;
+  --primary--dim: #AEB8FE;
   --darkgrey: #d4d4d4;
   --medgrey: #e0e0e0;
   --grey: #f7f7f7;
   --white: #fff;
+  --orange: #ff8600;
 
   --xs: 4px;
   --s: 8px;
@@ -35,7 +36,7 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: "IBM Plex Sans";
   font-weight: 300;
 }
 

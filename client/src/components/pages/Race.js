@@ -1,5 +1,5 @@
 import React from "react";
-import Leaderboard from "../modules/Leaderboard.js";
+import Scoreboard from "../modules/Scoreboard.js";
 import Timer from "../modules/Timer.js";
 import Question from "../modules/Question.js";
 
@@ -11,7 +11,7 @@ const Race = (props) => {
     let scores = [1, 2];
     return (
         <div className="Race-container">
-            <Leaderboard user_ids={user_ids} scores={scores} />
+            <Scoreboard user_ids={user_ids} scores={scores} />
             <Timer />
             {/* <Question /> */}
         </div>

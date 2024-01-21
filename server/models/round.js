@@ -1,10 +1,9 @@
 const mongoose = require("mongoose");
 
 const RoundSchema = new mongoose.Schema({
-    id: String,
     creator: String, // _id of creator
     players: [String], // list of _ids of participants
-    problems: String,
+    problem_set_id: String,
     player_scores: [Number],
     multiplayer: Boolean,
     started: Boolean,

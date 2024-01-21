@@ -1,29 +1,70 @@
 import React from "react";
-import { GoogleOAuthProvider, GoogleLogin, googleLogout } from "@react-oauth/google";
+import { Link } from "react-router-dom";
 
 import "../../utilities.css";
 import "./Home.css";
 
-//TODO: REPLACE WITH YOUR OWN CLIENT_ID
-const GOOGLE_CLIENT_ID = "956478673522-odt9nc158u9obsuqpeb16s3uiabon4lf.apps.googleusercontent.com";
+import Leaderboard from "../modules/Leaderboard.js";
 
-const Home = ({ userId, handleLogin, handleLogout }) => {
+const Home = (props) => {
   return (
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      {userId ? (
-        <button
-          onClick={() => {
-            googleLogout();
-            handleLogout();
-          }}
-        >
-          Logout
+  <body>
+    <div className="Home-container">
+      <div className="Home-main-rounded-div Home-sign-in">
+        <div className="u-inlineBlock Home-subheadline-text">
+          Sign in on the top right to save your progress and create custom games!
+        </div>
+        <button className="u-inlineBlock Home-sign-in-button Home-align-right Home-subheadline-text">
+          Sign In!
         </button>
-      ) : (
-        <GoogleLogin onSuccess={handleLogin} onError={(err) => console.log(err)} />
-      )}
-      Home page 
-    </GoogleOAuthProvider>
+      </div>
+      <div className="Home-main-rounded-div Home-multiplayer-random">
+        <div className="Home-headline-text">
+          MetaZacRacer - The MIT Mathing Competition
+        </div>
+        <div className="Home-subheadline-text">
+          Increase your mathing speed while racing against others!
+        </div>
+        <Link to="/race">
+          <button className="Home-button Home-mathing-race-button">
+            Mathing race
+          </button>
+        </Link>
+      </div>
+      <div className="Home-two-divs">
+        <div className="Home-main-rounded-div Home-individual">
+          <div className="Home-headline-text">
+            Mathing Test
+          </div>
+          <div className="Home-subheadline-text">
+            Practice your mathing skills on your own!
+          </div>
+          <Link to="/indiv">
+            <button className="Home-button Home-practice-yourself-button">
+              Practice Yourself
+            </button>
+          </Link>
+        </div>
+        <div className="Home-main-rounded-div Home-multiplayer-party">
+          <div className="Home-headline-text">
+            Race Your Friends
+          </div>
+          <div className="Home-subheadline-text">
+            Create your own river and race your friends!
+          </div>
+          <Link to="/indiv">
+            <button className="Home-button Home-create-party-button">
+              Create River
+            </button>
+          </Link>
+        </div>
+      </div>
+      <div className="Home-main-rounded-div Home-headline-text Home-leaderboard">
+        Leaderboards
+        {/* <Leaderboard /> */}
+      </div>
+    </div>
+  </body> 
   );
 };
 

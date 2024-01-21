@@ -1,65 +1,90 @@
-/* Basic Reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+.Home-container {
+    width: 800px;
+    margin: 0 auto;
 }
 
-body {
-    font-family: 'Times New Roman', serif;
-    background-color: #fafafa;
-    color: #000000;
-    line-height: 1.6;
-}
-
-.container {
-    width: 80%;
-    margin: auto;
-    overflow: hidden;
-}
-
-.header {
-    background: #333333;
-    color: #FFFFFF;
-    padding: 20px 0;
-    text-align: center;
-}
-
-.header h1 {
-    margin: 0;
-}
-
-.navbar {
-    background: #555555;
-    color: #FFFFFF;
-    padding: 10px 0;
-    text-align: center;
-}
-
-.navbar a {
-    color: #FFFFFF;
-    text-decoration: none;
-    padding: 10px 20px;
+.Home-headline-text {
+    font-size: 32px;
     font-weight: bold;
+    color: var(--white);
+    margin-bottom: 0px;
 }
 
-.content {
-    padding: 20px;
-    background: #FFFFFF;
-    border: 2px solid #D3D3D3;
+.Home-subheadline-text {
+    font-size: 20px;
+    color: var(--white);
+    margin-top: 0px;
 }
 
-.content h2,
-.content p {
+.Home-main-rounded-div {
+    border-radius: 20px;
+    background-color: var(--primary);
+    color: var(--white);
+    margin-top: 20px;
     margin-bottom: 20px;
 }
+.Home-button {
+    border-radius: 20px;
+    background-color: var(--orange);
+    color: var(--white);
+    padding: 10px;
+}
 
-.footer {
-    background: #333333;
-    color: #FFFFFF;
-    text-align: center;
-    padding: 10px 0;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
+.Home-sign-in-button {
+    border-radius: 20px;
+    background-color: var(--orange);
+    color: var(--white);
+    padding: 8px;
+    margin-top: -7px;
+}
+
+.Home-sign-in {
+    padding: 20px;
+}
+
+.Home-multiplayer-random {
+    padding: 20px;
+}
+
+.Home-two-divs {
+    display: flex;
+}
+
+.Home-individual {
+    flex: 1;
+    box-sizing: border-box;
+    margin-right: 10px;
+    padding: 20px;
+    margin-top: 0px;
+}
+
+.Home-multiplayer-party {
+    flex: 1;
+    box-sizing: border-box;
+    margin-left: 10px;
+    padding: 20px;
+    margin-top: 0px;
+}
+
+.Home-align-right {
+    float: right;
+}
+
+.Home-mathing-race-button {
+    margin-top: 10px;
+    font-size: 24px;
+}
+
+.Home-practice-yourself-button {
+    margin-top: 10px;
+    font-size: 24px;
+}
+
+.Home-create-party-button {
+    margin-top: 10px;
+    font-size: 24px;
+}
+
+.Home-leaderboard {
+    padding: 20px;
 }

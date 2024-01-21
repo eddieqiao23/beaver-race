@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
+import NavBar from "./pages/NavBar.js";
+import Footer from "./pages/Footer.js";
 
 import jwt_decode from "jwt-decode";
 
@@ -16,7 +18,7 @@ import { get, post } from "../utilities";
 
 /**
  * Define the "App" component
- */
+ */ 
 const App = () => {
   const [userId, setUserId] = useState(undefined);
 
@@ -45,22 +47,16 @@ const App = () => {
   };
 
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          <Home
-            path="/"
-            handleLogin={handleLogin}
-            handleLogout={handleLogout}
-            userId={userId}
-          />
-        }
-      />
-      <Route path="/race" element={<Race path="/race" />} />
-      <Route path="/indiv" element={<Indiv path="/indiv" />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <>
+      <NavBar handleLogin={handleLogin} handleLogout={handleLogout} userId={userId} />
+      <Routes>
+        <Route path="/" element={<Home path="/" userId={userId}/> } />
+        <Route path="/race" element={<Race path="/race" />} />
+        <Route path="/indiv" element={<Indiv path="/indiv" />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <Footer userId={userId} />
+    </>
   );
 };
 

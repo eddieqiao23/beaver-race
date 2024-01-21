@@ -1,0 +1,65 @@
+.NavBar-container {
+    padding: var(--s) var(--m);
+    background-color: var(--primary);
+    font-family: "IBM Plex Sans";
+}
+
+.NavBar-title {
+    color: var(--white);
+    font-size: 30px;
+}
+
+.NavBar-linkContainer {
+    margin-left: var(--l);
+}
+
+.NavBar-link,
+.NavBar-link:visited {
+    color: var(--white);
+    opacity: 0.6;
+    text-decoration: none;
+}
+
+.NavBar-link:hover {
+    opacity: 0.8;
+}
+
+.NavBar-link.NavBar-login {
+    opacity: 1;
+}
+
+.NavBar-link+.NavBar-link {
+    margin-left: var(--m);
+}
+
+.NavBar-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.NavBar-auth-button { 
+    float: right;
+}
+
+.NavBar-logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.NavBar-align-top {
+    vertical-align: top;
+}
+
+.NavBar-button {
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: 5px;
+    padding: var(--s) var(--s);
+    cursor: pointer;
+    vertical-align: bottom;
+    font-size: 20px;
+    font-family: "IBM Plex Sans";
+}
