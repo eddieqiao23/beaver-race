@@ -28,7 +28,7 @@
     opacity: 1;
 }
 
-.NavBar-link+.NavBar-link {
+.NavBar-link + .NavBar-link {
     margin-left: var(--m);
 }
 
@@ -39,7 +39,7 @@
     object-fit: cover;
 }
 
-.NavBar-auth-button { 
+.NavBar-auth-button {
     float: right;
 }
 

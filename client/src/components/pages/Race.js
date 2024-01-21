@@ -3,9 +3,9 @@ import Scoreboard from "../modules/Scoreboard.js";
 import Timer from "../modules/Timer.js";
 import Question from "../modules/Question.js";
 
-import "./Race.css"
+import "./Race.css";
 
-// Page that displays all elements of a multiplayer race 
+// Page that displays all elements of a multiplayer race
 const Race = (props) => {
     let user_ids = ["Dylan", "Eddie"];
     let scores = [1, 2];
@@ -15,7 +15,7 @@ const Race = (props) => {
             <Timer />
             {/* <Question /> */}
         </div>
-    )
-}
+    );
+};
 
 export default Race;

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Timer from "../modules/Timer.js";
 import Question from "../modules/Question.js";
+import RoundEndScoreboard from "../modules/RoundEndScoreboard.js";
 
-import "./Indiv.css"
+import "./Indiv.css";
 
 import { get, post } from "../../utilities.js";
 
@@ -13,53 +14,67 @@ const getRandomProblem = () => {
     if (sign === 0) {
         num1 = Math.floor(Math.random() * 98) + 2;
         num2 = Math.floor(Math.random() * 98) + 2;
-    }
-    else {
+    } else {
         num1 = Math.floor(Math.random() * 10) + 2;
         num2 = Math.floor(Math.random() * 98) + 2;
     }
 
     if (sign === 0) {
         if (Math.floor(Math.random() * 2) === 0) {
-            return {'question': `${num1} + ${num2}`, 'answer': `${num1 + num2}`}
+            return { question: `${num1} + ${num2}`, answer: `${num1 + num2}` };
+        } else {
+            return { question: `${num1 + num2} - ${num1}`, answer: `${num2}` };
         }
-        else {
-            return {'question': `${num1 + num2} - ${num1}`, 'answer': `${num2}`}
-        }
-    }
-    else {
+    } else {
         if (Math.floor(Math.random() * 2) === 0) {
-            return {'question': `${num1} x ${num2}`, 'answer': `${num1 * num2}`}
-        }
-        else {
-            return {'question': `${num1 * num2} ÷ ${num1}`, 'answer': `${num2}`}
+            return { question: `${num1} x ${num2}`, answer: `${num1 * num2}` };
+        } else {
+            return { question: `${num1 * num2} ÷ ${num1}`, answer: `${num2}` };
         }
     }
-}
+};
 
-
-// Page that displays all elements of a multiplayer race 
+// Page that displays all elements of a multiplayer race
 const Indiv = (props) => {
     // const [currProblem, setCurrProblem] = useState(0);
+    const [roundTimer, setRoundTimer] = useState(95);
     const [preMatchTimer, setPreMatchTimer] = useState(5);
     const [newRoundID, setNewRoundID] = useState("");
     const [gameStarted, setGameStarted] = useState(false);
-    
+    const [gameFinished, setGameFinished] = useState(false);
+    const [score, setScore] = useState(0);
+
     useEffect(() => {
         const intervalTimer = setInterval(() => {
-            setPreMatchTimer(preMatchTimer => preMatchTimer - 1);
+            setPreMatchTimer((preMatchTimer) => preMatchTimer - 1);
         }, 1000);
-    
+
         // Clear the interval when the timer reaches 0
         if (preMatchTimer === 0) {
-          clearInterval(intervalTimer);
-          setGameStarted(true);
+            clearInterval(intervalTimer);
+            setGameStarted(true);
         }
-    
+
         // Cleanup the interval on component unmount
         return () => clearInterval(intervalTimer);
-      }, [preMatchTimer]);
-    
+    }, [preMatchTimer]);
+
+    useEffect(() => {
+        const intervalTimer = setInterval(() => {
+            setRoundTimer((roundTimer) => roundTimer - 1);
+        }, 1000);
+
+        // Clear the interval when the timer reaches 0
+        if (roundTimer === 0) {
+            clearInterval(intervalTimer);
+            setGameFinished(true);
+            console.log("game finished");
+        }
+
+        // Cleanup the interval on component unmount
+        return () => clearInterval(intervalTimer);
+    }, [roundTimer]);
+
     useEffect(() => {
         const createProblemSetAndRound = async () => {
             console.log("started...");
@@ -72,11 +87,16 @@ const Indiv = (props) => {
             }
 
             try {
-                const problemSetRes = await post("/api/create_problem_set", {questions: questions, answers: answers});
+                const problemSetRes = await post("/api/create_problem_set", {
+                    questions: questions,
+                    answers: answers,
+                });
                 const problemSetID = problemSetRes._id;
                 console.log("Problem Set: " + problemSetID);
 
-                const newRoundRes = await post("/api/create_indiv_round", {problem_set_id: problemSetID});
+                const newRoundRes = await post("/api/create_indiv_round", {
+                    problem_set_id: problemSetID,
+                });
                 const createdRoundID = newRoundRes._id;
                 console.log("Round: " + createdRoundID);
 
@@ -85,14 +105,13 @@ const Indiv = (props) => {
                 console.log(error);
                 console.log("error creating problem set or round :(");
             }
-
-        }
+        };
         // createProblemSetAndRound().then(() => console.log("finished!"));
-        
+
         const changeRoundID = async () => {
             let createdRoundID = await createProblemSetAndRound();
             setNewRoundID(createdRoundID);
-        }
+        };
 
         try {
             changeRoundID().then(() => console.log("finished!"));
@@ -102,16 +121,28 @@ const Indiv = (props) => {
     }, []);
 
     console.log("Round ID: " + newRoundID);
+    let scores = [score];
     return (
         <div className="Indiv-container">
-            { !gameStarted || newRoundID === "" ? <div className="Indiv-preMatchTimer"> { preMatchTimer } </div> : 
-            <div>
-                <Timer /> 
-                <Question roundID = {newRoundID} /> 
-            </div>
-            }
+            {gameFinished ? (
+                <div className="Indiv-gameFinished">
+                    <RoundEndScoreboard multiplayer={false} scores={scores} />
+                </div>
+            ) : (
+                <div className="Indiv-game">
+                    {!gameStarted || newRoundID === "" ? (
+                        <div className="Indiv-preMatchTimer"> {preMatchTimer} </div>
+                    ) : (
+                        <div>
+                            <div className="Indiv-roundTimer"> {roundTimer} </div>
+                            {/* <Timer />  */}
+                            <Question roundID={newRoundID} score={score} setScore={setScore} />
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
-    )
+    );
 
     // const newRound = new Round({
     //     creator: '2',
@@ -123,6 +154,6 @@ const Indiv = (props) => {
     //     public: false,
     // });
     // newRound.save();
-}
+};
 
 export default Indiv;

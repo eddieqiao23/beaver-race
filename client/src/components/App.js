@@ -18,46 +18,46 @@ import { get, post } from "../utilities";
 
 /**
  * Define the "App" component
- */ 
+ */
 const App = () => {
-  const [userId, setUserId] = useState(undefined);
+    const [userId, setUserId] = useState(undefined);
 
-  useEffect(() => {
-    get("/api/whoami").then((user) => {
-      if (user._id) {
-        // they are registed in the database, and currently logged in.
-        setUserId(user._id);
-      }
-    });
-  }, []);
+    useEffect(() => {
+        get("/api/whoami").then((user) => {
+            if (user._id) {
+                // they are registed in the database, and currently logged in.
+                setUserId(user._id);
+            }
+        });
+    }, []);
 
-  const handleLogin = (credentialResponse) => {
-    const userToken = credentialResponse.credential;
-    const decodedCredential = jwt_decode(userToken);
-    console.log(`Logged in as ${decodedCredential.name}`);
-    post("/api/login", { token: userToken }).then((user) => {
-      setUserId(user._id);
-      post("/api/initsocket", { socketid: socket.id });
-    });
-  };
+    const handleLogin = (credentialResponse) => {
+        const userToken = credentialResponse.credential;
+        const decodedCredential = jwt_decode(userToken);
+        console.log(`Logged in as ${decodedCredential.name}`);
+        post("/api/login", { token: userToken }).then((user) => {
+            setUserId(user._id);
+            post("/api/initsocket", { socketid: socket.id });
+        });
+    };
 
-  const handleLogout = () => {
-    setUserId(undefined);
-    post("/api/logout");
-  };
+    const handleLogout = () => {
+        setUserId(undefined);
+        post("/api/logout");
+    };
 
-  return (
-    <>
-      <NavBar handleLogin={handleLogin} handleLogout={handleLogout} userId={userId} />
-      <Routes>
-        <Route path="/" element={<Home path="/" userId={userId}/> } />
-        <Route path="/race" element={<Race path="/race" />} />
-        <Route path="/indiv" element={<Indiv path="/indiv" />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      <Footer userId={userId} />
-    </>
-  );
+    return (
+        <>
+            <NavBar handleLogin={handleLogin} handleLogout={handleLogout} userId={userId} />
+            <Routes>
+                <Route path="/" element={<Home path="/" userId={userId} />} />
+                <Route path="/race" element={<Race path="/race" />} />
+                <Route path="/indiv" element={<Indiv path="/indiv" />} />
+                <Route path="*" element={<NotFound />} />
+            </Routes>
+            <Footer userId={userId} />
+        </>
+    );
 };
 
 export default App;

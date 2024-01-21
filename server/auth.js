@@ -9,65 +9,65 @@ const client = new OAuth2Client(CLIENT_ID);
 
 // accepts a login token from the frontend, and verifies that it's legit
 function verify(token) {
-  return client
-    .verifyIdToken({
-      idToken: token,
-      audience: CLIENT_ID,
-    })
-    .then((ticket) => ticket.getPayload());
+    return client
+        .verifyIdToken({
+            idToken: token,
+            audience: CLIENT_ID,
+        })
+        .then((ticket) => ticket.getPayload());
 }
 
 // gets user from DB, or makes a new account if it doesn't exist yet
 function getOrCreateUser(user) {
-  // the "sub" field means "subject", which is a unique identifier for each user
-  return User.findOne({ googleid: user.sub }).then((existingUser) => {
-    if (existingUser) return existingUser;
+    // the "sub" field means "subject", which is a unique identifier for each user
+    return User.findOne({ googleid: user.sub }).then((existingUser) => {
+        if (existingUser) return existingUser;
 
-    const newUser = new User({
-      name: user.name,
-      googleid: user.sub,
+        const newUser = new User({
+            name: user.name,
+            googleid: user.sub,
+        });
+
+        return newUser.save();
     });
-
-    return newUser.save();
-  });
 }
 
 function login(req, res) {
-  verify(req.body.token)
-    .then((user) => getOrCreateUser(user))
-    .then((user) => {
-      // persist user in the session
-      req.session.user = user;
-      res.send(user);
-    })
-    .catch((err) => {
-      console.log(`Failed to log in: ${err}`);
-      res.status(401).send({ err });
-    });
+    verify(req.body.token)
+        .then((user) => getOrCreateUser(user))
+        .then((user) => {
+            // persist user in the session
+            req.session.user = user;
+            res.send(user);
+        })
+        .catch((err) => {
+            console.log(`Failed to log in: ${err}`);
+            res.status(401).send({ err });
+        });
 }
 
 function logout(req, res) {
-  req.session.user = null;
-  res.send({});
+    req.session.user = null;
+    res.send({});
 }
 
 function populateCurrentUser(req, res, next) {
-  // simply populate "req.user" for convenience
-  req.user = req.session.user;
-  next();
+    // simply populate "req.user" for convenience
+    req.user = req.session.user;
+    next();
 }
 
 function ensureLoggedIn(req, res, next) {
-  if (!req.user) {
-    return res.status(401).send({ err: "not logged in" });
-  }
+    if (!req.user) {
+        return res.status(401).send({ err: "not logged in" });
+    }
 
-  next();
+    next();
 }
 
 module.exports = {
-  login,
-  logout,
-  populateCurrentUser,
-  ensureLoggedIn,
+    login,
+    logout,
+    populateCurrentUser,
+    ensureLoggedIn,
 };

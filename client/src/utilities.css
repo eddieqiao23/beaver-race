@@ -19,74 +19,74 @@
 @import url("https://fonts.googleapis.com/css?family=IBM+Plex+Sans&display=swap");
 
 :root {
-  --primary: #758bfd;
-  --primary--dim: #AEB8FE;
-  --darkgrey: #d4d4d4;
-  --medgrey: #e0e0e0;
-  --grey: #f7f7f7;
-  --white: #fff;
-  --orange: #ff8600;
+    --primary: #758bfd;
+    --primary--dim: #aeb8fe;
+    --darkgrey: #d4d4d4;
+    --medgrey: #e0e0e0;
+    --grey: #f7f7f7;
+    --white: #fff;
+    --orange: #ff8600;
 
-  --xs: 4px;
-  --s: 8px;
-  --m: 16px;
-  --l: 24px;
+    --xs: 4px;
+    --s: 8px;
+    --m: 16px;
+    --l: 24px;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  font-family: "IBM Plex Sans";
-  font-weight: 300;
+    margin: 0;
+    padding: 0;
+    font-family: "IBM Plex Sans";
+    font-weight: 300;
 }
 
 form {
-  flex-grow: 1;
+    flex-grow: 1;
 }
 
 .u-flex {
-  display: flex;
+    display: flex;
 }
 
 .u-flexColumn {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .u-flex-justifyCenter {
-  justify-content: center;
+    justify-content: center;
 }
 
 .u-flex-alignCenter {
-  align-items: center;
+    align-items: center;
 }
 
 .u-inlineBlock {
-  display: inline-block;
+    display: inline-block;
 }
 
 .u-bold {
-  font-weight: 600;
+    font-weight: 600;
 }
 
 .u-textCenter {
-  text-align: center;
+    text-align: center;
 }
 
 .u-relative {
-  position: relative;
+    position: relative;
 }
 
 .u-pointer {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .u-link {
-  color: var(--primary);
-  text-decoration: none;
-  cursor: pointer;
+    color: var(--primary);
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .u-link:hover {
-  color: var(--primary--dim);
+    color: var(--primary--dim);
 }

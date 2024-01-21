@@ -14,7 +14,7 @@ const Scoreboard = (props) => {
                 </div>
             ))}
         </div>
-    )
-}
+    );
+};
 
 export default Scoreboard;
