@@ -129,6 +129,10 @@ router.post("/delete_round_by_id", (req, res) => {
     });
 });
 
+// router.get("/activeUsers", (req, res) => {
+//     res.send({ activeUsers: socketManager.getAllConnectedUsers() });
+// });
+
 router.post("/login", auth.login);
 router.post("/logout", auth.logout);
 router.get("/whoami", (req, res) => {

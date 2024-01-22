@@ -1,14 +1,32 @@
+const gameLogic = require("./game-logic");
+
 let io;
 
 const userToSocketMap = {}; // maps user ID to socket object
 const socketToUserMap = {}; // maps socket ID to user object
 
+const getAllConnectedUsers = () => Object.values(socketToUserMap);
 const getSocketFromUserID = (userid) => userToSocketMap[userid];
 const getUserFromSocketID = (socketid) => socketToUserMap[socketid];
 const getSocketFromSocketID = (socketid) => io.sockets.connected[socketid];
 
+const sendGameState = () => {
+    io.emit("update", gameLogic.gameState);
+}
+
+const startRunningGame = () => {
+    setInterval(() => {
+        gameLogic.updateGameState();
+        sendGameState();
+    }, 5000); // 1 fps right now
+}
+
+startRunningGame();
+
 const addUser = (user, socket) => {
     const oldSocket = userToSocketMap[user._id];
+    gameLogic.spawnPlayer(user._id);
+    console.log("spawned player");
     if (oldSocket && oldSocket.id !== socket.id) {
         // there was an old tab open for this user, force it to disconnect
         // FIXME: is this the behavior you want?
@@ -44,5 +62,6 @@ module.exports = {
     getSocketFromUserID: getSocketFromUserID,
     getUserFromSocketID: getUserFromSocketID,
     getSocketFromSocketID: getSocketFromSocketID,
+    getAllConnectedUsers: getAllConnectedUsers,
     getIo: () => io,
 };
