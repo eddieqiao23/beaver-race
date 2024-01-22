@@ -3,7 +3,9 @@
     margin: 0 auto;
 }
 
-.Home-fade-image {
+.Home-fade-div {
+    background-color: var(--primary--dim);
+    color: var(--white);
     animation: fadeinout 2s linear;
     border-radius: 5px;
     position: fixed;
@@ -11,7 +13,21 @@
     top: 20%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 200px;
+    width: 250px;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    font-size: 20px;
+    padding-bottom: 10px;
+}
+
+.Home-fade-image {
+    animation: fadeinout 2s linear;
+    border-radius: 5px;
+    width: 90%;
+    margin: 10px;
     height: auto;
 }
 
@@ -70,6 +86,7 @@
 
 .Home-two-divs {
     display: flex;
+    margin-bottom: -20px;
 }
 
 .Home-individual {

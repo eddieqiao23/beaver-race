@@ -21,9 +21,11 @@ const Home = (props) => {
     const updateUsername = () => {
       post("/api/updateusername", { userId: userId, username: username }).then((res) => {
         if (res.success) {
-          setUsername("")
           setShowSuccess(true);
-          setTimeout(() => setShowSuccess(false), 2000);
+          setTimeout(() => {
+            setShowSuccess(false); 
+            setUsername("");
+          }, 2000);
         } else {
           setShowFailure(true);
           setTimeout(() => setShowFailure(false), 2000);
@@ -33,8 +35,8 @@ const Home = (props) => {
  
     return (
         <body>
-          {showSuccess && <img src={successful_beaver} className="Home-fade-image" />}
-          {showFailure && <img src={unsuccessful_beaver} className="Home-fade-image" />}
+          {showSuccess && <div className="Home-fade-div"> <img src={successful_beaver} className="Home-fade-image" /> <div>Hi {username}!</div></div>}
+          {showFailure && <div className="Home-fade-div"> <img src={unsuccessful_beaver} className="Home-fade-image" /> <div>{username} is not valid</div></div>}
             <div className="Home-container">
                 <div className="Home-main-rounded-div Home-sign-in">
                   {userId ? ( 
@@ -44,7 +46,7 @@ const Home = (props) => {
                       </div> 
                       <input 
                         className="u-inlineBlock Home-username-button Home-white-placeholder Home-align-right Home-subheadline-text"
-                        placeholder="Enter username"
+                        placeholder="new username..."
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
