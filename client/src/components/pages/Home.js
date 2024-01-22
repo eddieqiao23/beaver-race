@@ -4,19 +4,63 @@ import { Link } from "react-router-dom";
 import "../../utilities.css";
 import "./Home.css";
 
+import successful_beaver from "../../public/assets/beaver images/successful_beaver.png";
+import unsuccessful_beaver from "../../public/assets/beaver images/unsuccessful_beaver.png";
+
+import { get, post } from "../../utilities";
+
 import Leaderboard from "../modules/Leaderboard.js";
 
 const Home = (props) => {
+    const [username, setUsername] = React.useState("");
+    const [showSuccess, setShowSuccess] = React.useState(false);
+    const [showFailure, setShowFailure] = React.useState(false);
+
+    let userId = props.userId;
+
+    const updateUsername = () => {
+      post("/api/updateusername", { userId: userId, username: username }).then((res) => {
+        if (res.success) {
+          setUsername("")
+          setShowSuccess(true);
+          setTimeout(() => setShowSuccess(false), 2000);
+        } else {
+          setShowFailure(true);
+          setTimeout(() => setShowFailure(false), 2000);
+        }
+      });
+    };
+ 
     return (
         <body>
+          {showSuccess && <img src={successful_beaver} className="Home-fade-image" />}
+          {showFailure && <img src={unsuccessful_beaver} className="Home-fade-image" />}
             <div className="Home-container">
                 <div className="Home-main-rounded-div Home-sign-in">
+                  {userId ? ( 
+                    <>  
+                      <div className="u-inlineBlock Home-subheadline-text">
+                        add user stats here later
+                      </div> 
+                      <input 
+                        className="u-inlineBlock Home-username-button Home-white-placeholder Home-align-right Home-subheadline-text"
+                        placeholder="Enter username"
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault(); // prevent form submission
+                            updateUsername();
+                          }
+                        }}
+                      ></input>
+                    </>
+                  ) : (
                     <div className="u-inlineBlock Home-subheadline-text">
-                        Sign in on the top right to save your progress and create custom games!
+                      Sign in to change your username and view your stats!
                     </div>
-                    <button className="u-inlineBlock Home-sign-in-button Home-align-right Home-subheadline-text">
-                        Sign In!
-                    </button>
+                  )}
                 </div>
                 <div className="Home-main-rounded-div Home-multiplayer-random">
                     <div className="Home-headline-text">

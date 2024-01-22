@@ -3,6 +3,24 @@
     margin: 0 auto;
 }
 
+.Home-fade-image {
+    animation: fadeinout 2s linear;
+    border-radius: 5px;
+    position: fixed;
+    z-index: 9999;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: auto;
+}
+
+@keyframes fadeinout {
+    0% {opacity: 0;}
+    50% {opacity: 1;}
+    100% {opacity: 0;}
+}
+
 .Home-headline-text {
     font-size: 32px;
     font-weight: bold;
@@ -30,12 +48,16 @@
     padding: 10px;
 }
 
-.Home-sign-in-button {
+.Home-username-button {
     border-radius: 20px;
     background-color: var(--orange);
     color: var(--white);
     padding: 8px;
-    margin-top: -7px;
+    margin-top: -10px;
+}
+
+.Home-white-placeholder::placeholder {
+    color: var(--white);
 }
 
 .Home-sign-in {

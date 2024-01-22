@@ -43,6 +43,28 @@
     float: right;
 }
 
+.NavBar-sign-in-button {
+    border-radius: 20px;
+    background-color: var(--orange);
+    color: var(--white);
+    padding: 8px;
+    font-size: 20px;
+}
+
+.NavBar-sign-in-popup {
+    width: 20%;
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 20px;
+    background-color: var(--primary--dim);
+    color: var(--white);
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding:20px;
+}
+
 .NavBar-logo-container {
     display: flex;
     align-items: center;

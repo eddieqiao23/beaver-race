@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { get, post } from "../../utilities";
 import "./Question.css";
 
@@ -8,6 +8,7 @@ const Question = (props) => {
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState([]);
     const [doneLoading, setDoneLoading] = useState(false);
+    const inputRef = useRef();
 
     let score = props.score;
     let setScore = props.setScore;
@@ -27,6 +28,12 @@ const Question = (props) => {
             );
         });
     };
+
+    useEffect(() => {
+        if (doneLoading) {
+            inputRef.current && inputRef.current.focus();
+        }
+    }, [doneLoading]);
 
     useEffect(() => {
         getRoundInfo();
@@ -58,6 +65,7 @@ const Question = (props) => {
                                 type="text"
                                 placeholder=""
                                 onChange={handleInputChange}
+                                ref={inputRef}
                                 style={{ fontSize: "24pt" }}
                             />
                         </div>

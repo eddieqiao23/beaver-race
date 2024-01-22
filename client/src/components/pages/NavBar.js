@@ -20,8 +20,8 @@ const NavBar = ({ userId, handleLogin, handleLogout }) => {
                     <div className="u-inlineBlock NavBar-align-top">
                         <img src={BeaverRaceLogo} alt="" className="NavBar-image" />
                     </div>
-                    <div className="u-inlineBlock NavBar-align-top">
-                        <text className="NavBar-title">Beaver Race</text>
+                    <div className="u-inlineBlock NavBar-align-top NavBar-title">
+                        Beaver Race
                     </div>
                 </Link>
 
@@ -42,7 +42,7 @@ const NavBar = ({ userId, handleLogin, handleLogout }) => {
 
                 <div className="u-inlineBlock NavBar-auth-button">
                     {userId ? (
-                        <button
+                        <button className="NavBar-sign-in-button"
                             onClick={() => {
                                 googleLogout();
                                 handleLogout();

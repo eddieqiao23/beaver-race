@@ -37,8 +37,9 @@ const getRandomProblem = () => {
 // Page that displays all elements of a multiplayer race
 const Indiv = (props) => {
     // const [currProblem, setCurrProblem] = useState(0);
-    const [roundTimer, setRoundTimer] = useState(95);
+    const [roundTimer, setRoundTimer] = useState(10);
     const [preMatchTimer, setPreMatchTimer] = useState(5);
+    const [newProblemSetID, setNewProblemSetID] = useState("");
     const [newRoundID, setNewRoundID] = useState("");
     const [gameStarted, setGameStarted] = useState(false);
     const [gameFinished, setGameFinished] = useState(false);
@@ -68,6 +69,8 @@ const Indiv = (props) => {
         if (roundTimer === 0) {
             clearInterval(intervalTimer);
             setGameFinished(true);
+            post("/api/delete_problem_set_by_id", { problem_set_id: newRoundID });
+            post("/api/delete_round_by_id", { round_id: newRoundID });
             console.log("game finished");
         }
 
@@ -92,6 +95,7 @@ const Indiv = (props) => {
                     answers: answers,
                 });
                 const problemSetID = problemSetRes._id;
+                setNewProblemSetID(problemSetID);
                 console.log("Problem Set: " + problemSetID);
 
                 const newRoundRes = await post("/api/create_indiv_round", {
