@@ -33,7 +33,10 @@ const Home = (props) => {
           }, 2000);
         } else {
           setShowFailure(true);
-          setTimeout(() => setShowFailure(false), 2000);
+          setTimeout(() => {
+            setShowFailure(false); 
+            setUsername("");
+          }, 2000);
         }
       });
     };
