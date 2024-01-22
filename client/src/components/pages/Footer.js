@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import CryingBeaver from "../../public/assets/beaver images/crying beaver.png";
+import CryingBeaver from "../../public/assets/beavers/crying beaver.png";
 
 import "./Footer.css";
 

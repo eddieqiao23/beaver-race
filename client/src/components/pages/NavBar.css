@@ -7,6 +7,7 @@
 .NavBar-title {
     color: var(--white);
     font-size: 30px;
+    margin-right: 20px;
 }
 
 .NavBar-linkContainer {
@@ -75,7 +76,7 @@
 }
 
 .NavBar-button {
-    background-color: var(--primary);
+    background-color: transparent;
     color: var(--white);
     border: none;
     border-radius: 5px;

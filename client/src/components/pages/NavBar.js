@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin, googleLogout } from "@react-oauth/google";
 
-import BeaverRaceLogo from "../../public/assets/beaver images/BeaverIcon.png";
+import BeaverRaceLogo from "../../public/assets/beavers/BeaverIcon.png";
 
 import "./NavBar.css";
 
@@ -42,7 +42,7 @@ const NavBar = ({ userId, handleLogin, handleLogout }) => {
 
                 <div className="u-inlineBlock NavBar-auth-button">
                     {userId ? (
-                        <button className="NavBar-sign-in-button"
+                        <button className="u-pointer NavBar-sign-in-button"
                             onClick={() => {
                                 googleLogout();
                                 handleLogout();

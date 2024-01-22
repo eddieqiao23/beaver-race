@@ -4,8 +4,13 @@ import { Link } from "react-router-dom";
 import "../../utilities.css";
 import "./Home.css";
 
-import successful_beaver from "../../public/assets/beaver images/successful_beaver.png";
-import unsuccessful_beaver from "../../public/assets/beaver images/unsuccessful_beaver.png";
+import successful_beaver from "../../public/assets/beavers/successful_beaver.png";
+import unsuccessful_beaver from "../../public/assets/beavers/unsuccessful_beaver.png";
+
+import beaver_image from "../../public/assets/beavers/beaver_picture.png";
+import lonely_beaver from "../../public/assets/beavers/lonelyBeaver.png";
+import three_beavers from "../../public/assets/beavers/3beavers.png";
+
 
 import { get, post } from "../../utilities";
 
@@ -66,16 +71,17 @@ const Home = (props) => {
                 </div>
                 <div className="Home-main-rounded-div Home-multiplayer-random">
                     <div className="Home-headline-text">
-                        MetaZacRacer - The MIT Mathing Competition
+                        Beaver Racer - The MIT Mathing Competition
                     </div>
                     <div className="Home-subheadline-text">
-                        Increase your mathing speed while racing against others!
+                        Increase your mathing speed while racing against other beavers!
                     </div>
                     <Link to="/race">
-                        <button className="Home-button Home-mathing-race-button">
-                            Mathing race
+                        <button className="u-pointer Home-button Home-mathing-race-button">
+                            Mathing Race
                         </button>
                     </Link>
+                    <img src={beaver_image} className="Home-multiplayer-random-image" />
                 </div>
                 <div className="Home-two-divs">
                     <div className="Home-main-rounded-div Home-individual">
@@ -84,21 +90,23 @@ const Home = (props) => {
                             Practice your mathing skills on your own!
                         </div>
                         <Link to="/indiv">
-                            <button className="Home-button Home-practice-yourself-button">
+                            <button className="u-pointer Home-button Home-practice-yourself-button">
                                 Practice Yourself
                             </button>
                         </Link>
+                        <img src={lonely_beaver} className="Home-individual-image" />
                     </div>
                     <div className="Home-main-rounded-div Home-multiplayer-party">
                         <div className="Home-headline-text">Race Your Friends</div>
                         <div className="Home-subheadline-text">
-                            Create your own river and race your friends!
+                            Create your own river and race your beaver friends!
                         </div>
                         <Link to="/indiv">
-                            <button className="Home-button Home-create-party-button">
+                            <button className="u-pointer Home-button Home-create-party-button">
                                 Create River
                             </button>
                         </Link>
+                        <img src={three_beavers} className="Home-multiplayer-party-image" />
                     </div>
                 </div>
                 <div className="Home-main-rounded-div Home-headline-text Home-leaderboard">

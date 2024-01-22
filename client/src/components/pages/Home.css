@@ -82,6 +82,14 @@
 
 .Home-multiplayer-random {
     padding: 20px;
+    position: relative;
+}
+
+.Home-multiplayer-random-image {
+    position: absolute;
+    top: 20%;
+    left: 78%;
+    height: 90%;
 }
 
 .Home-two-divs {
@@ -95,6 +103,15 @@
     margin-right: 10px;
     padding: 20px;
     margin-top: 0px;
+    position: relative;
+}
+
+.Home-individual-image {
+    position: absolute;
+    border-radius: 10px;
+    top: 50%;
+    left: 75%;
+    height: 45%;
 }
 
 .Home-multiplayer-party {
@@ -103,6 +120,15 @@
     margin-left: 10px;
     padding: 20px;
     margin-top: 0px;
+    position: relative;
+}
+
+.Home-multiplayer-party-image {
+    position: absolute;
+    border-radius: 10px;
+    top: 45%;
+    left: 72%;
+    height: 50%;
 }
 
 .Home-align-right {
