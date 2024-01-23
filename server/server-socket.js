@@ -61,6 +61,7 @@ const addUser = (user, socket) => {
 };
 
 const removeUser = (user, socket) => {
+    console.log("DELETING!!");
     if (user) delete userToSocketMap[user._id];
     delete socketToUserMap[socket.id];
 };
@@ -74,6 +75,7 @@ module.exports = {
             let gameID = null;
             console.log("this is the game ID: " + gameID);
             socket.on('joinGame', (newGameID) => {
+                // addUser(user, socket);
                 socket.join(newGameID);
                 gameID = newGameID;
                 console.log(io.sockets.adapter.rooms);
@@ -88,12 +90,12 @@ module.exports = {
             });
             socket.on('leaveGame', (gameID) => {
                 socket.leave(gameID);
-                delete socketToGameMap[socket.id];
-                removeUser(getUserFromSocketID(socket.id), socket, gameID);
+                // delete socketToGameMap[socket.id];
+                // removeUser(getUserFromSocketID(socket.id), socket, gameID);
             });
             socket.on("disconnect", (reason) => {
-                const user = getUserFromSocketID(socket.id);
-                removeUser(user, socket, gameID);
+                // const user = getUserFromSocketID(socket.id);
+                // removeUser(user, socket, gameID);
             });
             socket.on("move", () => {
                 const user = getUserFromSocketID(socket.id);

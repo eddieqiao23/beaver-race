@@ -25,7 +25,8 @@ const Race = (props) => {
     const canvasRef = useRef(null);
 
     useEffect(() => {
-      socket.emit('joinGame', gameID);
+      if (loggedIn) {
+        socket.emit('joinGame', gameID);
 
         socket.on("update", (update) => {
             console.log(update);
@@ -35,7 +36,8 @@ const Race = (props) => {
         return () => {
           socket.emit('leaveGame', gameID);
         }
-    }, []);
+      }
+    }, [loggedIn]);
 
 
     const processUpdate = (update) => {
