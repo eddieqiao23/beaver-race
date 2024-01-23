@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Timer from "../modules/Timer.js";
 import Question from "../modules/Question.js";
+import MultiQuestion from "../modules/MultiQuestion.js";
 import RoundEndScoreboard from "../modules/RoundEndScoreboard.js";
 
 import "./Indiv.css";
@@ -37,7 +38,7 @@ const getRandomProblem = () => {
 // Page that displays all elements of a multiplayer race
 const Indiv = (props) => {
     // const [currProblem, setCurrProblem] = useState(0);
-    const [roundTimer, setRoundTimer] = useState(10);
+    const [roundTimer, setRoundTimer] = useState(30);
     const [preMatchTimer, setPreMatchTimer] = useState(5);
     const [newProblemSetID, setNewProblemSetID] = useState("");
     const [newRoundID, setNewRoundID] = useState("");
@@ -141,6 +142,7 @@ const Indiv = (props) => {
                             <div className="Indiv-roundTimer"> {roundTimer} </div>
                             {/* <Timer />  */}
                             <Question roundID={newRoundID} score={score} setScore={setScore} />
+                            {/* <MultiQuestion gameID={newRoundID} score={score} setScore={setScore} /> */}
                         </div>
                     )}
                 </div>
