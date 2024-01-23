@@ -58,18 +58,22 @@
     margin-bottom: 20px;
 }
 .Home-button {
-    border-radius: 20px;
+    border-radius: 10px;
     background-color: var(--orange);
     color: var(--white);
     padding: 10px;
 }
 
 .Home-username-button {
-    border-radius: 20px;
+    border-radius: 10px;
     background-color: var(--orange);
     color: var(--white);
     padding: 8px;
     margin-top: -10px;
+}
+
+.Home-username-text {
+    font-weight: bold;
 }
 
 .Home-white-placeholder::placeholder {

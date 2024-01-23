@@ -46,7 +46,7 @@ router.post("/updateusername", (req, res) => {
     const { userId, username } = req.body;
     console.log(userId, username);
 
-    if (filter.isProfane(username) || username.length < 2) {
+    if (filter.isProfane(username) || username.length < 2 || username.length > 20) {
         res.send({success:false});
     } else {
         User.findByIdAndUpdate(userId, { username: username }, { new: true }, (err, user) => {
@@ -57,6 +57,30 @@ router.post("/updateusername", (req, res) => {
         }
         });
     }
+});
+
+router.get("/get_user_by_id", (req, res) => {
+    User.findById(req.query.userId, (err, user) => {
+        if (err) {
+        res.send({ success: false, error: err });
+        } else {
+        res.send(user);
+        }
+    });
+}); 
+
+router.get("/get_top_users", (req, res) => {
+  User.find({}).then((users) => {
+    const usersWithAverageScore = users.map((user) => {
+      const totalScore = user.pastGames.reduce((a, b) => a + b.score, 0);
+      const averageScore = totalScore / user.pastGames.length;
+      return { ...user._doc, averageScore };
+    });
+
+    usersWithAverageScore.sort((a, b) => b.averageScore - a.averageScore);
+    const topUsers = usersWithAverageScore.slice(0, 5);
+    res.send({ success: true, users: topUsers });
+  });
 });
 
 router.post("/create_problem_set", (req, res) => {

@@ -40,6 +40,9 @@ body {
     font-weight: 300;
     background: radial-gradient(var(--primary--dim), var(--white));
     background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 form {

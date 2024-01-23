@@ -1,8 +1,10 @@
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { socket } from "../../client-socket.js";
 import Scoreboard from "../modules/Scoreboard.js";
 import Timer from "../modules/Timer.js";
 import Question from "../modules/Question.js";
+import MultiQuestion from "../modules/MultiQuestion.js";
 
 import { get, post } from "../../utilities";
 import { drawCanvas } from "../../canvasManager";
@@ -12,41 +14,57 @@ import "./Race.css";
 
 // Page that displays all elements of a multiplayer race
 const Race = (props) => {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [score, setScore] = useState(0);
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const gameID = searchParams.get('id');
+  
+
     const canvasRef = useRef(null);
 
-    // useEffect(() => {
-    //     get("/api/activeUsers").then((res) => {
-    //         console.log(res);
-    //     });
-    // })
-
     useEffect(() => {
+      socket.emit('joinGame', gameID);
+
         socket.on("update", (update) => {
             console.log(update);
             processUpdate(update);
         });
+
+        return () => {
+          socket.emit('leaveGame', gameID);
+        }
     }, []);
 
+
     const processUpdate = (update) => {
-        drawCanvas(update, canvasRef);
+        drawCanvas(update, canvasRef, gameID);
     }
 
-    // display text if the player is not logged in
-    let loginModal = null;
-    if (!props.userId) {
-        loginModal = <div> Please Login First! </div>;
-    }
+    useEffect(() => {
+      setLoggedIn(props.userId);
+    }, [props.userId]);
 
+    // let loginModal = null;
+    // if (!props.userId) {
+    //     loginModal = <div> Please Login First! </div>;
+    // }
 
-    // let user_ids = ["Dylan", "Eddie"];
-    // let scores = [1, 2];
     return (
         <>
-          <div>
-            {/* important: canvas needs id to be referenced by canvasManager */}
-            <canvas ref={canvasRef} id="game-canvas" width="500" height="500" />
-            {loginModal}
-          </div>
+          {/* important: canvas needs id to be referenced by canvasManager */}
+          { loggedIn ? 
+          <div className="Race-container">
+            <div className="Race-headline-text">
+              let's go racing! -DJ Tim
+            </div>
+            <canvas ref={canvasRef} id={`game-canvas-${gameID}`} width="1000" height="400" />
+            <MultiQuestion gameID={gameID} userID={props.userId} score={score} setScore={setScore}/>
+          </div> : 
+          <div className="Race-container Race-login-prompt"> 
+            Please login first!
+          </div>}
         </>
       );
     

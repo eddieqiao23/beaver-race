@@ -1,0 +1,19 @@
+.NotFound-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5%;
+    padding: var(--s) var(--m);
+}
+.NotFound-content {
+    font-family: "IBM Plex Sans";
+    font-size: large;
+}
+
+.NotFound-image {
+    object-fit: contain;
+    border-radius: 20px;
+    width: 200px;
+    margin: 20px;
+}

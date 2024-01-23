@@ -1,0 +1,32 @@
+.Race-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 20px;
+    width: 800px;
+    margin: 0 auto;
+}
+
+.Race-login-prompt {
+    border-radius: 20px;
+    background-color: var(--primary);
+    color: var(--white);
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 20px;
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--white);
+}
+
+.Race-headline-text {
+    border-radius: 20px;
+    background-color: var(--primary);
+    color: var(--white);
+    margin-bottom: 20px;
+    padding: 10px;
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--white);
+}

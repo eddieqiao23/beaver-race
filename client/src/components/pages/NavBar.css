@@ -45,7 +45,7 @@
 }
 
 .NavBar-sign-in-button {
-    border-radius: 20px;
+    border-radius: 10px;
     background-color: var(--orange);
     color: var(--white);
     padding: 8px;
