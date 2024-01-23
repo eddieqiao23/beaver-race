@@ -13,7 +13,7 @@ import three_beavers from "../../public/assets/beavers/3beavers.png";
 
 
 import { get, post } from "../../utilities";
-import { socket } from "../../client-socket.js";
+// import { socket } from "../../client-socket.js";
 
 import Leaderboard from "../modules/Leaderboard.js";
 
@@ -107,7 +107,7 @@ const Home = (props) => {
           const createdRoundID = newRoundRes._id;
           setRoundID(createdRoundID);
           console.log("Round: " + createdRoundID);
-          post("/api/initsocket", { socketid: socket.id });
+          // post("/api/initsocket", { socketid: socket.id });
           navigate(`/race?id=${createdRoundID}`);
 
         } catch (error) {
