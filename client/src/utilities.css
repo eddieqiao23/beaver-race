@@ -38,7 +38,7 @@ body {
     padding: 0;
     font-family: "IBM Plex Sans";
     font-weight: 300;
-    background: linear-gradient(var(--primary--dim), var(--white));
+    background: radial-gradient(var(--primary--dim), var(--white));
     background-attachment: fixed;
 }
 
