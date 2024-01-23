@@ -16,7 +16,7 @@ const MultiQuestion = (props) => {
     let setScore = props.setScore;
 
     const getRoundInfo = async () => {
-        get("/api/get_round_by_id", { roundID: props.gameID }).then((round) => {
+        get("/api/get_round_by_id", { gameID: props.gameID }).then((round) => {
             console.log("This displays the round for ID " + round.problem_set_id);
             get("/api/get_problem_set_by_id", { problemSetID: round.problem_set_id }).then(
                 (problemSet) => {

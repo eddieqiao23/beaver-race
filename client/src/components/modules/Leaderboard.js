@@ -34,7 +34,7 @@ const Leaderboard = (props) => {
 
     return (
         <div className="Leaderboard-container">
-            <div className="u-inlineBlock">
+            <div className="u-inlineBlock Leaderboard-title">
                 Leaderboard
             </div>
 
