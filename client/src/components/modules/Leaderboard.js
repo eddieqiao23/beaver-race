@@ -15,8 +15,13 @@ const Leaderboard = (props) => {
         get(`/api/get_user_by_id`, { userId: userId }).then((user) => {
             const totalScore = user.pastGames.reduce((a, b) => a + b.score, 0);
             const averageScore = totalScore / user.pastGames.length;
-            setUserAvgScore(averageScore);
-            setUserHighScore(Math.max(...user.pastGames.map(game => game.score)));
+            if (user.pastGames.length === 0) {
+                setUserAvgScore(0);
+                setUserHighScore(0);
+            } else {
+                setUserAvgScore(averageScore);
+                setUserHighScore(Math.max(...user.pastGames.map(game => game.score)));
+            };
         });
       }
     }, [userId]);
@@ -49,7 +54,7 @@ const Leaderboard = (props) => {
                         {index + 1}. {user.username}
                     </div>
                     <div className="u-inlineBlock">
-                        Avg {user.averageScore} q/s | Best {Math.max(...user.pastGames.map(game => game.score))} q/s 
+                        Avg {user.pastGames.length === 0 ? 0 : user.averageScore} q/s | Best {user.pastGames.length === 0 ? 0 : Math.max(...user.pastGames.map(game => game.score))} q/s 
                     </div>
                 </div>
             ))}
