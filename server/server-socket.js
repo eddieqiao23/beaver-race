@@ -5,12 +5,15 @@ let io;
 const userToSocketMap = {}; // maps user ID to socket object
 const socketToUserMap = {}; // maps socket ID to user object
 const socketToGameMap = {};
+const userToGameMap = {};
 
 const getAllConnectedUsers = () => Object.values(socketToUserMap);
 const getSocketFromUserID = (userid) => userToSocketMap[userid];
 const getUserFromSocketID = (socketid) => socketToUserMap[socketid];
 const getSocketFromSocketID = (socketid) => io.sockets.connected[socketid];
 const getGameFromSocketID = (socketid) => socketToGameMap[socketid];
+const getGameFromUserID = (userid) => userToGameMap[userid];
+
 
 const sendGameState = (gameID) => {
     console.log("updates emitted to " + gameID);
@@ -55,13 +58,14 @@ const addUser = (user, socket) => {
     //     gameLogic.spawnPlayer(user._id, gameID);
     // }
 
-    console.log("user is being added...")
+    console.log("ADDING!! " + user._id + " and " + socket.id);
     userToSocketMap[user._id] = socket;
     socketToUserMap[socket.id] = user;
+    // userToGameMap[user._id] = getGameFromSocketID(socket.id);
 };
 
 const removeUser = (user, socket) => {
-    console.log("DELETING!!");
+    console.log("DELETING!! " + user._id);
     if (user) delete userToSocketMap[user._id];
     delete socketToUserMap[socket.id];
 };
@@ -75,18 +79,40 @@ module.exports = {
             let gameID = null;
             console.log("this is the game ID: " + gameID);
             socket.on('joinGame', (newGameID) => {
-                // addUser(user, socket);
-                socket.join(newGameID);
-                gameID = newGameID;
-                console.log(io.sockets.adapter.rooms);
-                socketToGameMap[socket.id] = newGameID;
-                console.log("Socket:" + socket.id);
-                console.log(socketToUserMap);
-                console.log(getUserFromSocketID(socket.id));
-                console.log("User:" + getUserFromSocketID(socket.id)._id);
-                gameLogic.spawnPlayer(getUserFromSocketID(socket.id)._id, newGameID);
-                console.log("joined successfully");
-                startRunningGame(newGameID);
+                console.log("new game: " + newGameID);
+                console.log("socket: " + socket.id);
+                console.log("game to socket mapping");
+                console.log(socketToGameMap);
+                // can access user immediately
+                let currGame = null;
+                try {
+                    currGame = getGameFromUserID(getUserFromSocketID(socket.id)._id);
+                }
+                catch (error) {
+                    console.log("lol didn't work");
+                }
+
+                if (currGame !== newGameID) {
+                    const userID = getUserFromSocketID(socket.id)._id;
+
+                    gameID = newGameID;
+                    socket.join(newGameID);
+                    socketToGameMap[socket.id] = newGameID;
+                    userToGameMap[userID] = newGameID;
+
+                    console.log("S to U MAP!"); 
+                    console.log(socketToUserMap);
+                    console.log("Socket ID: " + socket.id);
+    
+                    gameLogic.spawnPlayer(userID, newGameID);
+                    startRunningGame(newGameID);    
+                }
+                else {
+                    // gameLogic.gameInProgress();
+                    console.log("rip already in game");
+                    socket.emit("alreadyInGame");
+                    // 
+                }
             });
             socket.on('leaveGame', (gameID) => {
                 socket.leave(gameID);

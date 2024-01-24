@@ -16,10 +16,12 @@ import "./Race.css";
 const Race = (props) => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [score, setScore] = useState(0);
+  const [showGame, setShowGame] = useState(true);
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const gameID = searchParams.get('id');
+
   
 
     const canvasRef = useRef(null);
@@ -31,6 +33,10 @@ const Race = (props) => {
         socket.on("update", (update) => {
             console.log(update);
             processUpdate(update);
+        });
+
+        socket.on("alreadyInGame", () => {
+          setShowGame(false);
         });
 
         return () => {
@@ -55,14 +61,18 @@ const Race = (props) => {
 
     return (
         <>
-          {/* important: canvas needs id to be referenced by canvasManager */}
           { loggedIn ? 
           <div className="Race-container">
             <div className="Race-headline-text">
               let's go racing! -DJ Tim
             </div>
-            <canvas ref={canvasRef} id={`game-canvas-${gameID}`} width="1000" height="400" />
-            <MultiQuestion gameID={gameID} userID={props.userId} score={score} setScore={setScore}/>
+            { showGame ? 
+              <div>
+              <canvas ref={canvasRef} id={`game-canvas-${gameID}`} width="1000" height="400" />
+              <MultiQuestion gameID={gameID} userID={props.userId} score={score} setScore={setScore}/>
+              </div>
+              : <div> You are already in a game! </div>
+            }
           </div> : 
           <div className="Race-container Race-login-prompt"> 
             Please login first!
