@@ -13,7 +13,6 @@ import { get, post } from "../../utilities";
 // import { drawCanvas } from "../../canvasManager";
 
 import "./Race.css";
-import { startGame } from "../../../../server/game-logic.js";
 
 // Page that displays all elements of a multiplayer race
 const Race = (props) => {
