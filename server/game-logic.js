@@ -8,7 +8,7 @@ const TRACK_LENGTH = 500;
 
 const gameState = {};
 
-const spawnPlayer = (id, gameID) => {
+const spawnPlayer = (id, username, gameID) => {
     // check if gameID is in gameState
     if (!(gameID in gameState)) {
         gameState[gameID] = {
@@ -20,10 +20,15 @@ const spawnPlayer = (id, gameID) => {
     }
     console.log(gameState);
     if (!(id in gameState[gameID]["players"])) {
-        gameState[gameID]["players"].push({ id: id, score: 0 });
+        gameState[gameID]["players"].push({ id: id, username: username, score: 0 });
         console.log("spawned!");
     }
 };
+
+const startGame = (gameID) => {
+    gameState[gameID]["started"] = true;
+    gameState[gameID]["start_time"] = new Date();
+}
 
 const removePlayer = (id, gameID) => {
     const index = gameState[gameID]["players"].indexOf(id);
@@ -56,4 +61,5 @@ module.exports = {
     movePlayer,
     updateGameState,
     doesPlayerExist,
+    startGame,
 };

@@ -20,7 +20,7 @@
     color: var(--white);
 }
 
-.Race-headline-text {
+/* .Race-headline-text {
     border-radius: 20px;
     background-color: var(--primary);
     color: var(--white);
@@ -29,4 +29,64 @@
     font-size: 32px;
     font-weight: bold;
     color: var(--white);
+} */
+
+.Race-headline-text {
+    border-radius: 20px;
+    background-color: var(--primary);
+    color: var(--white);
+    margin: 20px;
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--white);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 720px;
+}
+
+.Race-beaver-image {
+    width: 80px;
+    height: auto;
+}
+
+.Race-beaver-river {
+    background-color: var(--primary);
+    border-radius: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    /* margin: 20px; */
+    height: auto;
+    width: 730px;
+}
+
+.Race-beaver-bar {
+    background-color: var(--primary--dim);
+    border-radius: 20px;
+    padding: 5px;
+    margin: 10px;
+    /* height: 150px; */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.Race-log-image {
+    width: 80px;
+    height: auto;
+}
+
+.Race-username {
+    color: var(--white);
+}
+
+.Race-start-button {
+    border-radius: 10px;
+    background-color: var(--orange);
+    color: var(--white);
+    padding: 10px;
+    font-size: 32px;
+    margin-top: 20px;
 }

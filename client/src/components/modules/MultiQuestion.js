@@ -17,6 +17,12 @@ const MultiQuestion = (props) => {
     const getRoundInfo = async () => {
         get("/api/get_round_by_id", { roundID: props.gameID }).then((round) => {
             console.log("This displays the round for ID " + round.problem_set_id);
+            console.log("User ID: " + props.userID);
+            console.log("Players: ");
+            console.log(round.players);
+            if (round.players[0] === props.userID) {
+                props.setIsHost(true);
+            }
             get("/api/get_problem_set_by_id", { problemSetID: round.problem_set_id }).then(
                 (problemSet) => {
                     console.log("This displays the problem set for ID " + problemSet._id);
@@ -33,8 +39,8 @@ const MultiQuestion = (props) => {
         const roundID = props.gameID;
         const userID = props.userID;
 
-        console.log("Round ID: " + roundID);
-        console.log("User ID: " + userID);
+        // console.log("Round ID: " + roundID);
+        // console.log("User ID: " + userID);
 
         getRoundInfo();
     }, []);
@@ -60,21 +66,25 @@ const MultiQuestion = (props) => {
             {!doneLoading ? (
                 <div> </div>
             ) : (
-                <div>
-                    <div className="MultiQuestion-container">
-                        <div className="MultiQuestion-score">Score: {score}</div>
-                        <div className="MultiQuestion-problem">{questions[score]}</div>
-                        <div className="MultiQuestion-answer-box">
-                            <input
-                                type="text"
-                                placeholder=""
-                                onChange={handleInputChange}
-                                ref={inputRef}
-                                style={{ fontSize: "24pt" }}
-                            />
-                        </div>
-                    </div>
-                </div>
+                <>
+                    {props.raceStarted ? 
+                                    <div>
+                                    <div className="MultiQuestion-container">
+                                        <div className="MultiQuestion-score">Score: {score}</div>
+                                        <div className="MultiQuestion-problem">{questions[score]}</div>
+                                        <div className="MultiQuestion-answer-box">
+                                            <input
+                                                type="text"
+                                                placeholder=""
+                                                onChange={handleInputChange}
+                                                ref={inputRef}
+                                                style={{ fontSize: "24pt" }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                : <div> </div> }
+                </>
             )}
         </div>
     );

@@ -6,6 +6,7 @@ const userToSocketMap = {}; // maps user ID to socket object
 const socketToUserMap = {}; // maps socket ID to user object
 const socketToGameMap = {};
 const userToGameMap = {};
+const userToUsernameMap = {};
 
 const getAllConnectedUsers = () => Object.values(socketToUserMap);
 const getSocketFromUserID = (userid) => userToSocketMap[userid];
@@ -13,6 +14,7 @@ const getUserFromSocketID = (socketid) => socketToUserMap[socketid];
 const getSocketFromSocketID = (socketid) => io.sockets.connected[socketid];
 const getGameFromSocketID = (socketid) => socketToGameMap[socketid];
 const getGameFromUserID = (userid) => userToGameMap[userid];
+const getUsernameFromUserID = (userid) => userToUsernameMap[userid];
 
 const sendGameState = (gameID) => {
     console.log("updates emitted to " + gameID);
@@ -26,9 +28,9 @@ const startRunningGame = (gameID) => {
         sendGameState(gameID);
     }, 1000); // 1 fps right now
 
-    setTimeout(() => {
-        clearInterval(intervalId);
-    }, 60000);
+    // setTimeout(() => {
+    //     clearInterval(intervalId);
+    // }, 60000);
 };
 
 const addUser = (user, socket) => {
@@ -60,7 +62,7 @@ module.exports = {
             console.log(`socket has connected ${socket.id}`);
             let gameID = null;
             console.log("this is the game ID: " + gameID);
-            socket.on("joinGame", (newGameID) => {
+            socket.on("joinGame", (newGameID, username) => {
                 console.log("new game: " + newGameID);
                 console.log("socket: " + socket.id);
                 console.log("game to socket mapping");
@@ -80,12 +82,13 @@ module.exports = {
                     socket.join(newGameID);
                     socketToGameMap[socket.id] = newGameID;
                     userToGameMap[userID] = newGameID;
+                    userToUsernameMap[userID] = username;
 
                     console.log("S to U MAP!");
                     console.log(socketToUserMap);
                     console.log("Socket ID: " + socket.id);
 
-                    gameLogic.spawnPlayer(userID, newGameID);
+                    gameLogic.spawnPlayer(userID, username, newGameID);
                     startRunningGame(newGameID);
                 } else {
                     // gameLogic.gameInProgress();
@@ -106,6 +109,9 @@ module.exports = {
             socket.on("move", () => {
                 const user = getUserFromSocketID(socket.id);
                 if (user) gameLogic.movePlayer(user._id, gameID);
+            });
+            socket.on("startGame", (gameID) => {
+                gameLogic.startGame(gameID);
             });
         });
     },

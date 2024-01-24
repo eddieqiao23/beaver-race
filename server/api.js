@@ -106,7 +106,7 @@ router.get("/get_top_users", (req, res) => {
 
         if (req.query.sortMethod === "best") {
             usersWithScore = users.map((user) => {
-                const bestScore = user.pastGames.length === 0 ? 0 : Math.min(...user.pastGames);
+                const bestScore = user.pastGames.length === 0 ? 999 : Math.min(...user.pastGames);
                 return { ...user._doc, bestScore };
             });
             usersWithScore.sort((a, b) => a.bestScore - b.bestScore);
@@ -114,9 +114,9 @@ router.get("/get_top_users", (req, res) => {
             // Default to sorting by average
             usersWithScore = users.map((user) => {
                 const totalScore =
-                    user.pastGames.length === 0 ? 0 : user.pastGames.reduce((a, b) => a + b, 0);
+                    user.pastGames.length === 0 ? 999 : user.pastGames.reduce((a, b) => a + b, 0);
                 const averageScore =
-                    user.pastGames.length === 0 ? 0 : totalScore / user.pastGames.length;
+                    user.pastGames.length === 0 ? 999 : totalScore / user.pastGames.length;
                 return { ...user._doc, averageScore };
             });
             usersWithScore.sort((a, b) => a.averageScore - b.averageScore);
@@ -136,15 +136,15 @@ router.post("/create_problem_set", (req, res) => {
 });
 
 router.post("/create_indiv_round", (req, res) => {
+    let creatorID = "Guest Beaver";
     let creatorUsername = "Guest Beaver";
-    let creatorName = "Guest Beaver";
     if (req.user) {
-        creatorUsername = req.user._id;
-        creatorName = req.user.name;
+        creatorID = req.user._id;
+        creatorUsername = req.user.name;
     }
     const newRound = new Round({
-        creator: creatorUsername, // _id of creator
-        players: [creatorName], // list of _ids of participants
+        creator: creatorID, // _id of creator
+        players: [creatorID], // list of _ids of participants
         problem_set_id: req.body.problem_set_id,
         player_scores: [0],
         multiplayer: false,
