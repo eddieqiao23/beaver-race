@@ -169,11 +169,14 @@ const Home = (props) => {
                     <div className="Home-subheadline-text">
                         Increase your mathing speed while racing against other beavers!
                     </div>
-                    <Link to="/race">
-                        <button className="u-pointer Home-button Home-mathing-race-button">
+                    {/* <Link to="/race"> */}
+                        <button 
+                          className="u-pointer Home-button Home-mathing-race-button"
+                          onClick={createMultiplayerRound}
+                        >
                             Mathing Race
                         </button>
-                    </Link>
+                    {/* </Link> */}
                     {/* <img src={beaver_image} className="Home-multiplayer-random-image" /> */}
                 </div>
                 <div className="Home-two-divs">

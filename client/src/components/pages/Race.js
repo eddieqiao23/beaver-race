@@ -111,7 +111,7 @@ const Race = (props) => {
                             </div>
                             ))}
                           </div>
-                          { isHost ? <div> <button className="Race-start-button" onClick={startGameButton}>start game!</button> </div> : null}
+                          { (isHost && !raceStarted) ? <div> <button className="Race-start-button" onClick={startGameButton}>start game!</button> </div> : null}
                           <MultiQuestion
                               gameID={gameID}
                               userID={props.userId}
