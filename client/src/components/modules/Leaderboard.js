@@ -18,7 +18,7 @@ const Leaderboard = (props) => {
                     user.pastGames.length === 0
                         ? 0
                         : user.pastGames.reduce((a, b) => a + b, 0) / user.pastGames.length;
-                const highScore = user.pastGames.length === 0 ? 0 : Math.max(...user.pastGames);
+                const highScore = user.pastGames.length === 0 ? 0 : Math.min(...user.pastGames);
                 setUserAvgScore(averageScore);
                 setUserHighScore(highScore);
             });
@@ -52,8 +52,8 @@ const Leaderboard = (props) => {
             </div>
             {userId ? (
                 <div className="Leaderboard-your-stats">
-                    Your Stats: Avg {userAvgScore.toFixed(2)} q/s | Best {userHighScore.toFixed(2)}{" "}
-                    q/s
+                    Your Stats: Avg {userAvgScore.toFixed(2)} spq | Best {userHighScore.toFixed(2)}{" "}
+                    spq
                 </div>
             ) : (
                 <div className="Leaderboard-your-stats">Log in to see your stats!</div>
@@ -74,9 +74,9 @@ const Leaderboard = (props) => {
                             : (
                                   user.pastGames.reduce((a, b) => a + b, 0) / user.pastGames.length
                               ).toFixed(2)}{" "}
-                        q/s | Best{" "}
-                        {user.pastGames.length === 0 ? 0 : Math.max(...user.pastGames).toFixed(2)}{" "}
-                        q/s
+                        spq | Best{" "}
+                        {user.pastGames.length === 0 ? 0 : Math.min(...user.pastGames).toFixed(2)}{" "}
+                        spq
                     </div>
                 </div>
             ))}

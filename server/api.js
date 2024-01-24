@@ -61,7 +61,7 @@ router.post("/updateusername", (req, res) => {
 
 router.post("/update_user_pastgames", (req, res) => {
     const { userId, score, time } = req.body;
-    const gameResult = score / time;
+    const gameResult = time / score;
     User.findByIdAndUpdate(
         userId,
         { $push: { pastGames: gameResult } },
@@ -106,10 +106,10 @@ router.get("/get_top_users", (req, res) => {
 
         if (req.query.sortMethod === "best") {
             usersWithScore = users.map((user) => {
-                const bestScore = user.pastGames.length === 0 ? 0 : Math.max(...user.pastGames);
+                const bestScore = user.pastGames.length === 0 ? 0 : Math.min(...user.pastGames);
                 return { ...user._doc, bestScore };
             });
-            usersWithScore.sort((a, b) => b.bestScore - a.bestScore);
+            usersWithScore.sort((a, b) => a.bestScore - b.bestScore);
         } else {
             // Default to sorting by average
             usersWithScore = users.map((user) => {
@@ -119,7 +119,7 @@ router.get("/get_top_users", (req, res) => {
                     user.pastGames.length === 0 ? 0 : totalScore / user.pastGames.length;
                 return { ...user._doc, averageScore };
             });
-            usersWithScore.sort((a, b) => b.averageScore - a.averageScore);
+            usersWithScore.sort((a, b) => a.averageScore - b.averageScore);
         }
 
         const topUsers = usersWithScore.slice(0, 10);
