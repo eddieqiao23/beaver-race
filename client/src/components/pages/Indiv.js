@@ -48,7 +48,7 @@ const Indiv = (props) => {
     let round_time = 120;
     let pre_match_time = 1;
     let num_problems = 10;
-    const [roundTimer, setRoundTimer] = useState(round_time+pre_match_time);
+    const [roundTimer, setRoundTimer] = useState(round_time + pre_match_time);
     const [preMatchTimer, setPreMatchTimer] = useState(pre_match_time);
     const [newProblemSetID, setNewProblemSetID] = useState("");
     const [newRoundID, setNewRoundID] = useState("");
@@ -102,31 +102,35 @@ const Indiv = (props) => {
 
     useEffect(() => {
         const handleKeyDown = (event) => {
-            if (event.key === 'Enter') {
-            location.reload();
+            if (event.key === "Enter") {
+                location.reload();
             }
         };
 
-        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener("keydown", handleKeyDown);
 
         // Cleanup function to remove the event listener when the component unmounts
         return () => {
-            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener("keydown", handleKeyDown);
         };
     }, []);
 
     useEffect(() => {
-        setQpsScore((score/(round_time-roundTimer)).toFixed(2));
+        setQpsScore((score / (round_time - roundTimer)).toFixed(2));
         if (gameFinished && userId && notUpdatedGame) {
             console.log(score, roundTimer);
-            post(`/api/update_user_pastgames`, { userId: userId, score: score, time: round_time-roundTimer});
+            post(`/api/update_user_pastgames`, {
+                userId: userId,
+                score: score,
+                time: round_time - roundTimer,
+            });
             setNotUpdatedGame(false);
         }
     }, [gameFinished]);
 
     useEffect(() => {
-       setUpdateLeaderboard(true);
-       setUpdateLeaderboard(false);
+        setUpdateLeaderboard(true);
+        setUpdateLeaderboard(false);
     }, [notUpdatedGame]);
 
     useEffect(() => {
@@ -186,33 +190,32 @@ const Indiv = (props) => {
                         Score: {qpsScore} q/s
                         <button
                             className="u-pointer Indiv-play-again-button"
-                            onClick={() => {location.reload();}}>
+                            onClick={() => {
+                                location.reload();
+                            }}
+                        >
                             press enter to play again!
                         </button>
                     </div>
                     <div className="Indiv-leaderboard Home-main-rounded-div Home-headline-text Home-leaderboard">
-                        <Leaderboard userId={userId} updateLeaderboard={updateLeaderboard}/>
+                        <Leaderboard userId={userId} updateLeaderboard={updateLeaderboard} />
                     </div>
                 </>
             ) : (
                 <div className="Indiv-game">
                     {!gameStarted || newRoundID === "" ? (
-                        <div className="Indiv-preMatchTimer"> 
-                            round starting in {preMatchTimer} 
-                        </div>
+                        <div className="Indiv-preMatchTimer">round starting in {preMatchTimer}</div>
                     ) : (
                         <div>
-                            <div className="Indiv-roundTimer Indiv-headline-text"> 
-                                <div className="u-inlineBlock">
-                                    get to the logs asap!
-                                </div>
+                            <div className="Indiv-roundTimer Indiv-headline-text">
+                                <div className="u-inlineBlock">get to the logs asap!</div>
                                 <div className="u-inlineBlock">
                                     remaining time: {roundTimer.toFixed(0)}
                                 </div>
                             </div>
                             <div className="Indiv-beaver-river">
                                 <div className="Indiv-beaver-bar">
-                                    <div style={{ marginLeft: `${score*50 + 30}px` }}>
+                                    <div style={{ marginLeft: `${score * 50 + 30}px` }}>
                                         <img src={beaver_image} className="Indiv-beaver-image" />
                                     </div>
                                     <div className="Indiv-log">

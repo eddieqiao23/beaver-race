@@ -8,4 +8,4 @@ socket.on("connect", () => {
 
 export const move = () => {
     socket.emit("move");
-}
+};

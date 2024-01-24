@@ -56,9 +56,7 @@ const Question = (props) => {
             ) : (
                 <div>
                     <div className="Question-container">
-                        <div className="Question-score">
-                            Score: {score}
-                        </div>
+                        <div className="Question-score">Score: {score}</div>
                         <div className="Question-problem">{questions[score]}</div>
                         <div className="Question-answer-box">
                             <input

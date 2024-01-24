@@ -1,6 +1,6 @@
 let canvas;
-const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary');
-const highlightColor = getComputedStyle(document.documentElement).getPropertyValue('--orange');
+const primaryColor = getComputedStyle(document.documentElement).getPropertyValue("--primary");
+const highlightColor = getComputedStyle(document.documentElement).getPropertyValue("--orange");
 
 const CANVAS_WIDTH = 1000;
 const CANVAS_HEIGHT = 400;
@@ -31,7 +31,13 @@ export const drawCanvas = (drawState, canvasRef, gameID) => {
     Object.values(drawState[gameID]["players"]).forEach((p) => {
         // fillRectangle(context, p.score / 20 * 580 + 120, 120 + drawState.players.indexOf(p) * 80, 100, 40, "black");
         if (img.complete) {
-            context.drawImage(img, p.score / TOTAL_QUESTIONS * CANVAS_WIDTH * 0.85 + CANVAS_WIDTH * 0.05, CANVAS_HEIGHT * 0.1 + drawState[gameID]["players"].indexOf(p) * CANVAS_HEIGHT * 0.2, BEAVER_WIDTH, BEAVER_HEIGHT);
+            context.drawImage(
+                img,
+                (p.score / TOTAL_QUESTIONS) * CANVAS_WIDTH * 0.85 + CANVAS_WIDTH * 0.05,
+                CANVAS_HEIGHT * 0.1 + drawState[gameID]["players"].indexOf(p) * CANVAS_HEIGHT * 0.2,
+                BEAVER_WIDTH,
+                BEAVER_HEIGHT
+            );
         }
     });
 };

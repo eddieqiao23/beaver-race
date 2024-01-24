@@ -23,7 +23,7 @@ const router = express.Router();
 //initialize socket
 const socketManager = require("./server-socket");
 
-const Filter = require('bad-words');
+const Filter = require("bad-words");
 const filter = new Filter();
 
 // router.get("/test", (req, res) => {
@@ -47,44 +47,44 @@ router.post("/updateusername", (req, res) => {
     console.log(userId, username);
 
     if (filter.isProfane(username) || username.length < 2 || username.length > 20) {
-        res.send({success:false});
+        res.send({ success: false });
     } else {
         User.findByIdAndUpdate(userId, { username: username }, { new: true }, (err, user) => {
-        if (err || !user) {
-            res.send({success:false});
-        } else {
-            res.send({success:true});
-        }
+            if (err || !user) {
+                res.send({ success: false });
+            } else {
+                res.send({ success: true });
+            }
         });
     }
 });
 
 router.post("/update_user_pastgames", (req, res) => {
-  const { userId, score, time } = req.body;
-  const gameResult = score / time;
-  User.findByIdAndUpdate(
-    userId,
-    { $push: { pastGames: gameResult } },
-    { new: true },
-    (err, user) => {
-      if (err || !user) {
-        res.send({ success: false });
-      } else {
-        res.send({ success: true });
-      }
-    }
-  );
+    const { userId, score, time } = req.body;
+    const gameResult = score / time;
+    User.findByIdAndUpdate(
+        userId,
+        { $push: { pastGames: gameResult } },
+        { new: true },
+        (err, user) => {
+            if (err || !user) {
+                res.send({ success: false });
+            } else {
+                res.send({ success: true });
+            }
+        }
+    );
 });
 
 router.get("/get_user_by_id", (req, res) => {
     User.findById(req.query.userId, (err, user) => {
         if (err) {
-        res.send({ success: false, error: err });
+            res.send({ success: false, error: err });
         } else {
-        res.send(user);
+            res.send(user);
         }
     });
-}); 
+});
 
 // router.get("/get_top_users", (req, res) => {
 //   User.find({}).then((users) => {
@@ -101,27 +101,30 @@ router.get("/get_user_by_id", (req, res) => {
 // });
 
 router.get("/get_top_users", (req, res) => {
-  User.find({}).then((users) => {
-    let usersWithScore;
+    User.find({}).then((users) => {
+        let usersWithScore;
 
-    if (req.query.sortMethod === "best") {
-      usersWithScore = users.map((user) => {
-        const bestScore = (user.pastGames.length === 0) ? 0 : Math.max(...user.pastGames);
-        return { ...user._doc, bestScore };
-      });
-      usersWithScore.sort((a, b) => b.bestScore - a.bestScore);
-    } else { // Default to sorting by average
-      usersWithScore = users.map((user) => {
-        const totalScore = (user.pastGames.length === 0) ? 0 : user.pastGames.reduce((a, b) => a + b, 0);
-        const averageScore = (user.pastGames.length === 0) ? 0 : totalScore / user.pastGames.length;
-        return { ...user._doc, averageScore };
-      });
-      usersWithScore.sort((a, b) => b.averageScore - a.averageScore);
-    }
+        if (req.query.sortMethod === "best") {
+            usersWithScore = users.map((user) => {
+                const bestScore = user.pastGames.length === 0 ? 0 : Math.max(...user.pastGames);
+                return { ...user._doc, bestScore };
+            });
+            usersWithScore.sort((a, b) => b.bestScore - a.bestScore);
+        } else {
+            // Default to sorting by average
+            usersWithScore = users.map((user) => {
+                const totalScore =
+                    user.pastGames.length === 0 ? 0 : user.pastGames.reduce((a, b) => a + b, 0);
+                const averageScore =
+                    user.pastGames.length === 0 ? 0 : totalScore / user.pastGames.length;
+                return { ...user._doc, averageScore };
+            });
+            usersWithScore.sort((a, b) => b.averageScore - a.averageScore);
+        }
 
-    const topUsers = usersWithScore.slice(0, 10);
-    res.send({ success: true, users: topUsers });
-  });
+        const topUsers = usersWithScore.slice(0, 10);
+        res.send({ success: true, users: topUsers });
+    });
 });
 
 router.post("/create_problem_set", (req, res) => {
@@ -213,7 +216,7 @@ router.post("/initsocket", (req, res) => {
     // do nothing if user not logged in
     if (req.user) {
         console.log("hi");
-      socketManager.addUser(req.user, socketManager.getSocketFromSocketID(req.body.socketid));
+        socketManager.addUser(req.user, socketManager.getSocketFromSocketID(req.body.socketid));
     }
 
     res.send({});

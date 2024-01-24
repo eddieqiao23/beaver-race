@@ -8,8 +8,8 @@
     margin: 0 auto;
     background-color: var(--primary);
     border-radius: 20px;
-    padding:20px;
-    margin:20px;
+    padding: 20px;
+    margin: 20px;
     color: var(--white);
 }
 
@@ -30,4 +30,3 @@
     display: flex;
     justify-content: center;
 }
- 

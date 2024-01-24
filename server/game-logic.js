@@ -9,17 +9,19 @@ const TRACK_LENGTH = 500;
 const gameState = {};
 
 const spawnPlayer = (id, gameID) => {
-    // check if gameID is in gameState 
+    // check if gameID is in gameState
     if (!(gameID in gameState)) {
         gameState[gameID] = {
-            "players": [],
-            "winner": null,
+            players: [],
+            winner: null,
+            started: false,
+            start_time: null, // maybe??
         };
     }
     console.log(gameState);
     if (!(id in gameState[gameID]["players"])) {
-        gameState[gameID]["players"].push({id: id, score: 0});
-        console.log("spawned!");    
+        gameState[gameID]["players"].push({ id: id, score: 0 });
+        console.log("spawned!");
     }
 };
 
@@ -42,12 +44,10 @@ const movePlayer = (id, gameID) => {
 };
 
 const doesPlayerExist = (userID) => {
-    return gameState.players.some(player => player.userId === userId);
-}
-
-const updateGameState = () => {
-
+    return gameState.players.some((player) => player.userId === userId);
 };
+
+const updateGameState = () => {};
 
 module.exports = {
     gameState,
@@ -56,4 +56,4 @@ module.exports = {
     movePlayer,
     updateGameState,
     doesPlayerExist,
-}
+};

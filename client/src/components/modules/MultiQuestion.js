@@ -3,7 +3,6 @@ import { get, post } from "../../utilities";
 import "./MultiQuestion.css";
 import { move } from "../../client-socket";
 
-
 // Page that displays all elements of a multiplayer race
 const MultiQuestion = (props) => {
     const [currProblem, setCurrProblem] = useState(0);
@@ -33,14 +32,12 @@ const MultiQuestion = (props) => {
     useEffect(() => {
         const roundID = props.gameID;
         const userID = props.userID;
-    
+
         console.log("Round ID: " + roundID);
         console.log("User ID: " + userID);
-    
+
         getRoundInfo();
     }, []);
-
-    
 
     // useEffect(() => {
     //     if (doneLoading) {
@@ -65,9 +62,7 @@ const MultiQuestion = (props) => {
             ) : (
                 <div>
                     <div className="MultiQuestion-container">
-                        <div className="MultiQuestion-score">
-                            Score: {score}
-                        </div>
+                        <div className="MultiQuestion-score">Score: {score}</div>
                         <div className="MultiQuestion-problem">{questions[score]}</div>
                         <div className="MultiQuestion-answer-box">
                             <input
@@ -84,11 +79,7 @@ const MultiQuestion = (props) => {
         </div>
     );
 
-    return (
-        <div>
-            hi
-        </div>
-    )
+    return <div>hi</div>;
 };
 
 export default MultiQuestion;

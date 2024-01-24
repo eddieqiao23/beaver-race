@@ -6,9 +6,7 @@ import "./Footer.css";
 const NavBar = (props) => {
     return (
         <footer className="Footer-container">
-            <div className="Footer-content">
-                glhf
-            </div>
+            <div className="Footer-content">glhf</div>
         </footer>
     );
 };

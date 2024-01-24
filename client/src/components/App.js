@@ -39,10 +39,9 @@ const App = () => {
             setUserId(user._id);
             post("/api/initsocket", { socketid: socket.id });
             if (user.username === "") {
-                console.log("No username")
-            }
-            else {
-                console.log(user.username)
+                console.log("No username");
+            } else {
+                console.log(user.username);
             }
         });
     };
@@ -54,16 +53,16 @@ const App = () => {
 
     return (
         <>
-          <NavBar handleLogin={handleLogin} handleLogout={handleLogout} userId={userId} />
-          <body>
-            <Routes>
-                <Route path="/" element={<Home path="/" userId={userId} />} />
-                <Route path="/race" element={<Race path="/race" userId={userId} />} />
-                <Route path="/indiv" element={<Indiv path="/indiv" userId={userId} />} />
-                <Route path="*" element={<NotFound />} />
-            </Routes>
-          </body>
-          <Footer userId={userId} />
+            <NavBar handleLogin={handleLogin} handleLogout={handleLogout} userId={userId} />
+            <body>
+                <Routes>
+                    <Route path="/" element={<Home path="/" userId={userId} />} />
+                    <Route path="/race" element={<Race path="/race" userId={userId} />} />
+                    <Route path="/indiv" element={<Indiv path="/indiv" userId={userId} />} />
+                    <Route path="*" element={<NotFound />} />
+                </Routes>
+            </body>
+            <Footer userId={userId} />
         </>
     );
 };

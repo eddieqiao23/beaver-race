@@ -12,14 +12,17 @@ const Leaderboard = (props) => {
     const [sortMethod, setSortMethod] = useState("avg");
 
     useEffect(() => {
-      if (userId) {
-        get(`/api/get_user_by_id`, { userId: userId }).then((user) => {
-            const averageScore = (user.pastGames.length === 0) ? 0 : user.pastGames.reduce((a, b) => a + b, 0) / user.pastGames.length;
-            const highScore = (user.pastGames.length === 0) ? 0 : Math.max(...user.pastGames);
-            setUserAvgScore(averageScore);
-            setUserHighScore(highScore);
-        });
-      }
+        if (userId) {
+            get(`/api/get_user_by_id`, { userId: userId }).then((user) => {
+                const averageScore =
+                    user.pastGames.length === 0
+                        ? 0
+                        : user.pastGames.reduce((a, b) => a + b, 0) / user.pastGames.length;
+                const highScore = user.pastGames.length === 0 ? 0 : Math.max(...user.pastGames);
+                setUserAvgScore(averageScore);
+                setUserHighScore(highScore);
+            });
+        }
     }, [userId]);
 
     useEffect(() => {
@@ -31,31 +34,49 @@ const Leaderboard = (props) => {
     return (
         <div className="Leaderboard-container">
             <div className="Leaderboard-header">
-                <div className="u-inlineBlock Leaderboard-title">
-                    Leaderboard
-                </div>
+                <div className="u-inlineBlock Leaderboard-title">Leaderboard</div>
                 <div className="u-inlineBlock Leaderboard-sort">
-                    <button className="u-pointer Leaderboard-button" onClick={() => setSortMethod("avg")}>sort by avg</button>
-                    <button className="u-pointer Leaderboard-button" onClick={() => setSortMethod("best")}>sort by best</button>
+                    <button
+                        className="u-pointer Leaderboard-button"
+                        onClick={() => setSortMethod("avg")}
+                    >
+                        sort by avg
+                    </button>
+                    <button
+                        className="u-pointer Leaderboard-button"
+                        onClick={() => setSortMethod("best")}
+                    >
+                        sort by best
+                    </button>
                 </div>
             </div>
             {userId ? (
                 <div className="Leaderboard-your-stats">
-                    Your Stats: Avg {userAvgScore.toFixed(2)} q/s | Best {userHighScore.toFixed(2)} q/s 
+                    Your Stats: Avg {userAvgScore.toFixed(2)} q/s | Best {userHighScore.toFixed(2)}{" "}
+                    q/s
                 </div>
-            ) : (   
-                <div className="Leaderboard-your-stats">
-                    Log in to see your stats!
-                </div>  
+            ) : (
+                <div className="Leaderboard-your-stats">Log in to see your stats!</div>
             )}
 
-           {topUsers.map((user, index) => (
-                <div className={` ${user._id === userId ? "Leaderboard-highlight" : "Leaderboard-player"}`} key={index}>
+            {topUsers.map((user, index) => (
+                <div
+                    className={` ${user._id === userId ? "Leaderboard-highlight" : "Leaderboard-player"}`}
+                    key={index}
+                >
                     <div className="u-inlineBlock">
                         {index + 1}. {user.username}
                     </div>
                     <div className="u-inlineBlock">
-                        Avg {(user.pastGames.length === 0) ? 0 : (user.pastGames.reduce((a, b) => a + b, 0) / user.pastGames.length).toFixed(2)} q/s | Best {(user.pastGames.length === 0) ? 0 : Math.max(...user.pastGames).toFixed(2)} q/s 
+                        Avg{" "}
+                        {user.pastGames.length === 0
+                            ? 0
+                            : (
+                                  user.pastGames.reduce((a, b) => a + b, 0) / user.pastGames.length
+                              ).toFixed(2)}{" "}
+                        q/s | Best{" "}
+                        {user.pastGames.length === 0 ? 0 : Math.max(...user.pastGames).toFixed(2)}{" "}
+                        q/s
                     </div>
                 </div>
             ))}
