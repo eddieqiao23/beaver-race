@@ -13,15 +13,10 @@ const Leaderboard = (props) => {
     useEffect(() => {
       if (userId) {
         get(`/api/get_user_by_id`, { userId: userId }).then((user) => {
-            const totalScore = user.pastGames.reduce((a, b) => a + b.score, 0);
-            const averageScore = totalScore / user.pastGames.length;
-            if (user.pastGames.length === 0) {
-                setUserAvgScore(0);
-                setUserHighScore(0);
-            } else {
-                setUserAvgScore(averageScore);
-                setUserHighScore(Math.max(...user.pastGames.map(game => game.score)));
-            };
+            const averageScore = (user.pastGames.length === 0) ? 0 : user.pastGames.reduce((a, b) => a + b, 0) / user.pastGames.length;
+            const highScore = (user.pastGames.length === 0) ? 0 : Math.max(...user.pastGames);
+            setUserAvgScore(averageScore);
+            setUserHighScore(highScore);
         });
       }
     }, [userId]);
@@ -40,7 +35,7 @@ const Leaderboard = (props) => {
 
             {userId ? (
                 <div className="Leaderboard-your-stats">
-                    Your Stats: Avg {userAvgScore} q/s | Best {userHighScore} q/s 
+                    Your Stats: Avg {userAvgScore.toFixed(2)} q/s | Best {userHighScore.toFixed(2)} q/s 
                 </div>
             ) : (   
                 <div className="Leaderboard-your-stats">
@@ -54,7 +49,7 @@ const Leaderboard = (props) => {
                         {index + 1}. {user.username}
                     </div>
                     <div className="u-inlineBlock">
-                        Avg {user.pastGames.length === 0 ? 0 : user.averageScore} q/s | Best {user.pastGames.length === 0 ? 0 : Math.max(...user.pastGames.map(game => game.score))} q/s 
+                        Avg {(user.pastGames.length === 0) ? 0 : user.averageScore.toFixed(2)} q/s | Best {(user.pastGames.length === 0) ? 0 : Math.max(...user.pastGames).toFixed(2)} q/s 
                     </div>
                 </div>
             ))}

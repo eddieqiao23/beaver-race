@@ -59,6 +59,23 @@ router.post("/updateusername", (req, res) => {
     }
 });
 
+router.post("/update_user_pastgames", (req, res) => {
+  const { userId, score, time } = req.body;
+  const gameResult = score / time;
+  User.findByIdAndUpdate(
+    userId,
+    { $push: { pastGames: gameResult } },
+    { new: true },
+    (err, user) => {
+      if (err || !user) {
+        res.send({ success: false });
+      } else {
+        res.send({ success: true });
+      }
+    }
+  );
+});
+
 router.get("/get_user_by_id", (req, res) => {
     User.findById(req.query.userId, (err, user) => {
         if (err) {
@@ -72,8 +89,8 @@ router.get("/get_user_by_id", (req, res) => {
 router.get("/get_top_users", (req, res) => {
   User.find({}).then((users) => {
     const usersWithAverageScore = users.map((user) => {
-      const totalScore = user.pastGames.reduce((a, b) => a + b.score, 0);
-      const averageScore = totalScore / user.pastGames.length;
+      const totalScore = (user.pastGames.length === 0) ? 0 : user.pastGames.reduce((a, b) => a + b, 0);
+      const averageScore = (user.pastGames.length === 0) ? 0 : totalScore / user.pastGames.length;
       return { ...user._doc, averageScore };
     });
 

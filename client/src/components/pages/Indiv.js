@@ -38,13 +38,16 @@ const getRandomProblem = () => {
 // Page that displays all elements of a multiplayer race
 const Indiv = (props) => {
     // const [currProblem, setCurrProblem] = useState(0);
-    const [roundTimer, setRoundTimer] = useState(30);
+    let round_time = 30;
+    const [roundTimer, setRoundTimer] = useState(round_time);
     const [preMatchTimer, setPreMatchTimer] = useState(5);
     const [newProblemSetID, setNewProblemSetID] = useState("");
     const [newRoundID, setNewRoundID] = useState("");
     const [gameStarted, setGameStarted] = useState(false);
     const [gameFinished, setGameFinished] = useState(false);
     const [score, setScore] = useState(0);
+
+    let userId = props.userId;
 
     useEffect(() => {
         const intervalTimer = setInterval(() => {
@@ -78,6 +81,12 @@ const Indiv = (props) => {
         // Cleanup the interval on component unmount
         return () => clearInterval(intervalTimer);
     }, [roundTimer]);
+
+    useEffect(() => {
+        if (gameFinished && userId) {
+            console.log(score, roundTimer);
+            post(`/api/update_user_pastgames`, { userId: userId, score: score, time: round_time});
+        }}, [gameFinished]);
 
     useEffect(() => {
         const createProblemSetAndRound = async () => {
