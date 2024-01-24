@@ -24,6 +24,7 @@ const Home = (props) => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showFailure, setShowFailure] = useState(false);
     const [roundID, setRoundID] = useState("");
+    const [updateLeaderboard, setUpdateLeaderboard] = useState(false);
 
     let userId = props.userId;
 
@@ -55,6 +56,11 @@ const Home = (props) => {
         }
       });
     };
+
+    useEffect(() => {
+       setUpdateLeaderboard(true);
+       setUpdateLeaderboard(false);
+    }, [current_username]);
 
     const getRandomProblem = () => {
         let sign = Math.floor(Math.random() * 2); // 0 = +, *, 1 = -, /
@@ -188,7 +194,7 @@ const Home = (props) => {
                   </div>
               </div>
               <div className="Home-main-rounded-div Home-headline-text Home-leaderboard">
-                  <Leaderboard userId={userId}/>
+                  <Leaderboard userId={userId} updateLeaderboard={updateLeaderboard}/>
               </div>
           </div>
       </>

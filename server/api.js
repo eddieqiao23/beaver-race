@@ -86,16 +86,40 @@ router.get("/get_user_by_id", (req, res) => {
     });
 }); 
 
+// router.get("/get_top_users", (req, res) => {
+//   User.find({}).then((users) => {
+//     const usersWithAverageScore = users.map((user) => {
+//       const totalScore = (user.pastGames.length === 0) ? 0 : user.pastGames.reduce((a, b) => a + b, 0);
+//       const averageScore = (user.pastGames.length === 0) ? 0 : totalScore / user.pastGames.length;
+//       return { ...user._doc, averageScore };
+//     });
+
+//     usersWithAverageScore.sort((a, b) => b.averageScore - a.averageScore);
+//     const topUsers = usersWithAverageScore.slice(0, 5);
+//     res.send({ success: true, users: topUsers });
+//   });
+// });
+
 router.get("/get_top_users", (req, res) => {
   User.find({}).then((users) => {
-    const usersWithAverageScore = users.map((user) => {
-      const totalScore = (user.pastGames.length === 0) ? 0 : user.pastGames.reduce((a, b) => a + b, 0);
-      const averageScore = (user.pastGames.length === 0) ? 0 : totalScore / user.pastGames.length;
-      return { ...user._doc, averageScore };
-    });
+    let usersWithScore;
 
-    usersWithAverageScore.sort((a, b) => b.averageScore - a.averageScore);
-    const topUsers = usersWithAverageScore.slice(0, 5);
+    if (req.query.sortMethod === "best") {
+      usersWithScore = users.map((user) => {
+        const bestScore = (user.pastGames.length === 0) ? 0 : Math.max(...user.pastGames);
+        return { ...user._doc, bestScore };
+      });
+      usersWithScore.sort((a, b) => b.bestScore - a.bestScore);
+    } else { // Default to sorting by average
+      usersWithScore = users.map((user) => {
+        const totalScore = (user.pastGames.length === 0) ? 0 : user.pastGames.reduce((a, b) => a + b, 0);
+        const averageScore = (user.pastGames.length === 0) ? 0 : totalScore / user.pastGames.length;
+        return { ...user._doc, averageScore };
+      });
+      usersWithScore.sort((a, b) => b.averageScore - a.averageScore);
+    }
+
+    const topUsers = usersWithScore.slice(0, 10);
     res.send({ success: true, users: topUsers });
   });
 });

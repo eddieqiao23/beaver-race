@@ -6,6 +6,7 @@ import RoundEndScoreboard from "../modules/RoundEndScoreboard.js";
 import { Link } from "react-router-dom";
 
 import beaver_image from "../../public/assets/beavers/beaver_picture.png";
+import logs from "../../public/assets/beavers/logs.png";
 
 import "../../utilities.css";
 import "./Indiv.css";
@@ -44,15 +45,19 @@ const getRandomProblem = () => {
 // Page that displays all elements of a multiplayer race
 const Indiv = (props) => {
     // const [currProblem, setCurrProblem] = useState(0);
-    let round_time = 30;
-    let pre_match_time = 3;
+    let round_time = 120;
+    let pre_match_time = 1;
+    let num_problems = 10;
     const [roundTimer, setRoundTimer] = useState(round_time+pre_match_time);
     const [preMatchTimer, setPreMatchTimer] = useState(pre_match_time);
     const [newProblemSetID, setNewProblemSetID] = useState("");
     const [newRoundID, setNewRoundID] = useState("");
     const [gameStarted, setGameStarted] = useState(false);
     const [gameFinished, setGameFinished] = useState(false);
+    const [qpsScore, setQpsScore] = useState(0);
     const [score, setScore] = useState(0);
+    const [notUpdatedGame, setNotUpdatedGame] = useState(true);
+    const [updateLeaderboard, setUpdateLeaderboard] = useState(false);
 
     let userId = props.userId;
 
@@ -62,7 +67,7 @@ const Indiv = (props) => {
         }, 1000);
 
         // Clear the interval when the timer reaches 0
-        if (preMatchTimer === 0) {
+        if (preMatchTimer <= 0) {
             clearInterval(intervalTimer);
             setGameStarted(true);
         }
@@ -73,11 +78,11 @@ const Indiv = (props) => {
 
     useEffect(() => {
         const intervalTimer = setInterval(() => {
-            setRoundTimer((roundTimer) => roundTimer - 1);
-        }, 1000);
+            setRoundTimer((roundTimer) => roundTimer - 0.01);
+        }, 10);
 
         // Clear the interval when the timer reaches 0
-        if (roundTimer === 0) {
+        if (roundTimer <= 0) {
             clearInterval(intervalTimer);
             setGameFinished(true);
             post("/api/delete_problem_set_by_id", { problem_set_id: newRoundID });
@@ -88,6 +93,12 @@ const Indiv = (props) => {
         // Cleanup the interval on component unmount
         return () => clearInterval(intervalTimer);
     }, [roundTimer]);
+
+    useEffect(() => {
+        if (score === num_problems) {
+            setGameFinished(true);
+        }
+    }, [score]);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -105,10 +116,18 @@ const Indiv = (props) => {
     }, []);
 
     useEffect(() => {
-        if (gameFinished && userId) {
+        setQpsScore((score/(round_time-roundTimer)).toFixed(2));
+        if (gameFinished && userId && notUpdatedGame) {
             console.log(score, roundTimer);
-            post(`/api/update_user_pastgames`, { userId: userId, score: score, time: round_time});
-        }}, [gameFinished]);
+            post(`/api/update_user_pastgames`, { userId: userId, score: score, time: round_time-roundTimer});
+            setNotUpdatedGame(false);
+        }
+    }, [gameFinished]);
+
+    useEffect(() => {
+       setUpdateLeaderboard(true);
+       setUpdateLeaderboard(false);
+    }, [notUpdatedGame]);
 
     useEffect(() => {
         const createProblemSetAndRound = async () => {
@@ -163,7 +182,8 @@ const Indiv = (props) => {
             {gameFinished ? (
                 <>
                     <div className="Indiv-game-finished-container">
-                        <RoundEndScoreboard multiplayer={false} scores={scores} />
+                        {/* <RoundEndScoreboard multiplayer={false} scores={scores} /> */}
+                        Score: {qpsScore} q/s
                         <button
                             className="u-pointer Indiv-play-again-button"
                             onClick={() => {location.reload();}}>
@@ -171,28 +191,33 @@ const Indiv = (props) => {
                         </button>
                     </div>
                     <div className="Indiv-leaderboard Home-main-rounded-div Home-headline-text Home-leaderboard">
-                        <Leaderboard userId={userId}/>
+                        <Leaderboard userId={userId} updateLeaderboard={updateLeaderboard}/>
                     </div>
                 </>
             ) : (
                 <div className="Indiv-game">
                     {!gameStarted || newRoundID === "" ? (
                         <div className="Indiv-preMatchTimer"> 
-                            Round Starting In {preMatchTimer} 
+                            round starting in {preMatchTimer} 
                         </div>
                     ) : (
                         <div>
                             <div className="Indiv-roundTimer Indiv-headline-text"> 
                                 <div className="u-inlineBlock">
-                                    Let's go mathing!
+                                    get to the logs asap!
                                 </div>
                                 <div className="u-inlineBlock">
-                                    Remaining Time: {roundTimer}
+                                    remaining time: {roundTimer.toFixed(0)}
                                 </div>
                             </div>
-                            <div className="Indiv-beaver-bar">
-                                <div style={{ marginLeft: `${score*20 + 50}px` }}>
-                                    <img src={beaver_image} className="Indiv-beaver-image" />
+                            <div className="Indiv-beaver-river">
+                                <div className="Indiv-beaver-bar">
+                                    <div style={{ marginLeft: `${score*50 + 30}px` }}>
+                                        <img src={beaver_image} className="Indiv-beaver-image" />
+                                    </div>
+                                    <div className="Indiv-log">
+                                        <img src={logs} className="Indiv-log-image" />
+                                    </div>
                                 </div>
                             </div>
                             {/* <Timer />  */}

@@ -9,6 +9,7 @@ const Leaderboard = (props) => {
     const [topUsers, setTopUsers] = useState([]);
     const [userAvgScore, setUserAvgScore] = useState(0);
     const [userHighScore, setUserHighScore] = useState(0);
+    const [sortMethod, setSortMethod] = useState("avg");
 
     useEffect(() => {
       if (userId) {
@@ -22,17 +23,22 @@ const Leaderboard = (props) => {
     }, [userId]);
 
     useEffect(() => {
-        get("/api/get_top_users").then((res) => {
+        get("/api/get_top_users", { sortMethod: sortMethod }).then((res) => {
             setTopUsers(res.users);
         });
-    }, []);
+    }, [sortMethod, props.updateLeaderboard]);
 
     return (
         <div className="Leaderboard-container">
-            <div className="u-inlineBlock Leaderboard-title">
-                Leaderboard
+            <div className="Leaderboard-header">
+                <div className="u-inlineBlock Leaderboard-title">
+                    Leaderboard
+                </div>
+                <div className="u-inlineBlock Leaderboard-sort">
+                    <button className="u-pointer Leaderboard-button" onClick={() => setSortMethod("avg")}>sort by avg</button>
+                    <button className="u-pointer Leaderboard-button" onClick={() => setSortMethod("best")}>sort by best</button>
+                </div>
             </div>
-
             {userId ? (
                 <div className="Leaderboard-your-stats">
                     Your Stats: Avg {userAvgScore.toFixed(2)} q/s | Best {userHighScore.toFixed(2)} q/s 
@@ -40,7 +46,7 @@ const Leaderboard = (props) => {
             ) : (   
                 <div className="Leaderboard-your-stats">
                     Log in to see your stats!
-                </div>
+                </div>  
             )}
 
            {topUsers.map((user, index) => (
@@ -49,7 +55,7 @@ const Leaderboard = (props) => {
                         {index + 1}. {user.username}
                     </div>
                     <div className="u-inlineBlock">
-                        Avg {(user.pastGames.length === 0) ? 0 : user.averageScore.toFixed(2)} q/s | Best {(user.pastGames.length === 0) ? 0 : Math.max(...user.pastGames).toFixed(2)} q/s 
+                        Avg {(user.pastGames.length === 0) ? 0 : (user.pastGames.reduce((a, b) => a + b, 0) / user.pastGames.length).toFixed(2)} q/s | Best {(user.pastGames.length === 0) ? 0 : Math.max(...user.pastGames).toFixed(2)} q/s 
                     </div>
                 </div>
             ))}
