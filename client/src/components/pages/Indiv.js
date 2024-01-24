@@ -3,10 +3,16 @@ import Timer from "../modules/Timer.js";
 import Question from "../modules/Question.js";
 import MultiQuestion from "../modules/MultiQuestion.js";
 import RoundEndScoreboard from "../modules/RoundEndScoreboard.js";
+import { Link } from "react-router-dom";
 
+import beaver_image from "../../public/assets/beavers/beaver_picture.png";
+
+import "../../utilities.css";
 import "./Indiv.css";
 
 import { get, post } from "../../utilities.js";
+
+import Leaderboard from "../modules/Leaderboard.js";
 
 const getRandomProblem = () => {
     let sign = Math.floor(Math.random() * 2); // 0 = +, *, 1 = -, /
@@ -39,8 +45,9 @@ const getRandomProblem = () => {
 const Indiv = (props) => {
     // const [currProblem, setCurrProblem] = useState(0);
     let round_time = 30;
-    const [roundTimer, setRoundTimer] = useState(round_time);
-    const [preMatchTimer, setPreMatchTimer] = useState(5);
+    let pre_match_time = 3;
+    const [roundTimer, setRoundTimer] = useState(round_time+pre_match_time);
+    const [preMatchTimer, setPreMatchTimer] = useState(pre_match_time);
     const [newProblemSetID, setNewProblemSetID] = useState("");
     const [newRoundID, setNewRoundID] = useState("");
     const [gameStarted, setGameStarted] = useState(false);
@@ -81,6 +88,21 @@ const Indiv = (props) => {
         // Cleanup the interval on component unmount
         return () => clearInterval(intervalTimer);
     }, [roundTimer]);
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === 'Enter') {
+            location.reload();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        // Cleanup function to remove the event listener when the component unmounts
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
 
     useEffect(() => {
         if (gameFinished && userId) {
@@ -139,16 +161,40 @@ const Indiv = (props) => {
     return (
         <div className="Indiv-container">
             {gameFinished ? (
-                <div className="Indiv-gameFinished">
-                    <RoundEndScoreboard multiplayer={false} scores={scores} />
-                </div>
+                <>
+                    <div className="Indiv-game-finished-container">
+                        <RoundEndScoreboard multiplayer={false} scores={scores} />
+                        <button
+                            className="u-pointer Indiv-play-again-button"
+                            onClick={() => {location.reload();}}>
+                            press enter to play again!
+                        </button>
+                    </div>
+                    <div className="Indiv-leaderboard Home-main-rounded-div Home-headline-text Home-leaderboard">
+                        <Leaderboard userId={userId}/>
+                    </div>
+                </>
             ) : (
                 <div className="Indiv-game">
                     {!gameStarted || newRoundID === "" ? (
-                        <div className="Indiv-preMatchTimer"> {preMatchTimer} </div>
+                        <div className="Indiv-preMatchTimer"> 
+                            Round Starting In {preMatchTimer} 
+                        </div>
                     ) : (
                         <div>
-                            <div className="Indiv-roundTimer"> {roundTimer} </div>
+                            <div className="Indiv-roundTimer Indiv-headline-text"> 
+                                <div className="u-inlineBlock">
+                                    Let's go mathing!
+                                </div>
+                                <div className="u-inlineBlock">
+                                    Remaining Time: {roundTimer}
+                                </div>
+                            </div>
+                            <div className="Indiv-beaver-bar">
+                                <div style={{ marginLeft: `${score*20 + 50}px` }}>
+                                    <img src={beaver_image} className="Indiv-beaver-image" />
+                                </div>
+                            </div>
                             {/* <Timer />  */}
                             <Question roundID={newRoundID} score={score} setScore={setScore} />
                             {/* <MultiQuestion gameID={newRoundID} score={score} setScore={setScore} /> */}
@@ -158,17 +204,6 @@ const Indiv = (props) => {
             )}
         </div>
     );
-
-    // const newRound = new Round({
-    //     creator: '2',
-    //     players: ['3', '2'],
-    //     question: 1,
-    //     player_scores: [0],
-    //     multiplayer: false,
-    //     started: true,
-    //     public: false,
-    // });
-    // newRound.save();
 };
 
 export default Indiv;

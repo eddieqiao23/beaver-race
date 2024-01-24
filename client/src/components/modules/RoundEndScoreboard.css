@@ -1,9 +1,12 @@
 .RoundEndScoreboard-container {
-    font-size: 5rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     width: 100%;
-    padding-top: 5rem;
+    padding: 20px;
+    /* margin-top: 200px; */
+    background-color: var(--primary);
+    color: var(--white);
+    border-radius: 20px;
 }

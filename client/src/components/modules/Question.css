@@ -1,4 +1,23 @@
+.Question-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 20px;
+    width: 800px;
+    margin: 0 auto;
+    background-color: var(--primary);
+    border-radius: 20px;
+    padding: 20px;
+    margin: 20px;
+    color: var(--white);
+    width: 700px;
+}
+
 .Question-score {
+    background-color: var(--primary--dim);
+    border-radius: 10px;
+    padding: 5px;
     font-size: 24px;
 }
 
@@ -11,5 +30,5 @@
 .Question-answer-box {
     display: flex;
     justify-content: center;
-    /* height: 50px;     */
 }
+ 

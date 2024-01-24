@@ -7,12 +7,71 @@
     width: 800px;
     margin: 0 auto;
 }
+
 .Indiv-preMatchTimer {
-    font-size: 5rem;
+    font-size: 64px;
+    padding: 10px;
+    margin-top: 200px;
+    background-color: var(--primary);
+    color: var(--white);
+    border-radius: 10px;
+}
+
+.Indiv-headline-text {
+    border-radius: 20px;
+    background-color: var(--primary);
+    color: var(--white);
+    margin-bottom: 20px;
+    padding: 10px;
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--white);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 700px;
+}
+
+.Indiv-game-finished-container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    width: 100%;
-    padding-top: 5rem;
+    justify-content: center;
+    width: 700px;
+    font-size: 64px;
+    margin-top: 100px;
+    margin-bottom: 20px;
+    background-color: var(--primary);
+    padding-left: 30px;
+    padding-right: 30px;
+    border-radius: 20px;
+}
+
+.Indiv-play-again-button {
+    border-radius: 10px;
+    background-color: var(--orange);
+    color: var(--white);
+    padding: 15px;
+    font-size: 32px;
+    padding-left: 100px;
+    padding-right: 100px;
+    margin-bottom: 20px;
+}
+
+.Indiv-leaderboard {
+    margin-top: -5px;
+}
+
+.Indiv-beaver-image {
+    width: 100px;
+    height: auto;
+}
+
+.Indiv-beaver-bar {
+    background-color: var(--primary--dim);
+    border-radius: 20px;
+    padding-top: 80px;
+    padding-bottom: 20px;
+    margin: 20px;
+    height: 150px;
 }

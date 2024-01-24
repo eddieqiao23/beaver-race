@@ -1,7 +1,7 @@
 .Footer-container {
     padding: var(--s) var(--m);
     background-color: var(--primary);
-    background: linear-gradient(var(--primary), var(--primary--dim));
+    /* background: linear-gradient(var(--primary), var(--primary--dim)); */
     color: var(--white);
     font-family: "IBM Plex Sans";
 
