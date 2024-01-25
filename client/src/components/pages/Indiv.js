@@ -47,7 +47,7 @@ const Indiv = (props) => {
     // const [currProblem, setCurrProblem] = useState(0);
     let round_time = 120;
     let pre_match_time = 0;
-    let num_problems = 1;
+    let num_problems = 10;
     const [roundTimer, setRoundTimer] = useState(round_time + pre_match_time);
     // const [preMatchTimer, setPreMatchTimer] = useState(pre_match_time);
     const [newProblemSetID, setNewProblemSetID] = useState("");
@@ -174,7 +174,7 @@ const Indiv = (props) => {
             console.log("started...");
             let questions = [];
             let answers = [];
-            for (let i = 0; i < 200; i++) {
+            for (let i = 0; i < 20; i++) {
                 let newQuestion = getRandomProblem();
                 questions.push(newQuestion.question);
                 answers.push(newQuestion.answer);
