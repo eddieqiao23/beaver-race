@@ -91,7 +91,7 @@ const Home = (props) => {
         console.log("started...");
         let questions = [];
         let answers = [];
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 20; i++) {
             let newQuestion = getRandomProblem();
             questions.push(newQuestion.question);
             answers.push(newQuestion.answer);
