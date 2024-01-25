@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Timer from "../modules/Timer.js";
 import Question from "../modules/Question.js";
 import MultiQuestion from "../modules/MultiQuestion.js";
@@ -47,7 +47,7 @@ const Indiv = (props) => {
     // const [currProblem, setCurrProblem] = useState(0);
     let round_time = 120;
     let pre_match_time = 0;
-    let num_problems = 10;
+    let num_problems = 1;
     const [roundTimer, setRoundTimer] = useState(round_time + pre_match_time);
     // const [preMatchTimer, setPreMatchTimer] = useState(pre_match_time);
     const [newProblemSetID, setNewProblemSetID] = useState("");
@@ -58,6 +58,7 @@ const Indiv = (props) => {
     const [score, setScore] = useState(0);
     const [notUpdatedGame, setNotUpdatedGame] = useState(true);
     const [updateLeaderboard, setUpdateLeaderboard] = useState(false);
+    const gameFinishedRef = useRef(gameFinished);
 
     let userId = props.userId;
 
@@ -88,6 +89,7 @@ const Indiv = (props) => {
         if (roundTimer <= 0) {
             clearInterval(intervalTimer);
             setGameFinished(true);
+            gameFinishedRef.current = true;
             setRoundTimer(0);
             post("/api/delete_problem_set_by_id", { problem_set_id: newRoundID });
             post("/api/delete_round_by_id", { round_id: newRoundID });
@@ -101,6 +103,7 @@ const Indiv = (props) => {
     useEffect(() => {
         if (score === num_problems) {
             setGameFinished(true);
+            gameFinishedRef.current = true;
         }
     }, [score]);
 
@@ -120,27 +123,14 @@ const Indiv = (props) => {
     }, []);
 
     useEffect(() => {
-        let enterCounter = 0;
-        let timeoutId;
-
         const handleKeyDown = (event) => {
-            if (event.key === "Enter") {
-            enterCounter++;
-            clearTimeout(timeoutId);
-
-            if (enterCounter === 2) {
-                // Reset the game state to start a new game
+            if (event.key === "Enter" && gameFinishedRef.current) {
                 setGameFinished(false);
                 setGameStarted(false);
                 setScore(0);
                 setNewRoundID("");
                 setRoundTimer(round_time + pre_match_time);
-                enterCounter = 0;
-            }
-
-            timeoutId = setTimeout(() => {
-                enterCounter = 0;
-            }, 300); // Reset the counter if "Enter" is not pressed again within 300ms
+                gameFinishedRef.current = false;
             }
         };
 
@@ -236,7 +226,7 @@ const Indiv = (props) => {
                         </div>
                         <div className="Indiv-beaver-river">
                             <div className="Indiv-beaver-bar">
-                                <div style={{ marginLeft: `${score * 50 + 30}px` }}>
+                                <div style={{ marginLeft: `${score * 50 + 10}px` }}>
                                     <img src={beaver_image} className="Indiv-beaver-image" />
                                 </div>
                                 <div className="Indiv-log">
@@ -267,7 +257,7 @@ const Indiv = (props) => {
                                 setRoundTimer(round_time + pre_match_time);
                             }}
                         >
-                            Press enter twice to play again!
+                            Press enter to play again!
                         </button>
                     </div>
                     <div className="Indiv-leaderboard Home-main-rounded-div Home-headline-text Home-leaderboard">
