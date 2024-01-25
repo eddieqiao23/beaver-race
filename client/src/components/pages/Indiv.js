@@ -58,9 +58,8 @@ const Indiv = (props) => {
     const [score, setScore] = useState(0);
     const [notUpdatedGame, setNotUpdatedGame] = useState(true);
     const [updateLeaderboard, setUpdateLeaderboard] = useState(false);
+    const [createdNewRound, setCreatedNewRound] = useState(false);
     const gameFinishedRef = useRef(gameFinished);
-
-    let userId = props.userId;
 
     // useEffect(() => {
     //     const intervalTimer = setInterval(() => {
@@ -130,6 +129,8 @@ const Indiv = (props) => {
                 setScore(0);
                 setNewRoundID("");
                 setRoundTimer(round_time + pre_match_time);
+                setNotUpdatedGame(true)
+                setCreatedNewRound(false);
                 gameFinishedRef.current = false;
             }
         };
@@ -143,16 +144,24 @@ const Indiv = (props) => {
     }, []);
 
     useEffect(() => {
-        setSpqScore(((round_time - roundTimer) / score).toFixed(2));
-        if (gameFinished && userId && notUpdatedGame && score > 0) {
+        const updatePastGames = async () => {
+            setSpqScore(((round_time - roundTimer) / score).toFixed(2));
+            console.log(gameFinished, props.userId, notUpdatedGame, score)
+            if (gameFinished && props.userId && notUpdatedGame && score > 0) {
             console.log(score, roundTimer);
-            post(`/api/update_user_pastgames`, {
-                userId: userId,
+            await post(`/api/update_user_pastgames`, {
+                userId: props.userId,
                 score: score,
-                time: round_time - roundTimer,
-            });
+                time: (round_time - roundTimer),
+            }); 
             setNotUpdatedGame(false);
-        }
+            }
+            if (gameFinished && !props.userId) {
+            setNotUpdatedGame(false);
+            }
+        };
+
+        updatePastGames();
     }, [gameFinished]);
 
     useEffect(() => {
@@ -193,16 +202,18 @@ const Indiv = (props) => {
             }
         };
         // createProblemSetAndRound().then(() => console.log("finished!"));
+        if (!createdNewRound) {
+            const changeRoundID = async () => {
+                let createdRoundID = await createProblemSetAndRound();
+                setNewRoundID(createdRoundID);
+            };
 
-        const changeRoundID = async () => {
-            let createdRoundID = await createProblemSetAndRound();
-            setNewRoundID(createdRoundID);
-        };
-
-        try {
-            changeRoundID().then(() => console.log("finished!"));
-        } catch (error) {
-            location.reload();
+            try {
+                changeRoundID().then(() => console.log("finished!"));
+                setCreatedNewRound(true);
+            } catch (error) {
+                location.reload();
+            }
         }
     }, [newRoundID]);
 
@@ -261,7 +272,7 @@ const Indiv = (props) => {
                         </button>
                     </div>
                     <div className="Indiv-leaderboard Home-main-rounded-div Home-headline-text Home-leaderboard">
-                        {(!notUpdatedGame || !userId) && <Leaderboard userId={userId} updateLeaderboard={updateLeaderboard} />}
+                        {!notUpdatedGame && <Leaderboard userId={props.userId} updateLeaderboard={updateLeaderboard} />}
                     </div>
                 </>
             ) : (

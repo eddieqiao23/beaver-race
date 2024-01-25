@@ -71,6 +71,7 @@ router.post("/update_user_pastgames", (req, res) => {
                 res.send({ success: false });
             } else {
                 res.send({ success: true });
+                console.log("updated past games with score", {gameResult});
             }
         }
     );
@@ -85,20 +86,6 @@ router.get("/get_user_by_id", (req, res) => {
         }
     });
 });
-
-// router.get("/get_top_users", (req, res) => {
-//   User.find({}).then((users) => {
-//     const usersWithAverageScore = users.map((user) => {
-//       const totalScore = (user.pastGames.length === 0) ? 0 : user.pastGames.reduce((a, b) => a + b, 0);
-//       const averageScore = (user.pastGames.length === 0) ? 0 : totalScore / user.pastGames.length;
-//       return { ...user._doc, averageScore };
-//     });
-
-//     usersWithAverageScore.sort((a, b) => b.averageScore - a.averageScore);
-//     const topUsers = usersWithAverageScore.slice(0, 5);
-//     res.send({ success: true, users: topUsers });
-//   });
-// });
 
 router.get("/get_top_users", (req, res) => {
     User.find({}).then((users) => {
