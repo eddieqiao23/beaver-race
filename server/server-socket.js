@@ -76,6 +76,8 @@ module.exports = {
                 }
 
                 if (currGame !== newGameID) {
+                    console.log("printing socket to user map")
+                    console.log(socketToUserMap);
                     const userID = getUserFromSocketID(socket.id)._id;
 
                     gameID = newGameID;
@@ -102,6 +104,9 @@ module.exports = {
                 // delete socketToGameMap[socket.id];
                 // removeUser(getUserFromSocketID(socket.id), socket, gameID);
             });
+            socket.on("finishGame", (gameID, userID) => {
+                gameLogic.finishGame(gameID, userID);
+            })
             socket.on("disconnect", (reason) => {
                 // const user = getUserFromSocketID(socket.id);
                 // removeUser(user, socket, gameID);

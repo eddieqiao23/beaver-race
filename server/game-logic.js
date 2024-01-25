@@ -13,6 +13,7 @@ const spawnPlayer = (id, username, gameID) => {
     if (!(gameID in gameState)) {
         gameState[gameID] = {
             players: [],
+            placings: [],
             winner: null,
             started: false,
             start_time: null, // maybe??
@@ -28,7 +29,7 @@ const spawnPlayer = (id, username, gameID) => {
 const startGame = (gameID) => {
     gameState[gameID]["started"] = true;
     gameState[gameID]["start_time"] = new Date();
-}
+};
 
 const removePlayer = (id, gameID) => {
     const index = gameState[gameID]["players"].indexOf(id);
@@ -52,6 +53,11 @@ const doesPlayerExist = (userID) => {
     return gameState.players.some((player) => player.userId === userId);
 };
 
+const finishGame = (gameID, userID) => {
+    console.log("hi i am here");
+    gameState[gameID]["placings"].push(userID);
+};
+
 const updateGameState = () => {};
 
 module.exports = {
@@ -62,4 +68,5 @@ module.exports = {
     updateGameState,
     doesPlayerExist,
     startGame,
+    finishGame,
 };

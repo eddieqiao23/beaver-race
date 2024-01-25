@@ -47,7 +47,7 @@ const Indiv = (props) => {
     // const [currProblem, setCurrProblem] = useState(0);
     let round_time = 120;
     let pre_match_time = 0;
-    let num_problems = 10;
+    let num_problems = 1;
     const [roundTimer, setRoundTimer] = useState(round_time + pre_match_time);
     // const [preMatchTimer, setPreMatchTimer] = useState(pre_match_time);
     const [newProblemSetID, setNewProblemSetID] = useState("");
@@ -151,7 +151,6 @@ const Indiv = (props) => {
         };
     }, []);
 
-
     useEffect(() => {
         setSpqScore(((round_time - roundTimer) / score).toFixed(2));
         if (gameFinished && userId && notUpdatedGame && score > 0) {
@@ -220,6 +219,37 @@ const Indiv = (props) => {
     let scores = [score];
     return (
         <div className="Indiv-container">
+            <div className="Indiv-game">
+                {newRoundID === "" ? (
+                    // <div className="Indiv-preMatchTimer">round starting in {preMatchTimer}</div>
+                    <div></div>
+                ) : (
+                    <div>
+                        <div className="Indiv-roundTimer Indiv-headline-text">
+                            <div className="u-inlineBlock">
+                                {gameStarted ? "Get to the logs asap!" : "Press enter to start"}
+                            </div>
+                            <div className="u-inlineBlock">
+                                Remaining time: {roundTimer.toFixed(0)}
+                            </div>
+                        </div>
+                        <div className="Indiv-beaver-river">
+                            <div className="Indiv-beaver-bar">
+                                <div style={{ marginLeft: `${score * 50 + 30}px` }}>
+                                    <img src={beaver_image} className="Indiv-beaver-image" />
+                                </div>
+                                <div className="Indiv-log">
+                                    <img src={logs} className="Indiv-log-image" />
+                                </div>
+                            </div>
+                        </div>
+                        {/* <Timer />  */}
+                        {/* <Question roundID={newRoundID} score={score} setScore={setScore} /> */}
+                        {gameStarted && !gameFinished && <Question roundID={newRoundID} score={score} setScore={setScore} />}
+                        {/* <MultiQuestion gameID={newRoundID} score={score} setScore={setScore} /> */}
+                    </div>
+                )}
+            </div>
             {gameFinished ? (
                 <>
                     <div className="Indiv-game-finished-container">
@@ -236,45 +266,15 @@ const Indiv = (props) => {
                                 setRoundTimer(round_time + pre_match_time);
                             }}
                         >
-                            press enter twice to play again!
+                            Press enter twice to play again!
                         </button>
                     </div>
                     <div className="Indiv-leaderboard Home-main-rounded-div Home-headline-text Home-leaderboard">
-                        <Leaderboard userId={userId} updateLeaderboard={updateLeaderboard} />
+                        {(!notUpdatedGame || !userId) && <Leaderboard userId={userId} updateLeaderboard={updateLeaderboard} />}
                     </div>
                 </>
             ) : (
-                <div className="Indiv-game">
-                    {newRoundID === "" ? (
-                        // <div className="Indiv-preMatchTimer">round starting in {preMatchTimer}</div>
-                        <div></div>
-                    ) : (
-                        <div>
-                            <div className="Indiv-roundTimer Indiv-headline-text">
-                                <div className="u-inlineBlock">
-                                    {gameStarted ? "get to the logs asap!" : "press enter to start"}
-                                </div>
-                                <div className="u-inlineBlock">
-                                    remaining time: {roundTimer.toFixed(0)}
-                                </div>
-                            </div>
-                            <div className="Indiv-beaver-river">
-                                <div className="Indiv-beaver-bar">
-                                    <div style={{ marginLeft: `${score * 50 + 30}px` }}>
-                                        <img src={beaver_image} className="Indiv-beaver-image" />
-                                    </div>
-                                    <div className="Indiv-log">
-                                        <img src={logs} className="Indiv-log-image" />
-                                    </div>
-                                </div>
-                            </div>
-                            {/* <Timer />  */}
-                            {/* <Question roundID={newRoundID} score={score} setScore={setScore} /> */}
-                            {gameStarted && <Question roundID={newRoundID} score={score} setScore={setScore} />}
-                            {/* <MultiQuestion gameID={newRoundID} score={score} setScore={setScore} /> */}
-                        </div>
-                    )}
-                </div>
+                <div></div>
             )}
         </div>
     );

@@ -40,13 +40,13 @@ const Leaderboard = (props) => {
                         className="u-pointer Leaderboard-button"
                         onClick={() => setSortMethod("avg")}
                     >
-                        sort by avg
+                        Sort by avg
                     </button>
                     <button
                         className="u-pointer Leaderboard-button"
                         onClick={() => setSortMethod("best")}
                     >
-                        sort by best
+                        Sort by best
                     </button>
                 </div>
             </div>
