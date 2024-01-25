@@ -108,7 +108,7 @@ const Race = (props) => {
                 for (let i = 0; i < newPlayers.length; i++) {
                     placementsList.push(newPlacements[newPlayers[i]]);
                 }
-                setPlacements(newPlacements);
+                setPlacements(placementsList);
                 console.log(newPlacements);
 
                 setPlayers(newPlayers);
