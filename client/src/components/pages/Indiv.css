@@ -53,7 +53,7 @@
 .Indiv-play-again-button {
     border-radius: 10px;
     background-color: var(--orange);
-    color: var(--white);
+    color: var(--primary);
     padding: 15px;
     font-size: 24px;
     padding-left: 60px;

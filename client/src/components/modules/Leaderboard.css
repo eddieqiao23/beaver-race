@@ -54,7 +54,7 @@
 .Leaderboard-button {
     border-radius: 10px;
     background-color: var(--orange);
-    color: var(--white);
+    color: var(--primary);
     padding: 8px;
     margin: 5px;
     font-size: 18px;

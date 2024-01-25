@@ -17,10 +17,11 @@ const NavBar = ({ userId, handleLogin, handleLogout }) => {
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
             <nav className="NavBar-container">
                 <Link to="/">
-                    <div className="u-inlineBlock NavBar-align-top">
+                    {/* <div className="u-inlineBlock NavBar-align-top">
                         <img src={BeaverRaceLogo} alt="" className="NavBar-image" />
-                    </div>
-                    <div className="u-inlineBlock NavBar-align-top NavBar-title">Beaver Race</div>
+                    </div> */}
+                    <div className="u-inlineBlock NavBar-align-top NavBar-title-beaver">Beaver</div>
+                    <div className="u-inlineBlock NavBar-align-top NavBar-title-race">Race</div>
                 </Link>
 
                 <a

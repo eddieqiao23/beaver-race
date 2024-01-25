@@ -93,7 +93,7 @@
 .Race-start-button {
     border-radius: 10px;
     background-color: var(--orange);
-    color: var(--white);
+    color: var(--primary);
     padding: 10px;
     font-size: 32px;
     margin-top: 20px;
