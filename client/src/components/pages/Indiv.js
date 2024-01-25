@@ -47,7 +47,7 @@ const Indiv = (props) => {
     // const [currProblem, setCurrProblem] = useState(0);
     let round_time = 120;
     let pre_match_time = 0;
-    let num_problems = 1;
+    let num_problems = 10;
     const [roundTimer, setRoundTimer] = useState(round_time + pre_match_time);
     // const [preMatchTimer, setPreMatchTimer] = useState(pre_match_time);
     const [newProblemSetID, setNewProblemSetID] = useState("");
@@ -78,7 +78,7 @@ const Indiv = (props) => {
 
     useEffect(() => {
     let intervalTimer;
-        if (gameStarted) {
+        if (gameStarted && !gameFinished) {
             intervalTimer = setInterval(() => {
             setRoundTimer((roundTimer) => roundTimer - 0.01);
             }, 10);
@@ -88,6 +88,7 @@ const Indiv = (props) => {
         if (roundTimer <= 0) {
             clearInterval(intervalTimer);
             setGameFinished(true);
+            setRoundTimer(0);
             post("/api/delete_problem_set_by_id", { problem_set_id: newRoundID });
             post("/api/delete_round_by_id", { round_id: newRoundID });
             console.log("game finished");

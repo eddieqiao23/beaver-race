@@ -33,6 +33,7 @@ const Race = (props) => {
     const [placements, setPlacements] = useState(0);
     const [emittedPlacing, setEmittedPlacing] = useState(false);
     const emittedPlacingRef = useRef(emittedPlacing);
+    const [everyoneFinished, setEveryoneFinished] = useState(false);
 
     const [spqScore, setSpqScore] = useState(0);
     const [notUpdatedGame, setNotUpdatedGame] = useState(true);
@@ -46,7 +47,7 @@ const Race = (props) => {
 
     useEffect(() => {
     let intervalTimer;
-        if (raceStarted) {
+        if (raceStarted && !everyoneFinished) {
             intervalTimer = setInterval(() => {
             setRoundTimer((roundTimer) => roundTimer - 0.01);
             }, 10);
@@ -56,6 +57,7 @@ const Race = (props) => {
         if (roundTimer <= 0) {
             clearInterval(intervalTimer);
             setGameFinished(true);
+            setRoundTimer(0);
             post("/api/delete_problem_set_by_id", { problem_set_id: gameID });
             post("/api/delete_round_by_id", { round_id: gameID });
             console.log("game finished");
@@ -107,6 +109,9 @@ const Race = (props) => {
                 let placementsList = [];
                 for (let i = 0; i < newPlayers.length; i++) {
                     placementsList.push(newPlacements[newPlayers[i]]);
+                }
+                if (!placementsList.includes(-1)) {
+                  setEveryoneFinished(true);
                 }
                 setPlacements(placementsList);
                 console.log(newPlacements);
