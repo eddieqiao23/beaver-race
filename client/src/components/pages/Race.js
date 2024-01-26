@@ -44,6 +44,8 @@ const Race = (props) => {
     const [notUpdatedGame, setNotUpdatedGame] = useState(true);
     const [doneLoading, setDoneLoading] = useState(false);
 
+    const [preGameTimerOpacity, setPreGameTimerOpacity] = useState(1);
+
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const gameID = searchParams.get("id");
@@ -165,8 +167,11 @@ const Race = (props) => {
                 // If "Start Game" clicked but game hasn't started
                 // preGameTimer = 0 means don't show the timer
                 if (timeUntil > 0 && update[gameID]["started"]) {
-                    setPreGameTimer(Math.floor(timeUntil / 1000) + 1); // Offset by 1 for aesthetics
-                } else if (timeUntil <= 0 && update[gameID]["started"]) {
+                    setPreGameTimer(Math.floor(timeUntil / 1000) + 1);
+                    setPreGameTimerOpacity(Math.abs((timeUntil % 1000)-0.5)/1000)
+                    // console.log("updating pregame timer");
+                } 
+                else if (timeUntil <= 0 && update[gameID]["started"]) {
                     setPreGameTimer(0);
                     setRaceStarted(true);
                 } else {
@@ -217,74 +222,46 @@ const Race = (props) => {
             {loggedIn ? (
                 <div className="Race-container">
                     <div className="Race-headline-text">
-                        <div className="u-inlineBlock">
-                            {raceStarted ? "Get to the logs asap!" : "Waiting for host..."}
-                        </div>
-                        <div className="u-inlineBlock">Remaining time: {roundTimer.toFixed(0)}</div>
+                      <div className="u-inlineBlock">{raceStarted ? "Get to the logs asap!" : "Waiting for host..."}</div>
+                      <div className="u-inlineBlock">Remaining time: {roundTimer.toFixed(0)}</div>
                     </div>
                     {showGame ? (
+                      <> 
                         <>
-                            <div className="Race-beaver-river">
-                                {players.map((player, index) => (
-                                    <div className="Race-beaver-bar">
-                                        <div style={{ marginLeft: `${scores[index] * 58}px` }}>
-                                            <img
-                                                src={beaver_image}
-                                                className="Race-beaver-image"
-                                            />
-                                            <div className="Race-username">
-                                                {usernames[index]}
-                                            </div>
-                                        </div>
-                                        <div className="Race-log">
-                                            <img src={logs} className="Race-log-image" />
-                                            <div className="Race-position-text">
-                                                {placements[index] === -1
-                                                    ? null
-                                                    : placements[index] === -1
-                                                        ? null
-                                                        : getOrdinal(placements[index])}
-                                            </div>
-                                        </div>
+                        <div className="Race-beaver-river">
+                          {players.map((player, index) => (
+                            <div className="Race-beaver-bar">
+                                <div style={{ marginLeft: `${scores[index] * 58}px` }}>
+                                    <img src={beaver_image} className="Race-beaver-image" />
+                                    <div className="Race-username">{usernames[index]}</div>
+                                </div>
+                                <div className="Race-log">
+                                    <img src={logs} className="Race-log-image" />
+                                    <div className="Race-position-text"> 
+                                      {placements[index] === -1 ? null : placements[index] === -1 ? null : getOrdinal(placements[index])}
                                     </div>
-                                ))}
+                                </div>
                             </div>
-                            <>
-                                {isHost &&
-                                preGameTimer === 0 &&
-                                !raceStarted &&
-                                !preGameTimerStarted ? (
-                                    <div>
-                                        {" "}
-                                        <button
-                                            className="Race-start-button"
-                                            onClick={startGameButton}
-                                        >
-                                            Start game!
-                                        </button>{" "}
-                                    </div>
-                                ) : null}
-                            </>
-                            <>
-                                {preGameTimer !== 0 ? (
-                                    <h3 style={{ color: "white" }}>
-                                        Pregame Timer: {preGameTimer}
-                                    </h3>
-                                ) : null}
-                            </>
-                            {!gameFinished && (
-                                <MultiQuestion
-                                    gameID={gameID}
-                                    userID={props.userId}
-                                    score={score}
-                                    setScore={setScore}
-                                    setIsHost={setIsHost}
-                                    raceStarted={raceStarted}
-                                    doneLoading={doneLoading}
-                                    questions={questions}
-                                    answers={answers}
-                                />
-                            )}
+                            ))}
+                          </div>
+                          <>
+                            { (isHost && preGameTimer === 0 && !raceStarted && !preGameTimerStarted) ? <div> <button className="Race-start-button" onClick={startGameButton}>Start game!</button> </div> : null}
+                          </>
+                          <>
+                            { preGameTimer !== 0 ? <div className="Race-pregame-timer" style={{ opacity: preGameTimerOpacity }}>{ preGameTimer }</div> : null }
+                          </>
+                          {!gameFinished && <MultiQuestion
+                              gameID={gameID}
+                              userID={props.userId}
+                              score={score}
+                              setScore={setScore}
+                              setIsHost={setIsHost}
+                              raceStarted={raceStarted}
+                              doneLoading={doneLoading}
+                              questions={questions}
+                              answers={answers}
+                          />}
+                          </>
                         </>
                     ) : (
                         <div> You already joined this game! Please only join on one tab. </div>
@@ -295,15 +272,6 @@ const Race = (props) => {
             )}
         </>
     );
-
-    // return (
-    //     <div className="Race-container">
-    //         race will be here
-    //         {/* <Scoreboard user_ids={user_ids} scores={scores} /> */}
-    //         {/* <Timer /> */}
-    //         {/* <Question /> */}
-    //     </div>
-    // );
 };
 
 export default Race;

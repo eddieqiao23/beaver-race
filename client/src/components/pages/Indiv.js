@@ -138,8 +138,8 @@ const Indiv = (props) => {
     }, []);
 
     useEffect(() => {
-        const handleKeyDown = (event) => {
-            if (event.ctrlKey && event.key === "Enter") {
+        const handleKeyDown = (event) => {  
+            if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
                 setGameFinished(false);
                 setScore(0);
                 setNewRoundID("");
