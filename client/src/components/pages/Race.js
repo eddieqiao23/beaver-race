@@ -1,26 +1,26 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { socket } from "../../client-socket.js";
-import { useNavigate } from "react-router-dom";
-import { get, post } from "../../utilities";
-
-// Components used
+import { Link, useNavigate } from "react-router-dom";
+import Scoreboard from "../modules/Scoreboard.js";
+// import Timer from "../modules/Timer.js";
+// import Question from "../modules/Question.js";
 import MultiQuestion from "../modules/MultiQuestion.js";
 
-// Images for the river
 import beaver_image from "../../public/assets/beavers/beaver_picture.png";
 import logs from "../../public/assets/beavers/logs.png";
 
-// CSS for page
+import { get, post } from "../../utilities";
+// import { drawCanvas } from "../../canvasManager";
+
 import "./Race.css";
 
-// Parameters for game
 const TOTAL_QUESTIONS = 10;
-const ROUND_TIME = 120;
 
 // Page that displays all elements of a multiplayer race
 const Race = (props) => {
-    const [roundTimer, setRoundTimer] = useState(ROUND_TIME);
+    let round_time = 120;
+    const [roundTimer, setRoundTimer] = useState(round_time);
     const [loggedIn, setLoggedIn] = useState(false);
     const [score, setScore] = useState(0);
     const [showGame, setShowGame] = useState(true);
@@ -54,59 +54,56 @@ const Race = (props) => {
     const gameID = searchParams.get("id");
 
     const navigate = useNavigate();
+    // const canvasRef = useRef(null);
 
-    // Timer for the round (120 sec)
     useEffect(() => {
-        let intervalTimer;
-        // Start when the race starts, end when it's finished
-        if (raceStarted && !everyoneFinished) { 
+    let intervalTimer;
+        if (raceStarted && !everyoneFinished) {
             intervalTimer = setInterval(() => {
-                setRoundTimer((roundTimer) => roundTimer - 0.01);
-            }, 10); // Update every 0.01 sec
+            setRoundTimer((roundTimer) => roundTimer - 0.01);
+            }, 10);
         }
 
-        // Stop the timer if it reaches 0
+        // Clear the interval when the timer reaches 0
         if (roundTimer <= 0) {
-            // Restart states when the game finishes
             clearInterval(intervalTimer);
             setGameFinished(true);
             setRoundTimer(0);
-
-            // Clear from MongoDB
             post("/api/delete_problem_set_by_id", { problem_set_id: gameID });
             post("/api/delete_round_by_id", { round_id: gameID });
-        }
+            console.log("game finished");
+        }    
 
         // Cleanup the interval on component unmount
         return () => clearInterval(intervalTimer);
-    }, [roundTimer, raceStarted, everyoneFinished]);
+    }, [roundTimer, raceStarted]);
 
-    // Fetch the problem set + round information
     const getRoundInfo = async () => {
-        // First gets the round information
         get("/api/get_round_by_id", { roundID: gameID }).then((round) => {
-            // If the first player is the current user, then they're host
+            console.log("This displays the round for ID " + round.problem_set_id);
+            console.log("User ID: " + props.userId);
+            console.log("Players: ");
+            console.log(round.players);
             if (round.players[0] === props.userId) {
                 setIsHost(true);
             }
-
-            // Then gets the problem set info
             get("/api/get_problem_set_by_id", { problemSetID: round.problem_set_id }).then(
                 (problemSet) => {
+                    console.log("This displays the problem set for ID " + problemSet._id);
                     setQuestions(problemSet.questions);
                     setAnswers(problemSet.answers);
-                    setDoneLoading(true); 
+                    setDoneLoading(true);
+                    console.log(questions);
                 }
             );
         });
     };
 
-    // When page loads in, fetches all the round info
     useEffect(() => {
         getRoundInfo();
     }, []);
 
-    // Runs when the user logs in
+
     useEffect(() => {
         if (loggedIn) {
             console.log("this is logged in");
@@ -118,8 +115,8 @@ const Race = (props) => {
                 setFinishedJoinGame(true);
                 console.log("JOIN GAME WAS EMITTED");
             });
+            // socket.emit("joinGame", gameID);
 
-            // These updates contain game_state defined in game-logic.js
             socket.on("update", (update) => {
                 // Data about the players, usernames, and scores
                 console.log(update);
@@ -189,50 +186,66 @@ const Race = (props) => {
                         setPreGameTimer(0);
                     }
                 }
+                // else {
+                //     setPreGameTimer(-1);
+                // }
+                // // if (update[gameID]["started"] and )
+                // if (update[gameID]["started"]) {
+                //     setRaceStarted(true);
+                // }
+                // processUpdate(update);
             });
 
-            // If the user reloads or joins on two tabs
             socket.on("alreadyInGame", () => {
-                navigate("/");
+                // setShowGame(false);
+                navigate("/")
             });
-
-            // return () => {
-            //     socket.off("update");
-            //     socket.off("alreadyInGame");
-            // }
         }
     }, [loggedIn, gameID]);
 
-    // When the user logs in?
+    // const processUpdate = (update) => {
+    //     drawCanvas(update, canvasRef, gameID);
+    // };
+
     useEffect(() => {
         setLoggedIn(props.userId);
+        // console.log("CHECK HERE")
+        // console.log(props.userId)
     }, [props.userId]);
 
-    // When the game finishes, updates past info for statistics
+    // useEffect(() => {
+    //     console.log(emittedPlacing)
+
+    // }, [emittedPlacing]);
+
+    // let loginModal = null;
+    // if (!props.userId) {
+    //     loginModal = <div> Pleas`e Login First! </div>;
+    // }
+
     useEffect(() => {
-        setSpqScore(((ROUND_TIME - roundTimer) / score).toFixed(2));
+        setSpqScore(((round_time - roundTimer) / score).toFixed(2));
         if (gameFinished && notUpdatedGame && score > 0) {
+            console.log(score, roundTimer);
             post(`/api/update_user_pastgames`, {
                 userId: props.userId,
                 score: score,
-                time: ROUND_TIME - roundTimer,
+                time: round_time - roundTimer,
             });
             setNotUpdatedGame(false);
         }
     }, [gameFinished]);
 
-    // Runs when the "Start Game" button is clicked
     const startGameButton = () => {
         socket.emit("startGame", gameID);
         setPreGameTimerStarted(true);
-    };
+    }
 
-    // Huge brain code for converting number to ordinal
     const getOrdinal = (n) => {
-        const s = ["th", "st", "nd", "rd"];
-        const v = n % 100;
-        return n + (s[(v - 20) % 10] || s[v] || s[0]) + " place";
-    };
+      const s = ["th", "st", "nd", "rd"];
+      const v = n % 100;
+      return n + (s[(v - 20) % 10] || s[v] || s[0]) + " place";
+    }
 
     return (
         <>
@@ -289,6 +302,15 @@ const Race = (props) => {
             )}
         </>
     );
+
+    // return (
+    //     <div className="Race-container">
+    //         race will be here
+    //         {/* <Scoreboard user_ids={user_ids} scores={scores} /> */}
+    //         {/* <Timer /> */}
+    //         {/* <Question /> */}
+    //     </div>
+    // );
 };
 
 export default Race;

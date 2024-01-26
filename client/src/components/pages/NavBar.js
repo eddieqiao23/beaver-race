@@ -38,6 +38,13 @@ const NavBar = ({ userId, handleLogin, handleLogout }) => {
                 >
                     <button className="NavBar-button">multiplayer race</button>
                 </a>
+                <a
+                    href="https://forms.gle/hhnryvakyackzM467"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <button className="NavBar-button">report bug</button>
+                </a>
 
                 <div className="u-inlineBlock NavBar-auth-button">
                     {userId ? (
