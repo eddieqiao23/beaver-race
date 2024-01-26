@@ -126,18 +126,22 @@ const Indiv = (props) => {
         };
     }, []);
 
+    const resetRound = async () => {
+        setGameFinished(false);
+        setGameStarted(false);
+        setScore(0);
+        setNewRoundID("");
+        setRoundTimer(ROUND_TIME);
+        setNotUpdatedGame(true);
+        setCreatedNewRound(false);
+        gameFinishedRef.current = false;
+    };
+
     // Command + Enter to reset the game quickly
     useEffect(() => {
         const handleKeyDown = (event) => {  
             if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
-                setGameFinished(false);
-                setScore(0);
-                setNewRoundID("");
-                setRoundTimer(ROUND_TIME);
-                setNotUpdatedGame(true);
-                setCreatedNewRound(false);
-                gameFinishedRef.current = false;
-                setGameStarted(true);
+                resetRound();
             }
         };
 
@@ -153,14 +157,7 @@ const Indiv = (props) => {
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.key === "Enter" && gameFinishedRef.current) {
-                setGameFinished(false);
-                setGameStarted(false);
-                setScore(0);
-                setNewRoundID("");
-                setRoundTimer(ROUND_TIME);
-                setNotUpdatedGame(true);
-                setCreatedNewRound(false);
-                gameFinishedRef.current = false;
+                resetRound();
             }
         };
 
@@ -292,16 +289,7 @@ const Indiv = (props) => {
                         Score: {spqScore} spq
                         <button
                             className="u-pointer Indiv-play-again-button"
-                            onClick={() => {
-                                setGameFinished(false);
-                                setGameStarted(false);
-                                setScore(0);
-                                setNewRoundID("");
-                                setRoundTimer(ROUND_TIME);
-                                setNotUpdatedGame(true);
-                                setCreatedNewRound(false);
-                                gameFinishedRef.current = false;
-                            }}
+                            onClick={resetRound}
                         >
                             Press enter to play again!
                         </button>

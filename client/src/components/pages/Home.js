@@ -16,6 +16,33 @@ import { get, post } from "../../utilities";
 
 import Leaderboard from "../modules/Leaderboard.js";
 
+export const getRandomProblem = () => {
+    let sign = Math.floor(Math.random() * 2); // 0 = +, *, 1 = -, /
+    let num1 = 0;
+    let num2 = 0;
+    if (sign === 0) {
+        num1 = Math.floor(Math.random() * 98) + 2;
+        num2 = Math.floor(Math.random() * 98) + 2;
+    } else {
+        num1 = Math.floor(Math.random() * 10) + 2;
+        num2 = Math.floor(Math.random() * 98) + 2;
+    }
+
+    if (sign === 0) {
+        if (Math.floor(Math.random() * 2) === 0) {
+            return { question: `${num1} + ${num2}`, answer: `${num1 + num2}` };
+        } else {
+            return { question: `${num1 + num2} - ${num1}`, answer: `${num2}` };
+        }
+    } else {
+        if (Math.floor(Math.random() * 2) === 0) {
+            return { question: `${num1} x ${num2}`, answer: `${num1 * num2}` };
+        } else {
+            return { question: `${num1 * num2} ÷ ${num1}`, answer: `${num2}` };
+        }
+    }
+};
+
 const Home = (props) => {
     const [current_username, setCurrentUsername] = useState("");
     const [new_username, setNewUsername] = useState("");
@@ -60,32 +87,6 @@ const Home = (props) => {
     //     setUpdateLeaderboard(false);
     // }, [current_username]);
 
-    const getRandomProblem = () => {
-        let sign = Math.floor(Math.random() * 2); // 0 = +, *, 1 = -, /
-        let num1 = 0;
-        let num2 = 0;
-        if (sign === 0) {
-            num1 = Math.floor(Math.random() * 98) + 2;
-            num2 = Math.floor(Math.random() * 98) + 2;
-        } else {
-            num1 = Math.floor(Math.random() * 10) + 2;
-            num2 = Math.floor(Math.random() * 98) + 2;
-        }
-
-        if (sign === 0) {
-            if (Math.floor(Math.random() * 2) === 0) {
-                return { question: `${num1} + ${num2}`, answer: `${num1 + num2}` };
-            } else {
-                return { question: `${num1 + num2} - ${num1}`, answer: `${num2}` };
-            }
-        } else {
-            if (Math.floor(Math.random() * 2) === 0) {
-                return { question: `${num1} x ${num2}`, answer: `${num1 * num2}` };
-            } else {
-                return { question: `${num1 * num2} ÷ ${num1}`, answer: `${num2}` };
-            }
-        }
-    };
 
     const createMultiplayerRound = async () => {
         console.log("started...");
@@ -112,7 +113,9 @@ const Home = (props) => {
             setRoundID(createdRoundID);
             console.log("Round: " + createdRoundID);
             // post("/api/initsocket", { socketid: socket.id });
-            navigate(`/race?id=${createdRoundID}`);
+            const shortenedRoundID = createdRoundID.slice(-6).toUpperCase();
+            // navigate(`/race?id=${createdRoundID}`);
+            navigate(`/race?id=${shortenedRoundID}`);
         } catch (error) {
             console.log(error);
             console.log("error creating problem set or round :(");

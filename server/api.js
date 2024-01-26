@@ -152,6 +152,21 @@ router.get("/get_round_by_id", (req, res) => {
     });
 });
 
+router.get("/get_round_by_shortID", (req, res) => {
+    // find round by shortID
+    const shortID = req.query.shortID;
+    console.log(shortID)
+    Round.find({}).then((rounds) => {
+        const matchingRounds = rounds.filter(round => round._id.toString().toUpperCase().endsWith(shortID));
+        console.log("matching rounds", matchingRounds);
+        if (!matchingRounds || matchingRounds.length === 0) {
+            return res.send({ error: "Round not found" });
+        } else {
+            return res.send(matchingRounds[0]._id); // return the first match
+        }
+    });
+});
+
 router.get("/get_problem_set_by_id", (req, res) => {
     ProblemSet.findById(req.query.problemSetID).then((problem_set) => {
         if (!problem_set) {
@@ -181,6 +196,28 @@ router.post("/delete_round_by_id", (req, res) => {
         } else {
             return res.send(round);
         }
+    });
+});
+
+router.post("/update_round", (req, res) => {
+    let roundID = req.body.roundID;
+    let problemSetID = req.body.problemSetID;
+    // update round with new problem set
+    Round.findByIdAndUpdate(
+        roundID, 
+        { problemSet : problemSetID },
+        { players : [req.user._id]},
+        { new: true },
+    )
+    .then((updatedRound) => {
+        if (!updatedRound) {
+            return res.send({ error: "Round not found" });
+        } else {
+            return res.send(updatedRound);
+        }
+    })
+    .catch((err) => {
+        return res.send({ error: err });
     });
 });
 

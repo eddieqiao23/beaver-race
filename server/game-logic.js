@@ -61,6 +61,14 @@ const finishGame = (gameID, userID) => {
 
 const updateGameState = () => {};
 
+const restartGame = (gameID) => {
+    gameState[gameID]["players"] = [];
+    gameState[gameID]["placings"] = [];
+    gameState[gameID]["winner"] = null;
+    gameState[gameID]["started"] = false;
+    gameState[gameID]["start_time"] = null;
+};
+
 module.exports = {
     gameState,
     spawnPlayer,
@@ -70,4 +78,5 @@ module.exports = {
     doesPlayerExist,
     startGame,
     finishGame,
+    restartGame,
 };
