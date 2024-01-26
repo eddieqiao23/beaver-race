@@ -34,6 +34,8 @@ const Race = (props) => {
     const [emittedPlacing, setEmittedPlacing] = useState(false);
     const emittedPlacingRef = useRef(emittedPlacing);
     const [everyoneFinished, setEveryoneFinished] = useState(false);
+    const [preGameTimer, setPreGameTimer] = useState(0);
+    const [preGameTimerStarted, setPreGameTimerStarted] = useState(false);
 
     const [spqScore, setSpqScore] = useState(0);
     const [notUpdatedGame, setNotUpdatedGame] = useState(true);
@@ -121,9 +123,27 @@ const Race = (props) => {
                 setUsernames(newUsernames);
                 console.log(newUsernames);
                 console.log(update);
-                if (update[gameID]["started"]) {
+                // find time until update[gameID]["start_time"]
+                let timeUntil = new Date(update[gameID]["start_time"]) - new Date();
+                // check if timeUntil is positive
+                if (timeUntil > 0 && update[gameID]["started"]) {
+                    setPreGameTimer(Math.floor(timeUntil / 1000));
+                    // console.log("updating pregame timer");
+                } 
+                else if (timeUntil <= 0 && update[gameID]["started"]) {
+                    setPreGameTimer(0);
                     setRaceStarted(true);
                 }
+                else {
+                    setPreGameTimer(0);
+                }
+                // else {
+                //     setPreGameTimer(-1);
+                // }
+                // // if (update[gameID]["started"] and )
+                // if (update[gameID]["started"]) {
+                //     setRaceStarted(true);
+                // }
                 // processUpdate(update);
             });
 
@@ -173,6 +193,7 @@ const Race = (props) => {
 
     const startGameButton = () => {
         socket.emit("startGame", gameID);
+        setPreGameTimerStarted(true);
     }
 
     const getOrdinal = (n) => {
@@ -208,7 +229,12 @@ const Race = (props) => {
                             </div>
                             ))}
                           </div>
-                          { (isHost && !raceStarted) ? <div> <button className="Race-start-button" onClick={startGameButton}>Start game!</button> </div> : null}
+                          <>
+                            { (isHost && preGameTimer === 0 && !raceStarted && !preGameTimerStarted) ? <div> <button className="Race-start-button" onClick={startGameButton}>Start game!</button> </div> : null}
+                          </>
+                          <>
+                            { preGameTimer !== 0 ? <h3 style={{ color: 'white'}}>Pregame Timer: { preGameTimer }</h3> : null }
+                          </>
                           {!gameFinished && <MultiQuestion
                               gameID={gameID}
                               userID={props.userId}

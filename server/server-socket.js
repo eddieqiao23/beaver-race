@@ -26,7 +26,7 @@ const startRunningGame = (gameID) => {
     let intervalId = setInterval(() => {
         gameLogic.updateGameState();
         sendGameState(gameID);
-    }, 1000); // 1 fps right now
+    }, 1000 / 20); // 1 fps right now
 
     // setTimeout(() => {
     //     clearInterval(intervalId);
