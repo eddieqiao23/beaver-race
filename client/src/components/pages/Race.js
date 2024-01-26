@@ -46,6 +46,9 @@ const Race = (props) => {
 
     const [preGameTimerOpacity, setPreGameTimerOpacity] = useState(1);
 
+    const [finishedJoinGame, setFinishedJoinGame] = useState(false);
+    const finishedJoinGameRef = useRef(finishedJoinGame);
+
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const gameID = searchParams.get("id");
@@ -106,76 +109,85 @@ const Race = (props) => {
     // Runs when the user logs in
     useEffect(() => {
         if (loggedIn) {
+            console.log("this is logged in");
             // Gets info about the user and joins the socket room
             get("/api/get_user_by_id", { userId: props.userId }).then((user) => {
                 let username = user.username;
                 socket.emit("joinGame", gameID, username);
+                finishedJoinGameRef.current = true;
+                setFinishedJoinGame(true);
+                console.log("JOIN GAME WAS EMITTED");
             });
 
             // These updates contain game_state defined in game-logic.js
             socket.on("update", (update) => {
                 // Data about the players, usernames, and scores
-                let data = update[gameID]["players"];
+                console.log(update);
+                console.log(gameID);
+                console.log(finishedJoinGameRef.current);
+                if (finishedJoinGameRef.current) {
+                    let data = update[gameID]["players"];
 
-                // Reads in the data from JSON format
-                let newPlayers = [];
-                let newScores = [];
-                let newUsernames = [];
-                // Format: key is player ID, value is placement (-1 if not finished)
-                let newPlacements = {};
-                let finished = false; // Whether the game is over for this user
-                console.log(data);
-                for (let i = 0; i < data.length; i++) {
-                    // Extract data from JSON
-                    newPlayers.push(data[i]["id"]);
-                    newScores.push(data[i]["score"]);
-                    newUsernames.push(data[i]["username"]);
+                    // Reads in the data from JSON format
+                    let newPlayers = [];
+                    let newScores = [];
+                    let newUsernames = [];
+                    // Format: key is player ID, value is placement (-1 if not finished)
+                    let newPlacements = {};
+                    let finished = false; // Whether the game is over for this user
+                    // console.log(data);
+                    for (let i = 0; i < data.length; i++) {
+                        // Extract data from JSON
+                        newPlayers.push(data[i]["id"]);
+                        newScores.push(data[i]["score"]);
+                        newUsernames.push(data[i]["username"]);
 
-                    if (!emittedPlacingRef.current) { // Checks if game is over
-                        if (data[i]["id"] === props.userId && data[i]["score"] >= TOTAL_QUESTIONS) {
-                            socket.emit("finishGame", gameID, props.userId);
-                            finished = true;
-                            setGameFinished(true);
-                            setEmittedPlacing(true);
-                            emittedPlacingRef.current = true;
+                        if (!emittedPlacingRef.current) { // Checks if game is over
+                            if (data[i]["id"] === props.userId && data[i]["score"] >= TOTAL_QUESTIONS) {
+                                socket.emit("finishGame", gameID, props.userId);
+                                finished = true;
+                                setGameFinished(true);
+                                setEmittedPlacing(true);
+                                emittedPlacingRef.current = true;
+                            }
                         }
+                        newPlacements[data[i]["id"]] = -1;
                     }
-                    newPlacements[data[i]["id"]] = -1;
-                }
 
-                // Do some scuffed parsing to get the placements
-                let placings_data = update[gameID]["placings"];
-                for (let i = 0; i < placings_data.length; i++) {
-                    newPlacements[placings_data[i]] = i + 1;
-                }
-                let placementsList = [];
-                for (let i = 0; i < newPlayers.length; i++) {
-                    placementsList.push(newPlacements[newPlayers[i]]);
-                }
-                if (!placementsList.includes(-1)) {
-                    setEveryoneFinished(true);
-                }
+                    // Do some scuffed parsing to get the placements
+                    let placings_data = update[gameID]["placings"];
+                    for (let i = 0; i < placings_data.length; i++) {
+                        newPlacements[placings_data[i]] = i + 1;
+                    }
+                    let placementsList = [];
+                    for (let i = 0; i < newPlayers.length; i++) {
+                        placementsList.push(newPlacements[newPlayers[i]]);
+                    }
+                    if (!placementsList.includes(-1)) {
+                        setEveryoneFinished(true);
+                    }
 
-                // Set states to the new data
-                setPlacements(placementsList);
-                setPlayers(newPlayers);
-                setScores(newScores);
-                setUsernames(newUsernames);
+                    // Set states to the new data
+                    setPlacements(placementsList);
+                    setPlayers(newPlayers);
+                    setScores(newScores);
+                    setUsernames(newUsernames);
 
-                // Time until start_time to calculate pre-game timer
-                let timeUntil = new Date(update[gameID]["start_time"]) - new Date();
-                // If "Start Game" clicked but game hasn't started
-                // preGameTimer = 0 means don't show the timer
-                if (timeUntil > 0 && update[gameID]["started"]) {
-                    setPreGameTimer(Math.floor(timeUntil / 1000) + 1);
-                    setPreGameTimerOpacity(Math.abs((timeUntil % 1000)-0.5)/1000)
-                    // console.log("updating pregame timer");
-                } 
-                else if (timeUntil <= 0 && update[gameID]["started"]) {
-                    setPreGameTimer(0);
-                    setRaceStarted(true);
-                } else {
-                    setPreGameTimer(0);
+                    // Time until start_time to calculate pre-game timer
+                    let timeUntil = new Date(update[gameID]["start_time"]) - new Date();
+                    // If "Start Game" clicked but game hasn't started
+                    // preGameTimer = 0 means don't show the timer
+                    if (timeUntil > 0 && update[gameID]["started"]) {
+                        setPreGameTimer(Math.floor(timeUntil / 1000) + 1);
+                        setPreGameTimerOpacity(Math.abs((timeUntil % 1000)-0.5)/1000)
+                        // console.log("updating pregame timer");
+                    } 
+                    else if (timeUntil <= 0 && update[gameID]["started"]) {
+                        setPreGameTimer(0);
+                        setRaceStarted(true);
+                    } else {
+                        setPreGameTimer(0);
+                    }
                 }
             });
 
@@ -183,8 +195,13 @@ const Race = (props) => {
             socket.on("alreadyInGame", () => {
                 navigate("/");
             });
+
+            // return () => {
+            //     socket.off("update");
+            //     socket.off("alreadyInGame");
+            // }
         }
-    }, [loggedIn]);
+    }, [loggedIn, gameID]);
 
     // When the user logs in?
     useEffect(() => {

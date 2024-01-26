@@ -17,8 +17,8 @@ const getGameFromUserID = (userid) => userToGameMap[userid];
 const getUsernameFromUserID = (userid) => userToUsernameMap[userid];
 
 const sendGameState = (gameID) => {
-    console.log("updates emitted to " + gameID);
-    console.log(gameLogic.gameState);
+    // console.log("updates emitted to " + gameID);
+    // console.log(gameLogic.gameState);
     io.to(gameID).emit("update", gameLogic.gameState);
 };
 
