@@ -22,7 +22,7 @@ const Home = (props) => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showFailure, setShowFailure] = useState(false);
     const [roundID, setRoundID] = useState("");
-    const [updateLeaderboard, setUpdateLeaderboard] = useState(false);
+    // const [updateLeaderboard, setUpdateLeaderboard] = useState(false);
 
     let userId = props.userId;
 
@@ -55,10 +55,10 @@ const Home = (props) => {
         });
     };
 
-    useEffect(() => {
-        setUpdateLeaderboard(true);
-        setUpdateLeaderboard(false);
-    }, [current_username]);
+    // useEffect(() => {
+    //     setUpdateLeaderboard(true);
+    //     setUpdateLeaderboard(false);
+    // }, [current_username]);
 
     const getRandomProblem = () => {
         let sign = Math.floor(Math.random() * 2); // 0 = +, *, 1 = -, /
@@ -174,7 +174,7 @@ const Home = (props) => {
                         className="u-pointer Home-button Home-mathing-race-button"
                         onClick={createMultiplayerRound}
                     >
-                        Mathing Race
+                        Random Game
                     </button>
                     {/* </Link> */}
                     {/* <img src={beaver_image} className="Home-multiplayer-random-image" /> */}
@@ -187,7 +187,7 @@ const Home = (props) => {
                         </div>
                         <Link to="/indiv">
                             <button className="u-pointer Home-button Home-practice-yourself-button">
-                                Practice Yourself
+                                Individual Practice
                             </button>
                         </Link>
                         {/* <img src={lonely_beaver} className="Home-individual-image" /> */}
@@ -202,14 +202,14 @@ const Home = (props) => {
                             className="u-pointer Home-button Home-create-party-button"
                             onClick={createMultiplayerRound}
                         >
-                            Create River
+                            Create Party
                         </button>
                         {/* </Link> */}
                         {/* <img src={three_beavers} className="Home-multiplayer-party-image" /> */}
                     </div>
                 </div>
                 <div className="Home-main-rounded-div Home-headline-text Home-leaderboard">
-                    <Leaderboard userId={userId} updateLeaderboard={updateLeaderboard} />
+                    <Leaderboard userId={userId} current_username={current_username} />
                 </div>
             </div>
         </>

@@ -43,8 +43,8 @@
     /* margin-top: 100px; */
     margin-bottom: 20px;
     background-color: var(--primary);
-    padding-left: 30px;
-    padding-right: 30px;
+    padding-left: 20px;
+    padding-right: 20px;
     border-radius: 20px;
     color: var(--white);
     padding-top: 10px;
@@ -84,8 +84,8 @@
     /* margin-top: 100px; */
     margin-bottom: 20px;
     background-color: var(--primary);
-    padding-left: 30px;
-    padding-right: 30px;
+    padding-left: 20px;
+    padding-right: 20px;
     border-radius: 20px;
     color: var(--white);
     padding-top: 10px;
@@ -94,7 +94,15 @@
 }
 
 .Indiv-leaderboard {
-    margin-top: -5px;
+    /* margin-top: -5px; */
+    border-radius: 20px;
+    background-color: var(--primary);
+    color: var(--white);
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 32px;
+    font-weight: bold;
+    padding: 10px;
 }
 
 .Indiv-beaver-image {
@@ -108,18 +116,21 @@
     padding-top: 40px;
     padding-bottom: 40px;
     margin: 20px;
-    height: 150px;
 }
 
 .Indiv-beaver-bar {
     background-color: var(--primary--dim);
     border-radius: 20px;
     padding: 10px;
-    margin: 20px;
-    /* height: 150px; */
+    margin: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.Indiv-highlighted-log {
+    background-color: var(--orange);
+    border-radius: 20px;
 }
 
 .Indiv-log-image {

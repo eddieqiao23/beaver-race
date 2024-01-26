@@ -29,7 +29,7 @@ const spawnPlayer = (id, username, gameID) => {
 const startGame = (gameID) => {
     gameState[gameID]["started"] = true;
     const now = new Date();
-    gameState[gameID]["start_time"] = new Date(now.getTime() + 5 * 1000);
+    gameState[gameID]["start_time"] = new Date(now.getTime() + 3 * 1000);
 };
 
 const removePlayer = (id, gameID) => {

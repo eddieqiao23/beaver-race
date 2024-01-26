@@ -11,15 +11,43 @@ import beaver_image from "../../public/assets/beavers/beaver_picture.png";
 import logs from "../../public/assets/beavers/logs.png";
 
 import { get, post } from "../../utilities";
+import "./Race.css";
 // import { drawCanvas } from "../../canvasManager";
 
-import "./Race.css";
+import Leaderboard from "../modules/Leaderboard.js";
 
 const TOTAL_QUESTIONS = 10;
+const round_time = 120
+
+const getRandomProblem = () => {
+    let sign = Math.floor(Math.random() * 2); // 0 = +, *, 1 = -, /
+    let num1 = 0;
+    let num2 = 0;
+    if (sign === 0) {
+        num1 = Math.floor(Math.random() * 98) + 2;
+        num2 = Math.floor(Math.random() * 98) + 2;
+    } else {
+        num1 = Math.floor(Math.random() * 10) + 2;
+        num2 = Math.floor(Math.random() * 98) + 2;
+    }
+
+    if (sign === 0) {
+        if (Math.floor(Math.random() * 2) === 0) {
+            return { question: `${num1} + ${num2}`, answer: `${num1 + num2}` };
+        } else {
+            return { question: `${num1 + num2} - ${num1}`, answer: `${num2}` };
+        }
+    } else {
+        if (Math.floor(Math.random() * 2) === 0) {
+            return { question: `${num1} x ${num2}`, answer: `${num1 * num2}` };
+        } else {
+            return { question: `${num1 * num2} ÷ ${num1}`, answer: `${num2}` };
+        }
+    }
+};
 
 // Page that displays all elements of a multiplayer race
 const Race = (props) => {
-    let round_time = 120;
     const [roundTimer, setRoundTimer] = useState(round_time);
     const [loggedIn, setLoggedIn] = useState(false);
     const [score, setScore] = useState(0);
@@ -28,7 +56,9 @@ const Race = (props) => {
     const [scores, setScores] = useState([]);
     const [usernames, setUsernames] = useState([]);
     const [isHost, setIsHost] = useState(false);
+    const isHostRef = useRef(isHost);
     const [raceStarted, setRaceStarted] = useState(false);
+    const raceStartedRef = useRef(raceStarted);
     const [gameFinished, setGameFinished] = useState(false);
     const [placements, setPlacements] = useState(0);
     const [emittedPlacing, setEmittedPlacing] = useState(false);
@@ -36,6 +66,7 @@ const Race = (props) => {
     const [everyoneFinished, setEveryoneFinished] = useState(false);
     const [preGameTimer, setPreGameTimer] = useState(0);
     const [preGameTimerStarted, setPreGameTimerStarted] = useState(false);
+    const preGameTimerStartedRef = useRef(preGameTimerStarted);
 
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState([]);
@@ -86,6 +117,7 @@ const Race = (props) => {
             console.log(round.players);
             if (round.players[0] === props.userId) {
                 setIsHost(true);
+                isHostRef.current = true;
             }
             get("/api/get_problem_set_by_id", { problemSetID: round.problem_set_id }).then(
                 (problemSet) => {
@@ -102,7 +134,6 @@ const Race = (props) => {
     useEffect(() => {
         getRoundInfo();
     }, []);
-
 
     useEffect(() => {
         if (loggedIn) {
@@ -182,6 +213,7 @@ const Race = (props) => {
                     else if (timeUntil <= 0 && update[gameID]["started"]) {
                         setPreGameTimer(0);
                         setRaceStarted(true);
+                        raceStartedRef.current = true;
                     } else {
                         setPreGameTimer(0);
                     }
@@ -223,23 +255,51 @@ const Race = (props) => {
     //     loginModal = <div> Pleas`e Login First! </div>;
     // }
 
+    // After the game is over, update the user's past games
     useEffect(() => {
-        setSpqScore(((round_time - roundTimer) / score).toFixed(2));
-        if (gameFinished && notUpdatedGame && score > 0) {
-            console.log(score, roundTimer);
-            post(`/api/update_user_pastgames`, {
-                userId: props.userId,
-                score: score,
-                time: round_time - roundTimer,
-            });
-            setNotUpdatedGame(false);
-        }
+        const updatePastGames = async () => {
+            setSpqScore(((round_time - roundTimer) / score).toFixed(2));
+            console.log(gameFinished, props.userId, notUpdatedGame, score);
+            if (gameFinished && props.userId && notUpdatedGame && score > 0) {
+                console.log(score, roundTimer);
+                await post(`/api/update_user_pastgames`, {
+                    userId: props.userId,
+                    score: score,
+                    time: round_time - roundTimer,
+                });
+                setNotUpdatedGame(false);
+            }
+            if (gameFinished && !props.userId) {
+                setNotUpdatedGame(false);
+            }
+        };
+
+        updatePastGames();
     }, [gameFinished]);
 
     const startGameButton = () => {
         socket.emit("startGame", gameID);
         setPreGameTimerStarted(true);
+        preGameTimerStartedRef.current = true;
     }
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+          console.log(isHost, preGameTimer, preGameTimerStarted, raceStarted)
+            if (event.key === "Enter" && isHostRef.current && !raceStartedRef.current && !preGameTimerStartedRef.current) {
+                socket.emit("startGame", gameID);
+                setPreGameTimerStarted(true);
+                preGameTimerStartedRef.current = true;
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        // Cleanup function to remove the event listener when the component unmounts
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
 
     const getOrdinal = (n) => {
       const s = ["th", "st", "nd", "rd"];
@@ -252,7 +312,11 @@ const Race = (props) => {
             {loggedIn ? (
                 <div className="Race-container">
                     <div className="Race-headline-text">
-                      <div className="u-inlineBlock">{raceStarted ? "Get to the logs asap!" : "Waiting for host..."}</div>
+                      {gameFinished ? (
+                        <div className="u-inlineBlock">Great job beaver!</div>
+                      ) : (
+                        <div className="u-inlineBlock">{preGameTimerStarted ? "Get to the logs asap!" : "Waiting for host..."}</div>
+                      )}
                       <div className="u-inlineBlock">Remaining time: {roundTimer.toFixed(0)}</div>
                     </div>
                     {showGame ? (
@@ -275,7 +339,7 @@ const Race = (props) => {
                             ))}
                           </div>
                           <>
-                            { (isHost && preGameTimer === 0 && !raceStarted && !preGameTimerStarted) ? <div> <button className="Race-start-button" onClick={startGameButton}>Start game!</button> </div> : null}
+                            { (isHost && preGameTimer === 0 && !raceStarted && !preGameTimerStarted) ? <div> <button className="Race-start-button" onClick={startGameButton}>Press enter to start game!</button> </div> : null}
                           </>
                           <>
                             { preGameTimer !== 0 ? <div className="Race-pregame-timer" style={{ opacity: preGameTimerOpacity }}>{ preGameTimer }</div> : null }
@@ -291,6 +355,18 @@ const Race = (props) => {
                               questions={questions}
                               answers={answers}
                           />}
+                          {gameFinished ? (
+                            <>
+                              <div className="Race-finished-container">
+                                <div className="Race-your-score">
+                                  Score: {spqScore} spq
+                                </div>
+                              </div>
+                              <div className="Race-leaderboard">
+                                <Leaderboard userId={props.userId}/>
+                              </div>
+                            </>
+                          ) : (<div></div>)}  
                           </>
                         </>
                     ) : (

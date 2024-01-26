@@ -55,7 +55,7 @@ const Indiv = (props) => {
     const [spqScore, setSpqScore] = useState(0);
     const [score, setScore] = useState(0);
     const [notUpdatedGame, setNotUpdatedGame] = useState(true);
-    const [updateLeaderboard, setUpdateLeaderboard] = useState(false);
+    // const [updateLeaderboard, setUpdateLeaderboard] = useState(false);
     const [createdNewRound, setCreatedNewRound] = useState(false);
     const gameFinishedRef = useRef(gameFinished);
 
@@ -78,8 +78,8 @@ const Indiv = (props) => {
             gameFinishedRef.current = true;
 
             // Clear from MongoDB
-            post("/api/delete_problem_set_by_id", { problem_set_id: gameID });
-            post("/api/delete_round_by_id", { round_id: gameID });
+            post("/api/delete_problem_set_by_id", { problem_set_id: newProblemSetID });
+            post("/api/delete_round_by_id", { round_id: newRoundID });
         }
 
         // Cleanup the interval on component unmount
@@ -186,7 +186,7 @@ const Indiv = (props) => {
                 });
                 setNotUpdatedGame(false);
             }
-            if (gameFinished && !props.userId) {
+            if (gameFinished && !props.userId || score === 0) {
                 setNotUpdatedGame(false);
             }
         };
@@ -250,7 +250,7 @@ const Indiv = (props) => {
                     <div>
                         <div className="Indiv-roundTimer Indiv-headline-text">
                             <div className="u-inlineBlock">
-                                {gameStarted ? "Get to the logs asap!" : "Press enter to start!"}
+                                {!gameFinished ? "Get to the logs asap!" : "Great job beaver!"}
                             </div>
                             <div className="u-inlineBlock">
                                 Remaining time: {roundTimer.toFixed(0)}
@@ -261,7 +261,7 @@ const Indiv = (props) => {
                                 <div style={{ marginLeft: `${score * 50}px` }}>
                                     <img src={beaver_image} className="Indiv-beaver-image" />
                                 </div>
-                                <div className="Indiv-log">
+                                <div className={`${score === TOTAL_QUESTIONS ? "Indiv-highlighted-log" : "Indiv-log"}`}>
                                     <img src={logs} className="Indiv-log-image" />
                                 </div>
                             </div>
@@ -293,23 +293,22 @@ const Indiv = (props) => {
                         <button
                             className="u-pointer Indiv-play-again-button"
                             onClick={() => {
-                                // location.reload();
                                 setGameFinished(false);
                                 setGameStarted(false);
                                 setScore(0);
                                 setNewRoundID("");
                                 setRoundTimer(ROUND_TIME);
+                                setNotUpdatedGame(true);
+                                setCreatedNewRound(false);
+                                gameFinishedRef.current = false;
                             }}
                         >
                             Press enter to play again!
                         </button>
                     </div>
-                    <div className="Indiv-leaderboard Home-main-rounded-div Home-headline-text Home-leaderboard">
+                    <div className="Indiv-leaderboard">
                         {!notUpdatedGame && (
-                            <Leaderboard
-                                userId={props.userId}
-                                updateLeaderboard={updateLeaderboard}
-                            />
+                            <Leaderboard userId={props.userId}/>
                         )}
                     </div>
                 </>

@@ -29,7 +29,7 @@ const Leaderboard = (props) => {
         get("/api/get_top_users", { sortMethod: sortMethod }).then((res) => {
             setTopUsers(res.users);
         });
-    }, [sortMethod, props.updateLeaderboard]);
+    }, [sortMethod, props.current_username]);
 
     return (
         <div className="Leaderboard-container">
