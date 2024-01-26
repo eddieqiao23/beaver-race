@@ -123,13 +123,51 @@ const Indiv = (props) => {
 
     useEffect(() => {
         const handleKeyDown = (event) => {
+            // Prevent the default behavior when the Tab key is pressed
+            if (event.key === 'Tab') {
+                event.preventDefault();
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        // Cleanup function to remove the event listener when the component unmounts
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {  
+            if (event.ctrlKey && event.key === "Enter") {
+                setGameFinished(false);
+                setScore(0);
+                setNewRoundID("");
+                setRoundTimer(round_time + pre_match_time);
+                setNotUpdatedGame(true);
+                setCreatedNewRound(false);
+                gameFinishedRef.current = false;
+                setGameStarted(true);
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        // Cleanup function to remove the event listener when the component unmounts
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
             if (event.key === "Enter" && gameFinishedRef.current) {
                 setGameFinished(false);
                 setGameStarted(false);
                 setScore(0);
                 setNewRoundID("");
                 setRoundTimer(round_time + pre_match_time);
-                setNotUpdatedGame(true)
+                setNotUpdatedGame(true);
                 setCreatedNewRound(false);
                 gameFinishedRef.current = false;
             }
@@ -229,7 +267,7 @@ const Indiv = (props) => {
                     <div>
                         <div className="Indiv-roundTimer Indiv-headline-text">
                             <div className="u-inlineBlock">
-                                {gameStarted ? "Get to the logs asap!" : "Press enter to start"}
+                                {gameStarted ? "Get to the logs asap!" : "Press enter to start!"}
                             </div>
                             <div className="u-inlineBlock">
                                 Remaining time: {roundTimer.toFixed(0)}
@@ -237,7 +275,7 @@ const Indiv = (props) => {
                         </div>
                         <div className="Indiv-beaver-river">
                             <div className="Indiv-beaver-bar">
-                                <div style={{ marginLeft: `${score * 50 + 10}px` }}>
+                                <div style={{ marginLeft: `${score * 50}px` }}>
                                     <img src={beaver_image} className="Indiv-beaver-image" />
                                 </div>
                                 <div className="Indiv-log">
@@ -249,6 +287,20 @@ const Indiv = (props) => {
                         {/* <Question roundID={newRoundID} score={score} setScore={setScore} /> */}
                         {gameStarted && !gameFinished && <Question roundID={newRoundID} score={score} setScore={setScore} />}
                         {/* <MultiQuestion gameID={newRoundID} score={score} setScore={setScore} /> */}
+                        {!gameStarted ? (
+                            <div className="Indiv-game-start-container">
+                            <button
+                                className="u-pointer Indiv-start-play-button"
+                                onClick={() => {
+                                    setGameStarted(true);
+                            }}
+                        >
+                            Press enter to start!
+                        </button>
+                    </div>
+                        ) : (
+                            <div></div>
+                        )}
                     </div>
                 )}
             </div>

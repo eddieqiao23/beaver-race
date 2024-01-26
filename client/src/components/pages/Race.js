@@ -216,7 +216,7 @@ const Race = (props) => {
                         <div className="Race-beaver-river">
                           {players.map((player, index) => (
                             <div className="Race-beaver-bar">
-                                <div style={{ marginLeft: `${scores[index] * 50 + 30}px` }}>
+                                <div style={{ marginLeft: `${scores[index] * 58}px` }}>
                                     <img src={beaver_image} className="Race-beaver-image" />
                                     <div className="Race-username">{usernames[index]}</div>
                                 </div>

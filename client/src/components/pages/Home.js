@@ -181,6 +181,35 @@ const Home = (props) => {
                 </div>
                 <div className="Home-two-divs">
                     <div className="Home-main-rounded-div Home-individual">
+                        <div className="Home-headline-text">Join Game</div>
+                        <div className="Home-subheadline-text">
+                            Swim to a random river!
+                        </div>
+                        <Link to="/indiv">
+                            <button className="u-pointer Home-button Home-practice-yourself-button">
+                                Join Game
+                            </button>
+                        </Link>
+                        {/* <img src={lonely_beaver} className="Home-individual-image" /> */}
+                    </div>
+                    <div className="Home-main-rounded-div Home-multiplayer-party">
+                        <div className="Home-headline-text">IDK</div>
+                        <div className="Home-subheadline-text">
+                            IDK
+                        </div>
+                        {/* <Link to={`/race/${roundID}`}> */}
+                        <button
+                            className="u-pointer Home-button Home-create-party-button"
+                            onClick={createMultiplayerRound}
+                        >
+                            IDK
+                        </button>
+                        {/* </Link> */}
+                        {/* <img src={three_beavers} className="Home-multiplayer-party-image" /> */}
+                    </div>
+                </div>
+                <div className="Home-two-divs">
+                    <div className="Home-main-rounded-div Home-individual">
                         <div className="Home-headline-text">Mathing Test</div>
                         <div className="Home-subheadline-text">
                             Practice your mathing skills on your own!
