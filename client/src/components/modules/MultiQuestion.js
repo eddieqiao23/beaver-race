@@ -45,11 +45,11 @@ const MultiQuestion = (props) => {
         getRoundInfo();
     }, []);
 
-    useEffect(() => {
-        if (doneLoading && props.raceStarted) {
-            inputRef.current && inputRef.current.focus();
-        }
-    }, [doneLoading, props.raceStarted]);
+    // useEffect(() => {
+    //     if (doneLoading) {
+    //         inputRef.current && inputRef.current.focus();
+    //     }
+    // }, [doneLoading]);
 
     const handleInputChange = (event) => {
         if (event.target.value === answers[score]) {

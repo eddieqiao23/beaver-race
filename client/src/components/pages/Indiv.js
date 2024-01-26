@@ -123,13 +123,51 @@ const Indiv = (props) => {
 
     useEffect(() => {
         const handleKeyDown = (event) => {
+            // Prevent the default behavior when the Tab key is pressed
+            if (event.key === 'Tab') {
+                event.preventDefault();
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        // Cleanup function to remove the event listener when the component unmounts
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {  
+            if (event.ctrlKey && event.key === "Enter") {
+                setGameFinished(false);
+                setScore(0);
+                setNewRoundID("");
+                setRoundTimer(round_time + pre_match_time);
+                setNotUpdatedGame(true);
+                setCreatedNewRound(false);
+                gameFinishedRef.current = false;
+                setGameStarted(true);
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        // Cleanup function to remove the event listener when the component unmounts
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
             if (event.key === "Enter" && gameFinishedRef.current) {
                 setGameFinished(false);
                 setGameStarted(false);
                 setScore(0);
                 setNewRoundID("");
                 setRoundTimer(round_time + pre_match_time);
-                setNotUpdatedGame(true)
+                setNotUpdatedGame(true);
                 setCreatedNewRound(false);
                 gameFinishedRef.current = false;
             }
