@@ -72,23 +72,25 @@ const MultiQuestion = (props) => {
                 <div> </div>
             ) : (
                 <>
-                    {props.raceStarted ? 
-                                    <div>
-                                    <div className="MultiQuestion-container">
-                                        <div className="MultiQuestion-score">Score: {score}</div>
-                                        <div className="MultiQuestion-problem">{questions[score]}</div>
-                                        <div className="MultiQuestion-answer-box">
-                                            <input
-                                                type="text"
-                                                placeholder=""
-                                                onChange={handleInputChange}
-                                                ref={inputRef}
-                                                style={{ fontSize: "24pt" }}
-                                            />
-                                        </div>
-                                    </div>
+                    {props.raceStarted ? (
+                        <div>
+                            <div className="MultiQuestion-container">
+                                <div className="MultiQuestion-score">Score: {score}</div>
+                                <div className="MultiQuestion-problem">{questions[score]}</div>
+                                <div className="MultiQuestion-answer-box">
+                                    <input
+                                        type="text"
+                                        placeholder=""
+                                        onChange={handleInputChange}
+                                        ref={inputRef}
+                                        style={{ fontSize: "24pt" }}
+                                    />
                                 </div>
-                                : <div> </div> }
+                            </div>
+                        </div>
+                    ) : (
+                        <div> </div>
+                    )}
                 </>
             )}
         </div>

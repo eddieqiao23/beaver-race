@@ -71,7 +71,7 @@ router.post("/update_user_pastgames", (req, res) => {
                 res.send({ success: false });
             } else {
                 res.send({ success: true });
-                console.log("updated past games with score", {gameResult});
+                console.log("updated past games with score", { gameResult });
             }
         }
     );
