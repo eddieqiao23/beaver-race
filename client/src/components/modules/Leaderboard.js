@@ -53,7 +53,7 @@ const Leaderboard = (props) => {
             {userId ? (
                 <div className="Leaderboard-your-stats">
                     Your Stats: Avg {userAvgScore.toFixed(2)} spq | Best {userHighScore.toFixed(2)}{" "}
-                    spq
+                    spq (seconds per question)
                 </div>
             ) : (
                 <div className="Leaderboard-your-stats">Log in to see your stats!</div>
