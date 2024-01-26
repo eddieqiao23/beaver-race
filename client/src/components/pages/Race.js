@@ -37,8 +37,12 @@ const Race = (props) => {
     const [preGameTimer, setPreGameTimer] = useState(0);
     const [preGameTimerStarted, setPreGameTimerStarted] = useState(false);
 
+    const [questions, setQuestions] = useState([]);
+    const [answers, setAnswers] = useState([]);
+
     const [spqScore, setSpqScore] = useState(0);
     const [notUpdatedGame, setNotUpdatedGame] = useState(true);
+    const [doneLoading, setDoneLoading] = useState(false);
 
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
@@ -68,6 +72,32 @@ const Race = (props) => {
         // Cleanup the interval on component unmount
         return () => clearInterval(intervalTimer);
     }, [roundTimer, raceStarted]);
+
+    const getRoundInfo = async () => {
+        get("/api/get_round_by_id", { roundID: gameID }).then((round) => {
+            console.log("This displays the round for ID " + round.problem_set_id);
+            console.log("User ID: " + props.userId);
+            console.log("Players: ");
+            console.log(round.players);
+            if (round.players[0] === props.userId) {
+                setIsHost(true);
+            }
+            get("/api/get_problem_set_by_id", { problemSetID: round.problem_set_id }).then(
+                (problemSet) => {
+                    console.log("This displays the problem set for ID " + problemSet._id);
+                    setQuestions(problemSet.questions);
+                    setAnswers(problemSet.answers);
+                    setDoneLoading(true);
+                    console.log(questions);
+                }
+            );
+        });
+    };
+
+    useEffect(() => {
+        getRoundInfo();
+    }, []);
+
 
     useEffect(() => {
         if (loggedIn) {
@@ -127,7 +157,7 @@ const Race = (props) => {
                 let timeUntil = new Date(update[gameID]["start_time"]) - new Date();
                 // check if timeUntil is positive
                 if (timeUntil > 0 && update[gameID]["started"]) {
-                    setPreGameTimer(Math.floor(timeUntil / 1000));
+                    setPreGameTimer(Math.floor(timeUntil / 1000) + 1);
                     // console.log("updating pregame timer");
                 } 
                 else if (timeUntil <= 0 && update[gameID]["started"]) {
@@ -242,6 +272,9 @@ const Race = (props) => {
                               setScore={setScore}
                               setIsHost={setIsHost}
                               raceStarted={raceStarted}
+                              doneLoading={doneLoading}
+                              questions={questions}
+                              answers={answers}
                           />}
                           </>
                         </>
