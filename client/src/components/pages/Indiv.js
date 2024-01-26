@@ -15,6 +15,7 @@ import { get, post } from "../../utilities.js";
 
 import Leaderboard from "../modules/Leaderboard.js";
 
+const TOTAL_QUESTIONS = 10;
 const ROUND_TIME = 120;
 
 const getRandomProblem = () => {
@@ -46,10 +47,7 @@ const getRandomProblem = () => {
 
 // Page that displays all elements of a multiplayer race
 const Indiv = (props) => {
-    // const [currProblem, setCurrProblem] = useState(0);
-    let pre_match_time = 0;
-    let num_problems = 10;
-    const [roundTimer, setRoundTimer] = useState(ROUND_TIME + pre_match_time);
+    const [roundTimer, setRoundTimer] = useState(ROUND_TIME);
     const [newProblemSetID, setNewProblemSetID] = useState("");
     const [newRoundID, setNewRoundID] = useState("");
     const [gameStarted, setGameStarted] = useState(false);
@@ -61,51 +59,42 @@ const Indiv = (props) => {
     const [createdNewRound, setCreatedNewRound] = useState(false);
     const gameFinishedRef = useRef(gameFinished);
 
-    // useEffect(() => {
-    //     const intervalTimer = setInterval(() => {
-    //         setPreMatchTimer((preMatchTimer) => preMatchTimer - 1);
-    //     }, 1000);
-
-    //     // Clear the interval when the timer reaches 0
-    //     if (preMatchTimer <= 0) {
-    //         clearInterval(intervalTimer);
-    //         setGameStarted(true);
-    //     }
-
-    //     // Cleanup the interval on component unmount
-    //     return () => clearInterval(intervalTimer);
-    // }, [preMatchTimer]);
-
+    // Timer for the round (120 sec)
     useEffect(() => {
         let intervalTimer;
-        if (gameStarted && !gameFinished) {
+        // Start when the race starts, end when it's finished
+        if (gameStarted && !gameFinished) { 
             intervalTimer = setInterval(() => {
                 setRoundTimer((roundTimer) => roundTimer - 0.01);
-            }, 10);
+            }, 10); // Update every 0.01 sec
         }
 
-        // Clear the interval when the timer reaches 0
+        // Stop the timer if it reaches 0
         if (roundTimer <= 0) {
+            // Restart states when the game finishes
             clearInterval(intervalTimer);
             setGameFinished(true);
-            gameFinishedRef.current = true;
             setRoundTimer(0);
-            post("/api/delete_problem_set_by_id", { problem_set_id: newRoundID });
-            post("/api/delete_round_by_id", { round_id: newRoundID });
-            console.log("game finished");
+            gameFinishedRef.current = true;
+
+            // Clear from MongoDB
+            post("/api/delete_problem_set_by_id", { problem_set_id: gameID });
+            post("/api/delete_round_by_id", { round_id: gameID });
         }
 
         // Cleanup the interval on component unmount
         return () => clearInterval(intervalTimer);
     }, [roundTimer, gameStarted]);
 
+    // Check if the game is over
     useEffect(() => {
-        if (score === num_problems) {
+        if (score === TOTAL_QUESTIONS) {
             setGameFinished(true);
             gameFinishedRef.current = true;
         }
     }, [score]);
 
+    // Enter is how the game starts
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.key === "Enter" && score === 0) {
@@ -121,9 +110,9 @@ const Indiv = (props) => {
         };
     }, []);
 
+    // Prevent default tab behavior
     useEffect(() => {
         const handleKeyDown = (event) => {
-            // Prevent the default behavior when the Tab key is pressed
             if (event.key === "Tab") {
                 event.preventDefault();
             }
@@ -137,13 +126,14 @@ const Indiv = (props) => {
         };
     }, []);
 
+    // Command + Enter to reset the game quickly
     useEffect(() => {
         const handleKeyDown = (event) => {  
             if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
                 setGameFinished(false);
                 setScore(0);
                 setNewRoundID("");
-                setRoundTimer(ROUND_TIME + pre_match_time);
+                setRoundTimer(ROUND_TIME);
                 setNotUpdatedGame(true);
                 setCreatedNewRound(false);
                 gameFinishedRef.current = false;
@@ -159,6 +149,7 @@ const Indiv = (props) => {
         };
     }, []);
 
+    // Enter to reset the game
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.key === "Enter" && gameFinishedRef.current) {
@@ -166,7 +157,7 @@ const Indiv = (props) => {
                 setGameStarted(false);
                 setScore(0);
                 setNewRoundID("");
-                setRoundTimer(ROUND_TIME + pre_match_time);
+                setRoundTimer(ROUND_TIME);
                 setNotUpdatedGame(true);
                 setCreatedNewRound(false);
                 gameFinishedRef.current = false;
@@ -181,6 +172,7 @@ const Indiv = (props) => {
         };
     }, []);
 
+    // After the game is over, update the user's past games
     useEffect(() => {
         const updatePastGames = async () => {
             setSpqScore(((ROUND_TIME - roundTimer) / score).toFixed(2));
@@ -203,13 +195,7 @@ const Indiv = (props) => {
     }, [gameFinished]);
 
     useEffect(() => {
-        setUpdateLeaderboard(true);
-        setUpdateLeaderboard(false);
-    }, [notUpdatedGame]);
-
-    useEffect(() => {
         const createProblemSetAndRound = async () => {
-            console.log("started...");
             let questions = [];
             let answers = [];
             for (let i = 0; i < 20; i++) {
@@ -239,7 +225,7 @@ const Indiv = (props) => {
                 console.log("error creating problem set or round :(");
             }
         };
-        // createProblemSetAndRound().then(() => console.log("finished!"));
+
         if (!createdNewRound) {
             const changeRoundID = async () => {
                 let createdRoundID = await createProblemSetAndRound();
@@ -255,13 +241,10 @@ const Indiv = (props) => {
         }
     }, [newRoundID]);
 
-    // console.log("Round ID: " + newRoundID);
-    let scores = [score];
     return (
         <div className="Indiv-container">
             <div className="Indiv-game">
                 {newRoundID === "" ? (
-                    // <div className="Indiv-preMatchTimer">round starting in {preMatchTimer}</div>
                     <div></div>
                 ) : (
                     <div>
@@ -283,12 +266,9 @@ const Indiv = (props) => {
                                 </div>
                             </div>
                         </div>
-                        {/* <Timer />  */}
-                        {/* <Question roundID={newRoundID} score={score} setScore={setScore} /> */}
                         {gameStarted && !gameFinished && (
                             <Question roundID={newRoundID} score={score} setScore={setScore} />
                         )}
-                        {/* <MultiQuestion gameID={newRoundID} score={score} setScore={setScore} /> */}
                         {!gameStarted ? (
                             <div className="Indiv-game-start-container">
                                 <button
@@ -309,7 +289,6 @@ const Indiv = (props) => {
             {gameFinished ? (
                 <>
                     <div className="Indiv-game-finished-container">
-                        {/* <RoundEndScoreboard multiplayer={false} scores={scores} /> */}
                         Score: {spqScore} spq
                         <button
                             className="u-pointer Indiv-play-again-button"
@@ -319,7 +298,7 @@ const Indiv = (props) => {
                                 setGameStarted(false);
                                 setScore(0);
                                 setNewRoundID("");
-                                setRoundTimer(ROUND_TIME + pre_match_time);
+                                setRoundTimer(ROUND_TIME);
                             }}
                         >
                             Press enter to play again!
