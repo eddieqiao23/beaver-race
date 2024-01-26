@@ -98,3 +98,11 @@
     font-size: 32px;
     margin-top: 20px;
 }
+
+.Race-pregame-timer {
+    color: var(--white);
+    text-align: center;
+    font-size: 64px;
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+}

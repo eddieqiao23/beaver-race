@@ -44,6 +44,8 @@ const Race = (props) => {
     const [notUpdatedGame, setNotUpdatedGame] = useState(true);
     const [doneLoading, setDoneLoading] = useState(false);
 
+    const [preGameTimerOpacity, setPreGameTimerOpacity] = useState(1);
+
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const gameID = searchParams.get("id");
@@ -153,11 +155,13 @@ const Race = (props) => {
                 setUsernames(newUsernames);
                 console.log(newUsernames);
                 console.log(update);
+                
                 // find time until update[gameID]["start_time"]
                 let timeUntil = new Date(update[gameID]["start_time"]) - new Date();
                 // check if timeUntil is positive
                 if (timeUntil > 0 && update[gameID]["started"]) {
                     setPreGameTimer(Math.floor(timeUntil / 1000) + 1);
+                    setPreGameTimerOpacity(Math.abs((timeUntil % 1000)-0.5)/1000)
                     // console.log("updating pregame timer");
                 } 
                 else if (timeUntil <= 0 && update[gameID]["started"]) {
@@ -263,7 +267,7 @@ const Race = (props) => {
                             { (isHost && preGameTimer === 0 && !raceStarted && !preGameTimerStarted) ? <div> <button className="Race-start-button" onClick={startGameButton}>Start game!</button> </div> : null}
                           </>
                           <>
-                            { preGameTimer !== 0 ? <h3 style={{ color: 'white'}}>Pregame Timer: { preGameTimer }</h3> : null }
+                            { preGameTimer !== 0 ? <div className="Race-pregame-timer" style={{ opacity: preGameTimerOpacity }}>{ preGameTimer }</div> : null }
                           </>
                           {!gameFinished && <MultiQuestion
                               gameID={gameID}
