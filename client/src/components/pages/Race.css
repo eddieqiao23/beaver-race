@@ -144,3 +144,22 @@
     padding-right: 60px;
     margin-top: 10px;
 }
+
+.Race-waiting-for-host {
+    border-radius: 20px;
+    background-color: var(--primary);
+    color: var(--white);
+    margin: 20px;
+    margin-top: 20px;
+    padding: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--white);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 720px;
+}

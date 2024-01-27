@@ -196,7 +196,7 @@ const Home = (props) => {
                             </div>
                             <input
                                 className="u-inlineBlock Home-username-button Home-white-placeholder Home-align-right Home-subheadline-text"
-                                placeholder="new username..."
+                                placeholder="Enter Username"
                                 type="text"
                                 value={new_username}
                                 onChange={(e) => setNewUsername(e.target.value)}
@@ -270,7 +270,7 @@ const Home = (props) => {
                                 )}
                                 <input
                                     className="u-inlineBlock Home-game-code Home-white-placeholder"
-                                    placeholder="game code..."
+                                    placeholder="Enter Code"
                                     type="text"
                                     value={gameCode}
                                     onChange={(e) => setGameCode(e.target.value)}
@@ -286,7 +286,7 @@ const Home = (props) => {
                             <button className="u-pointer Home-party-sign-in"
                                 onClick={showSignInPrompt}
                             >
-                                Sign in to create or join a party!
+                                Sign in to create or join party!
                             </button>
                         )}
                         {/* </Link> */}

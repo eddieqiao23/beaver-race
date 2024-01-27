@@ -414,7 +414,7 @@ const Race = (props) => {
                       {gameFinished ? (
                         <div className="u-inlineBlock">Great job beaver!</div>
                       ) : (
-                        <div className="u-inlineBlock">{preGameTimerStarted ? "Get to the logs asap!" : "Waiting for host..."}</div>
+                        <div className="u-inlineBlock">{preGameTimerStarted ? "Get to the logs asap!" : `Game Code: ${shortenedGameID}`}</div>
                       )}
                       <div className="u-inlineBlock">Remaining time: {roundTimer.toFixed(0)}</div>
                     </div>
@@ -438,7 +438,9 @@ const Race = (props) => {
                             ))}
                           </div>
                           <>
-                            { (isHost && preGameTimer === 0 && !raceStarted && !preGameTimerStarted) ? <div> <button className="Race-start-button" onClick={startGameButton}>Press enter to start game!</button> </div> : null}
+                            { (isHost && preGameTimer === 0 && !raceStarted && !preGameTimerStarted) ? 
+                              <div> <button className="Race-start-button" onClick={startGameButton}>Press enter to start game!</button> </div> 
+                              : <div className="Race-waiting-for-host">Waiting for host to start game...</div>}
                           </>
                           <>
                             { preGameTimer !== 0 ? <div className="Race-pregame-timer" style={{ opacity: preGameTimerOpacity }}>{ preGameTimer }</div> : null }
