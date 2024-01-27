@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Routes, Route } from "react-router-dom";
 import NavBar from "./pages/NavBar.js";
 import Footer from "./pages/Footer.js";
@@ -21,6 +22,18 @@ import { get, post } from "../utilities";
  */
 const App = () => {
     const [userId, setUserId] = useState(undefined);
+
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const path = location.pathname;
+        const match = path.match(/^\/(\w{6})$/);
+        if (match) {
+            const id = match[1];
+            navigate(`/race?id=${id}`, { replace: true });
+        }
+    }, [location, navigate]);
 
     useEffect(() => {
         get("/api/whoami").then((user) => {

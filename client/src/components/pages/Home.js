@@ -49,6 +49,7 @@ const Home = (props) => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showFailure, setShowFailure] = useState(false);
     const [signInPrompt, setSignInPrompt] = useState(false);
+    const [gameCode, setGameCode] = useState("");
     const [roundID, setRoundID] = useState("");
     // const [updateLeaderboard, setUpdateLeaderboard] = useState(false);
 
@@ -63,6 +64,11 @@ const Home = (props) => {
             });
         }
     }, [userId]);
+
+    const tryGameCode = () => {
+        navigate(`/race?id=${gameCode}`);
+        setGameCode("");
+    };
 
     const updateUsername = () => {
         post("/api/updateusername", { userId: userId, username: new_username }).then((res) => {
@@ -242,21 +248,45 @@ const Home = (props) => {
                     <div className="Home-main-rounded-div Home-multiplayer-party">
                         <div className="Home-headline-text">Race Your Friends</div>
                         <div className="Home-subheadline-text">
-                            Create your own river and race your beaver friends!
+                            Create or join a river and race your beaver friends!
                         </div>
                         {/* <Link to={`/race/${roundID}`}> */}
                         {userId ?(
-                            <button
-                                className="u-pointer Home-button Home-create-party-button"
-                                onClick={createMultiplayerRound}
-                            >
-                                Create Party
-                            </button>
+                            <>
+                                {gameCode ? (
+                                    <button
+                                        className="u-pointer Home-button Home-create-party-button"
+                                        onClick={tryGameCode}
+                                        >
+                                            Join Party
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="u-pointer Home-button Home-create-party-button"
+                                        onClick={createMultiplayerRound}
+                                        >
+                                            Create Party
+                                    </button>
+                                )}
+                                <input
+                                    className="u-inlineBlock Home-game-code Home-white-placeholder"
+                                    placeholder="game code..."
+                                    type="text"
+                                    value={gameCode}
+                                    onChange={(e) => setGameCode(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault(); // prevent form submission
+                                            tryGameCode();
+                                        }
+                                    }}
+                                ></input>
+                            </>
                         ) : (
                             <button className="u-pointer Home-party-sign-in"
                                 onClick={showSignInPrompt}
                             >
-                                Sign in to create party!
+                                Sign in to create or join a party!
                             </button>
                         )}
                         {/* </Link> */}

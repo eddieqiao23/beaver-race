@@ -9,6 +9,7 @@
 .NotFound-content {
     font-family: "IBM Plex Sans";
     font-size: large;
+    color: var(--white);
 }
 
 .NotFound-image {

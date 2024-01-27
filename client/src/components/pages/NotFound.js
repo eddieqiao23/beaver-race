@@ -7,7 +7,7 @@ const NotFound = () => {
     return (
         <div className="NotFound-container">
             <div className="NotFound-content">404 Not Found</div>
-            <div className="NotFound-content">The page you requested couldn't be found.</div>
+            <div className="NotFound-content">The page you requested couldn't be found</div>
             <div>
                 <img src={CryingBeaver} alt="" className="NotFound-image" />
             </div>
