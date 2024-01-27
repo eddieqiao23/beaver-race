@@ -24,17 +24,27 @@
     --darkgrey: #d4d4d4;
     --medgrey: #e0e0e0;
     --grey: #f7f7f7;
-    --white: #fff;
-    --orange: #ff8600; */
+    --white: #fff; */
 
     --primary: #212121;
+    --secondary: #a688fa;
     --primary--dim: #303030;
     --darkgrey: #d4d4d4;
     --medgrey: #e0e0e0;
     --grey: #f7f7f7;
+    --white: #fff;  
+    --black: #000; 
+    --button--text: #000;
+
+    /* --primary: #e76f51;
+    --secondary: #2a9d8f;
+    --primary--dim: #2a9d8f;
+    --darkgrey: #264653;
+    --medgrey: #e0e0e0;
+    --grey: #f7f7f7;
     --white: #fff;
-    --orange: #ff8600;
-    --black: #000;
+    --black: #264653;
+    --button--text: #fff; */
 
     --xs: 4px;
     --s: 8px;
@@ -47,7 +57,6 @@ body {
     padding: 0;
     font-family: "IBM Plex Sans";
     font-weight: 300;
-    /* background: radial-gradient(var(--primary--dim), var(--white)); */
     background: radial-gradient(var(--black), var(--primary));
     background-attachment: fixed;
     min-height: 100vh;

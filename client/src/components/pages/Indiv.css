@@ -52,8 +52,8 @@
 
 .Indiv-play-again-button {
     border-radius: 10px;
-    background-color: var(--orange);
-    color: var(--primary);
+    background-color: var(--secondary);
+    color: var(--button--text);
     padding: 15px;
     font-size: 24px;
     padding-left: 60px;
@@ -64,8 +64,8 @@
 
 .Indiv-start-play-button {
     border-radius: 10px;
-    background-color: var(--orange);
-    color: var(--primary);
+    background-color: var(--secondary);
+    color: var(--button--text);
     padding: 15px;
     font-size: 24px;
     padding-left: 60px;
@@ -129,7 +129,7 @@
 }
 
 .Indiv-highlighted-log {
-    background-color: var(--orange);
+    background-color: var(--secondary);
     border-radius: 20px;
 }
 

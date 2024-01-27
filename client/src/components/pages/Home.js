@@ -48,6 +48,7 @@ const Home = (props) => {
     const [new_username, setNewUsername] = useState("");
     const [showSuccess, setShowSuccess] = useState(false);
     const [showFailure, setShowFailure] = useState(false);
+    const [signInPrompt, setSignInPrompt] = useState(false);
     const [roundID, setRoundID] = useState("");
     // const [updateLeaderboard, setUpdateLeaderboard] = useState(false);
 
@@ -81,6 +82,41 @@ const Home = (props) => {
             }
         });
     };
+
+    const showSignInPrompt = () => {
+        setSignInPrompt(true);
+        setTimeout(() => {
+            setSignInPrompt(false);
+        }, 2000);
+    };
+
+    useEffect(() => {
+        const konamiCodeSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a', 'Enter'];
+        let currentInput = [];
+
+        const handleKeyDown = (event) => {
+        currentInput.push(event.key);
+
+        // Ensure the length of current input does not exceed the Konami Code length
+        currentInput = currentInput.slice(-konamiCodeSequence.length);
+
+        if (JSON.stringify(currentInput) === JSON.stringify(konamiCodeSequence)) {
+            
+            // Change CSS variable when Konami Code is entered
+            if (getComputedStyle(document.documentElement).getPropertyValue("--secondary") == '#a688fa') {
+                document.documentElement.style.setProperty('--secondary', '#FF8C00');
+            } else {
+                document.documentElement.style.setProperty('--secondary', '#a688fa');
+            }
+        }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
 
     // useEffect(() => {
     //     setUpdateLeaderboard(true);
@@ -131,6 +167,13 @@ const Home = (props) => {
                     <div>Hi {new_username}!</div>
                 </div>
             )}
+            {signInPrompt && (
+                <div className="Home-fade-div Home-username-text">
+                    {" "}
+                    <img src={successful_beaver} className="Home-fade-image" />{" "}
+                    <div>Sign in on the top right!</div>
+                </div>
+            )}
             {showFailure && (
                 <div className="Home-fade-div Home-username-text">
                     {" "}
@@ -160,7 +203,8 @@ const Home = (props) => {
                             ></input>
                         </>
                     ) : (
-                        <div className="u-inlineBlock Home-subheadline-text">
+                        <div className="u-inlineBlock Home-subheadline-text"
+                        onClick={showSignInPrompt}>
                             Sign in to change your username and view your stats!
                         </div>
                     )}
@@ -201,12 +245,20 @@ const Home = (props) => {
                             Create your own river and race your beaver friends!
                         </div>
                         {/* <Link to={`/race/${roundID}`}> */}
-                        <button
-                            className="u-pointer Home-button Home-create-party-button"
-                            onClick={createMultiplayerRound}
-                        >
-                            Create Party
-                        </button>
+                        {userId ?(
+                            <button
+                                className="u-pointer Home-button Home-create-party-button"
+                                onClick={createMultiplayerRound}
+                            >
+                                Create Party
+                            </button>
+                        ) : (
+                            <button className="u-pointer Home-party-sign-in"
+                                onClick={showSignInPrompt}
+                            >
+                                Sign in to create party!
+                            </button>
+                        )}
                         {/* </Link> */}
                         {/* <img src={three_beavers} className="Home-multiplayer-party-image" /> */}
                     </div>

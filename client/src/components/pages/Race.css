@@ -92,8 +92,8 @@
 
 .Race-start-button {
     border-radius: 10px;
-    background-color: var(--orange);
-    color: var(--primary);
+    background-color: var(--secondary);
+    color: var(--button--text);
     padding: 10px;
     font-size: 32px;
     margin-top: 20px;
@@ -126,7 +126,6 @@
     width: 700px;
     font-size: 52px;
     margin-top: 20px;
-    /* margin-bottom: 20px; */
     background-color: var(--primary);
     padding-left: 20px;
     padding-right: 20px;
@@ -137,12 +136,11 @@
 
 .Race-play-again-button {
     border-radius: 10px;
-    background-color: var(--orange);
-    color: var(--primary);
+    background-color: var(--secondary);
+    color: var(--button--text);
     padding: 15px;
     font-size: 24px;
     padding-left: 60px;
     padding-right: 60px;
-    margin-bottom: 20px;
     margin-top: 10px;
 }

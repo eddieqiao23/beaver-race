@@ -17,7 +17,7 @@ const Leaderboard = (props) => {
                 const averageScore =
                     user.pastGames.length === 0
                         ? 0
-                        : user.pastGames.reduce((a, b) => a + b, 0) / user.pastGames.length;
+                        : user.pastGames.slice(-5).reduce((a, b) => a + b, 0) / user.pastGames.slice(-5).length;
                 const highScore = user.pastGames.length === 0 ? 0 : Math.min(...user.pastGames);
                 setUserAvgScore(averageScore);
                 setUserHighScore(highScore);
@@ -72,7 +72,7 @@ const Leaderboard = (props) => {
                         {user.pastGames.length === 0
                             ? 0
                             : (
-                                  user.pastGames.reduce((a, b) => a + b, 0) / user.pastGames.length
+                                  user.pastGames.slice(-5).reduce((a, b) => a + b, 0) / user.pastGames.slice(-5).length
                               ).toFixed(2)}{" "}
                         spq | Best{" "}
                         {user.pastGames.length === 0 ? 0 : Math.min(...user.pastGames).toFixed(2)}{" "}

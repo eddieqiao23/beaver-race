@@ -16,7 +16,7 @@ import "./Race.css";
 
 import Leaderboard from "../modules/Leaderboard.js";
 
-const TOTAL_QUESTIONS = 10;
+const TOTAL_QUESTIONS = 2;
 const round_time = 120
 
 const getRandomProblem = () => {
@@ -82,12 +82,62 @@ const Race = (props) => {
     const [finishedJoinGame, setFinishedJoinGame] = useState(false);
     const finishedJoinGameRef = useRef(finishedJoinGame);
 
+    const [hostMadeNewGame, setHostMadeNewGame] = useState(false);
+    const hostMadeNewGameRef = useRef(hostMadeNewGame);
+
+    const [newShortenedRoundID, setNewShortenedRoundID] = useState(null);
+    const newShortenedRoundIDRef = useRef(newShortenedRoundID);
+
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     // const gameID = searchParams.get("id");
     const shortenedGameID = searchParams.get("id");
     const [gameID, setGameID] = useState(null);
     const gameIDRef = useRef(gameID);
+
+    const fetchGameID = async () => {
+      console.log("RUNNING NOW")
+      await get(`/api/get_round_by_shortID`, { shortID: shortenedGameID })
+        .then(res => {
+          if (res.error) {
+            console.error('Error: bad game ID');
+            navigate("/")
+          } else {
+            setGameID(res);
+            gameIDRef.current = res;
+          }
+        });
+    };
+
+    const getRoundInfo = async () => {
+        get("/api/get_round_by_id", { roundID: gameIDRef.current }).then((round) => {
+            console.log("This displays the round for ID " + round.problem_set_id);
+            console.log("User ID: " + props.userId);
+            console.log("Players: ");
+            console.log(round.players);
+            if (round.players[0] === props.userId) {
+                setIsHost(true);
+                isHostRef.current = true;
+            }
+            get("/api/get_problem_set_by_id", { problemSetID: round.problem_set_id }).then(
+                (problemSet) => {
+                    console.log("This displays the problem set for ID " + problemSet._id);
+                    setQuestions(problemSet.questions);
+                    setAnswers(problemSet.answers);
+                    setDoneLoading(true);
+                    console.log(questions);
+                }
+            );
+        });
+    };
+
+    useEffect(() => {
+      fetchGameID().then(() => {
+        if (gameIDRef.current) {
+          getRoundInfo()
+        }
+      });
+    }, []);
 
     useEffect(() => {
     let intervalTimer;
@@ -113,56 +163,31 @@ const Race = (props) => {
         return () => clearInterval(intervalTimer);
     }, [roundTimer, raceStarted]);
 
-    const fetchGameID = async () => {
-          console.log("RUNNING NOW")
-          await get(`/api/get_round_by_shortID`, { shortID: shortenedGameID }).then((roundID) => {gameIDRef.current = roundID});
-        };
-
-    const getRoundInfo = async () => {
-        get("/api/get_round_by_id", { roundID: gameIDRef.current }).then((round) => {
-            console.log("This displays the round for ID " + round.problem_set_id);
-            console.log("User ID: " + props.userId);
-            console.log("Players: ");
-            console.log(round.players);
-            if (round.players[0] === props.userId) {
-                setIsHost(true);
-                isHostRef.current = true;
-            }
-            get("/api/get_problem_set_by_id", { problemSetID: round.problem_set_id }).then(
-                (problemSet) => {
-                    console.log("This displays the problem set for ID " + problemSet._id);
-                    setQuestions(problemSet.questions);
-                    setAnswers(problemSet.answers);
-                    setDoneLoading(true);
-                    console.log(questions);
-                }
-            );
-        });
-    };
 
     useEffect(() => {
-        fetchGameID().then(() => {getRoundInfo()});
-    }, []);
-
-    useEffect(() => {
-        if (loggedIn) {
+      console.log("CHECKING IF LOGGED IN AND GAME ID")
+      // console.log(loggedIn, gameIDRef.current)
+        if (loggedIn && gameIDRef.current) {
             console.log("this is logged in");
             // Gets info about the user and joins the socket room
             get("/api/get_user_by_id", { userId: props.userId }).then((user) => {
                 let username = user.username;
                 socket.emit("joinGame", gameIDRef.current, username);
+                // setFinishedJoinGame(true);
                 finishedJoinGameRef.current = true;
-                setFinishedJoinGame(true);
+                // setFinishedJoinGame(true);
                 console.log("JOIN GAME WAS EMITTED");
             });
             // socket.emit("joinGame", gameIDRef.current);
 
             socket.on("update", (update) => {
                 // Data about the players, usernames, and scores
-                console.log(update);
-                console.log(gameIDRef.current);
-                console.log(finishedJoinGameRef.current);
+                // console.log(update);
+                // console.log(gameIDRef.current);
                 if (finishedJoinGameRef.current) {
+                    if (update[gameIDRef.current]["new_game"]) {
+                        hostMadeNewGameRef.current = true;
+                    }
                     let data = update[gameIDRef.current]["players"];
 
                     // Reads in the data from JSON format
@@ -202,6 +227,7 @@ const Race = (props) => {
                     }
                     if (!placementsList.includes(-1)) {
                         setEveryoneFinished(true);
+                        everyoneFinishedRef.current = true;
                     }
 
                     // Set states to the new data
@@ -227,30 +253,6 @@ const Race = (props) => {
                         setPreGameTimer(0);
                     }
                 }
-                // else {
-                //     setPreGameTimer(-1);
-                // }
-                // // if (update[gameIDRef.current]["started"] and )
-                // if (update[gameIDRef.current]["started"]) {
-                //     setRaceStarted(true);
-                // }
-                // processUpdate(update);
-            });
-
-            socket.on("restartGame", () => {
-                setGameFinished(false);
-                setRaceStarted(false);
-                setPreGameTimerStarted(false);
-                setPreGameTimer(0);
-                setPreGameTimerOpacity(1);
-                setRoundTimer(round_time);
-                setEmittedPlacing(false);
-                emittedPlacingRef.current = false;
-                setEveryoneFinished(false);
-                everyoneFinishedRef.current = false;
-                setNotUpdatedGame(true);
-                setDoneLoading(false);
-                getRoundInfo();
             });
 
             socket.on("alreadyInGame", () => {
@@ -258,11 +260,8 @@ const Race = (props) => {
                 navigate("/")
             });
         }
-    }, [loggedIn, gameIDRef.current]);
 
-    // const processUpdate = (update) => {
-    //     drawCanvas(update, canvasRef, gameIDRef.current);
-    // };
+    }, [loggedIn, gameIDRef.current]);
 
     useEffect(() => {
         setLoggedIn(props.userId);
@@ -283,13 +282,12 @@ const Race = (props) => {
     // After the game is over, update the user's past games
     useEffect(() => {
         const updatePastGames = async () => {
-            setSpqScore(((round_time - roundTimer) / score).toFixed(2));
-            console.log(gameFinished, props.userId, notUpdatedGame, score);
+            console.log(round_time, roundTimer, score)
+            setSpqScore(((round_time - roundTimer) / TOTAL_QUESTIONS).toFixed(2));
             if (gameFinished && props.userId && notUpdatedGame && score > 0) {
-                console.log(score, roundTimer);
                 await post(`/api/update_user_pastgames`, {
                     userId: props.userId,
-                    score: score,
+                    score: TOTAL_QUESTIONS,
                     time: round_time - roundTimer,
                 });
                 setNotUpdatedGame(false);
@@ -303,44 +301,49 @@ const Race = (props) => {
     }, [gameFinished]);
 
     const startGameButton = () => {
+      if (gameIDRef.current) {
         socket.emit("startGame", gameIDRef.current);
         setPreGameTimerStarted(true);
         preGameTimerStartedRef.current = true;
+      }
     }
 
     useEffect(() => {
         const handleKeyDown = (event) => {
           console.log(isHost, preGameTimer, preGameTimerStarted, raceStarted)
-            if (event.key === "Enter" && isHostRef.current && !raceStartedRef.current && !preGameTimerStartedRef.current) {
+            if (event.key === "Enter" && isHostRef.current && !raceStartedRef.current && !preGameTimerStartedRef.current && gameIDRef.current) {
                 socket.emit("startGame", gameIDRef.current);
                 setPreGameTimerStarted(true);
                 preGameTimerStartedRef.current = true;
             }
         };
-
         window.addEventListener("keydown", handleKeyDown);
 
-        // Cleanup function to remove the event listener when the component unmounts
-        return () => {
-            window.removeEventListener("keydown", handleKeyDown);
-        };
+        return () => {window.removeEventListener("keydown", handleKeyDown);};
     }, []);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
-          console.log(isHost, preGameTimer, preGameTimerStarted, raceStarted)
-            if (event.key === "Enter" && everyoneFinishedRef.current && isHostRef.current && !raceStartedRef.current && !preGameTimerStartedRef.current) {
-                // NEW ROUND FUNCTION HERE
-                pass
+            // console.log(isHost, preGameTimer, preGameTimerStarted, raceStarted)
+            if (event.key === "Enter" && isHostRef.current && everyoneFinishedRef.current) {
+                makeNewRound();
             }
         };
-
         window.addEventListener("keydown", handleKeyDown);
+        
+        return () => {window.removeEventListener("keydown", handleKeyDown);};
+    }, []);
 
-        // Cleanup function to remove the event listener when the component unmounts
-        return () => {
-            window.removeEventListener("keydown", handleKeyDown);
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            // console.log(isHost, preGameTimer, preGameTimerStarted, raceStarted)
+            if (event.key === "Enter" && hostMadeNewGameRef.current && !isHostRef.current && everyoneFinishedRef.current) {
+                playAgain();  
+            }
         };
+        window.addEventListener("keydown", handleKeyDown);
+        
+        return () => {window.removeEventListener("keydown", handleKeyDown);};
     }, []);
 
     const getOrdinal = (n) => {
@@ -350,6 +353,13 @@ const Race = (props) => {
     }
 
     const playAgain = async () => {
+        // console.log("Play again stuff");
+        navigate(`../race?id=${newShortenedRoundIDRef.current}`, { replace: true});
+        navigate(0);
+    } 
+
+    const makeNewRound = async () => {
+        console.log("started...");
         let questions = [];
         let answers = [];
         for (let i = 0; i < 20; i++) {
@@ -365,28 +375,40 @@ const Race = (props) => {
             });
             const problemSetID = problemSetRes._id;
             console.log("Problem Set: " + problemSetID);
-            const newRoundRes = await post("/api/update_round", { round_id: gameIDRef.current, problem_set_id: problemSetID });
-            socket.emit("restartGame", gameIDRef.current);
-            // const newRoundRes = await post("/api/", {
-            //     problem_set_id: problemSetID,
-            // });
-            // const createdRoundID = newRoundRes._id;
+
+            const newRoundRes = await post("/api/create_indiv_round", {
+                problem_set_id: problemSetID,
+            });
+            const createdRoundID = newRoundRes._id;
             // setRoundID(createdRoundID);
-            // console.log("Round: " + createdRoundID);
-            // // post("/api/initsocket", { socketid: socket.id });
-            // const shortenedRoundID = createdRoundID.slice(-6).toUpperCase();
-            // // navigate(`/race?id=${createdRoundID}`);
-            // navigate(`/race?id=${shortenedRoundID}`);
+            console.log("Round: " + createdRoundID);
+            // post("/api/initsocket", { socketid: socket.id });
+            const shortenedRoundID = createdRoundID.slice(-6).toUpperCase();
+            newShortenedRoundIDRef.current = shortenedRoundID;
+            // navigate(`/race?id=${createdRoundID}`);
+            socket.emit("newGame", gameIDRef.current);
+            setHostMadeNewGame(true);
+            console.log(shortenedRoundID);
+            hostMadeNewGameRef.current = true;
+            navigate(`../race?id=${shortenedRoundID}`, { replace: true});
+            navigate(0);
+            // NavigationActions.push({ id: shortenedRoundID })
+            // props.navigation.push('race', {
+            //     id: shortenedRoundID,
+            //   }); 
+            // const goToNewParam = () => {
+            //   navigate(`/race/${shortenedRoundID}`);
+            // };
+            // goToNewParam();
         } catch (error) {
             console.log(error);
             console.log("error creating problem set or round :(");
         }
-    }
-
+    };
 
     return (
         <>
-            {loggedIn ? (
+            {(loggedIn) ? (
                 <div className="Race-container">
                     <div className="Race-headline-text">
                       {gameFinished ? (
@@ -441,15 +463,23 @@ const Race = (props) => {
                                 {(everyoneFinished && isHost) ? (
                                   <button
                                   className="u-pointer Race-play-again-button"
-                                    onClick={ playAgain }
+                                    onClick={ makeNewRound }
                                     >
-                                      Press enter to play again!
+                                      Press enter to create a new game!
                                   </button>
                                 ) : (<div></div>)}  
+                                {(everyoneFinished && !isHostRef.current && hostMadeNewGameRef.current) ? (
+                                  <button
+                                  className="u-pointer Race-play-again-button"
+                                    onClick={ playAgain }
+                                    >
+                                      Press enter to join new game!
+                                  </button>
+                                ) : (<div></div>)}  
+                                </div>
                                 <div className="Race-leaderboard">
                                   <Leaderboard userId={props.userId}/>
                                 </div>
-                              </div>
                             </>
                           ) : (<div></div>)}  
                           </>
@@ -463,6 +493,7 @@ const Race = (props) => {
             )}
         </>
     );
+
 
     // return (
     //     <div className="Race-container">

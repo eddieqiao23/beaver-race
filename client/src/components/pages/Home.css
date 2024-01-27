@@ -65,15 +65,15 @@
 }
 .Home-button {
     border-radius: 10px;
-    background-color: var(--orange);
-    color: var(--primary);
+    background-color: var(--secondary);
+    color: var(--button--text);
     padding: 10px;
 }
 
 .Home-username-button {
     border-radius: 10px;
-    background-color: var(--orange);
-    color: var(--primary);
+    background-color: var(--secondary);
+    color: var(--button--text);
     padding: 8px;
     margin-top: -10px;
 }
@@ -83,7 +83,7 @@
 }
 
 .Home-white-placeholder::placeholder {
-    color: var(--primary);
+    color: var(--button--text);
 }
 
 .Home-sign-in {
@@ -162,4 +162,13 @@
 
 .Home-leaderboard {
     padding: 10px;
+}
+
+.Home-party-sign-in {
+    border-radius: 10px;
+    background-color: var(--secondary);
+    color: var(--button--text);
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 24px;
 }

@@ -142,6 +142,7 @@ const Indiv = (props) => {
         const handleKeyDown = (event) => {  
             if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
                 resetRound();
+                setGameStarted(true);
             }
         };
 
@@ -172,13 +173,11 @@ const Indiv = (props) => {
     // After the game is over, update the user's past games
     useEffect(() => {
         const updatePastGames = async () => {
-            setSpqScore(((ROUND_TIME - roundTimer) / score).toFixed(2));
-            console.log(gameFinished, props.userId, notUpdatedGame, score);
+            setSpqScore(((ROUND_TIME - roundTimer) / TOTAL_QUESTIONS).toFixed(2));
             if (gameFinished && props.userId && notUpdatedGame && score > 0) {
-                console.log(score, roundTimer);
                 await post(`/api/update_user_pastgames`, {
                     userId: props.userId,
-                    score: score,
+                    score: TOTAL_QUESTIONS,
                     time: ROUND_TIME - roundTimer,
                 });
                 setNotUpdatedGame(false);

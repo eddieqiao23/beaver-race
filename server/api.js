@@ -62,19 +62,21 @@ router.post("/updateusername", (req, res) => {
 router.post("/update_user_pastgames", (req, res) => {
     const { userId, score, time } = req.body;
     const gameResult = time / score;
-    User.findByIdAndUpdate(
-        userId,
-        { $push: { pastGames: gameResult } },
-        { new: true },
-        (err, user) => {
-            if (err || !user) {
-                res.send({ success: false });
-            } else {
-                res.send({ success: true });
-                console.log("updated past games with score", { gameResult });
+    if (gameResult > 0.1) {
+        User.findByIdAndUpdate(
+            userId,
+            { $push: { pastGames: gameResult } },
+            { new: true },
+            (err, user) => {
+                if (err || !user) {
+                    res.send({ success: false });
+                } else {
+                    res.send({ success: true });
+                    console.log("updated past games with score", { gameResult });
+                }
             }
-        }
-    );
+        );
+    }
 });
 
 router.get("/get_user_by_id", (req, res) => {
@@ -101,9 +103,9 @@ router.get("/get_top_users", (req, res) => {
             // Default to sorting by average
             usersWithScore = users.map((user) => {
                 const totalScore =
-                    user.pastGames.length === 0 ? 999 : user.pastGames.reduce((a, b) => a + b, 0);
+                    user.pastGames.length === 0 ? 999 : user.pastGames.slice(-5).reduce((a, b) => a + b, 0);
                 const averageScore =
-                    user.pastGames.length === 0 ? 999 : totalScore / user.pastGames.length;
+                    user.pastGames.length === 0 ? 999 : totalScore / user.pastGames.slice(-5).length;
                 return { ...user._doc, averageScore };
             });
             usersWithScore.sort((a, b) => a.averageScore - b.averageScore);
@@ -157,10 +159,10 @@ router.get("/get_round_by_shortID", (req, res) => {
     const shortID = req.query.shortID;
     console.log(shortID)
     Round.find({}).then((rounds) => {
-        const matchingRounds = rounds.filter(round => round._id.toString().toUpperCase().endsWith(shortID));
+        const matchingRounds = rounds.filter(round => round._id.toString().toUpperCase().endsWith(shortID.toUpperCase()));
         console.log("matching rounds", matchingRounds);
         if (!matchingRounds || matchingRounds.length === 0) {
-            return res.send({ error: "Round not found" });
+            return res.send({ error : "no matching rounds" });
         } else {
             return res.send(matchingRounds[0]._id); // return the first match
         }
@@ -196,28 +198,6 @@ router.post("/delete_round_by_id", (req, res) => {
         } else {
             return res.send(round);
         }
-    });
-});
-
-router.post("/update_round", (req, res) => {
-    let roundID = req.body.roundID;
-    let problemSetID = req.body.problemSetID;
-    // update round with new problem set
-    Round.findByIdAndUpdate(
-        roundID, 
-        { problemSet : problemSetID },
-        { players : [req.user._id]},
-        { new: true },
-    )
-    .then((updatedRound) => {
-        if (!updatedRound) {
-            return res.send({ error: "Round not found" });
-        } else {
-            return res.send(updatedRound);
-        }
-    })
-    .catch((err) => {
-        return res.send({ error: err });
     });
 });
 

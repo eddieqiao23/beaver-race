@@ -17,6 +17,7 @@ const spawnPlayer = (id, username, gameID) => {
             winner: null,
             started: false,
             start_time: null, // maybe??
+            new_game: false,
         };
     }
     console.log(gameState);
@@ -61,13 +62,9 @@ const finishGame = (gameID, userID) => {
 
 const updateGameState = () => {};
 
-const restartGame = (gameID) => {
-    gameState[gameID]["players"] = [];
-    gameState[gameID]["placings"] = [];
-    gameState[gameID]["winner"] = null;
-    gameState[gameID]["started"] = false;
-    gameState[gameID]["start_time"] = null;
-};
+const newGame = (gameID) => {
+    gameState[gameID]["new_game"] = true;
+}
 
 module.exports = {
     gameState,
@@ -78,5 +75,5 @@ module.exports = {
     doesPlayerExist,
     startGame,
     finishGame,
-    restartGame,
+    newGame,
 };
