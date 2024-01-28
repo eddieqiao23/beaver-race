@@ -16,7 +16,7 @@ import "./Race.css";
 
 import Leaderboard from "../modules/Leaderboard.js";
 
-const TOTAL_QUESTIONS = 2;
+const TOTAL_QUESTIONS = 10;
 const round_time = 120
 
 const getRandomProblem = () => {
