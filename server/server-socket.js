@@ -118,8 +118,8 @@ module.exports = {
             socket.on("startGame", (gameID) => {
                 gameLogic.startGame(gameID);
             });
-            socket.on("newGame", (gameID) => {
-                gameLogic.newGame(gameID);
+            socket.on("newGame", (gameID, shortenedRoundID) => {
+                gameLogic.newGame(gameID, shortenedRoundID);
             });
         });
     },

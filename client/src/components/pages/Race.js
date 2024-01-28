@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { socket } from "../../client-socket.js";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Scoreboard from "../modules/Scoreboard.js";
 // import Timer from "../modules/Timer.js";
 // import Question from "../modules/Question.js";
@@ -88,6 +88,12 @@ const Race = (props) => {
     const [newShortenedRoundID, setNewShortenedRoundID] = useState(null);
     const newShortenedRoundIDRef = useRef(newShortenedRoundID);
 
+    let userId = props.userId;
+    console.log(useLocation());
+    if (!userId) {
+        userId = useLocation().state.userId;
+    }
+
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     // const gameID = searchParams.get("id");
@@ -112,10 +118,10 @@ const Race = (props) => {
     const getRoundInfo = async () => {
         get("/api/get_round_by_id", { roundID: gameIDRef.current }).then((round) => {
             console.log("This displays the round for ID " + round.problem_set_id);
-            console.log("User ID: " + props.userId);
+            console.log("User ID: " + userId);
             console.log("Players: ");
             console.log(round.players);
-            if (round.players[0] === props.userId) {
+            if (round.players[0] === userId) {
                 setIsHost(true);
                 isHostRef.current = true;
             }
@@ -170,7 +176,7 @@ const Race = (props) => {
         if (loggedIn && gameIDRef.current) {
             console.log("this is logged in");
             // Gets info about the user and joins the socket room
-            get("/api/get_user_by_id", { userId: props.userId }).then((user) => {
+            get("/api/get_user_by_id", { userId: userId }).then((user) => {
                 let username = user.username;
                 socket.emit("joinGame", gameIDRef.current, username);
                 // setFinishedJoinGame(true);
@@ -182,10 +188,11 @@ const Race = (props) => {
 
             socket.on("update", (update) => {
                 // Data about the players, usernames, and scores
-                // console.log(update);
+                console.log(update);
                 // console.log(gameIDRef.current);
                 if (finishedJoinGameRef.current) {
-                    if (update[gameIDRef.current]["new_game"]) {
+                    if (update[gameIDRef.current]["new_game"] !== null) {
+                        newShortenedRoundIDRef.current = update[gameIDRef.current]["new_game"];
                         hostMadeNewGameRef.current = true;
                     }
                     let data = update[gameIDRef.current]["players"];
@@ -205,8 +212,8 @@ const Race = (props) => {
                         newUsernames.push(data[i]["username"]);
 
                         if (!emittedPlacingRef.current) { // Checks if game is over
-                            if (data[i]["id"] === props.userId && data[i]["score"] >= TOTAL_QUESTIONS) {
-                                socket.emit("finishGame", gameIDRef.current, props.userId);
+                            if (data[i]["id"] === userId && data[i]["score"] >= TOTAL_QUESTIONS) {
+                                socket.emit("finishGame", gameIDRef.current, userId);
                                 finished = true;
                                 setGameFinished(true);
                                 setEmittedPlacing(true);
@@ -261,13 +268,18 @@ const Race = (props) => {
             });
         }
 
+        return () => {
+            socket.off("update");
+            socket.off("alreadyInGame");
+        }
+
     }, [loggedIn, gameIDRef.current]);
 
     useEffect(() => {
-        setLoggedIn(props.userId);
+        setLoggedIn(userId);
         // console.log("CHECK HERE")
-        // console.log(props.userId)
-    }, [props.userId]);
+        // console.log(userId)
+    }, [userId]);
 
     // useEffect(() => {
     //     console.log(emittedPlacing)
@@ -275,7 +287,7 @@ const Race = (props) => {
     // }, [emittedPlacing]);
 
     // let loginModal = null;
-    // if (!props.userId) {
+    // if (!userId) {
     //     loginModal = <div> Pleas`e Login First! </div>;
     // }
 
@@ -284,15 +296,15 @@ const Race = (props) => {
         const updatePastGames = async () => {
             console.log(round_time, roundTimer, score)
             setSpqScore(((round_time - roundTimer) / TOTAL_QUESTIONS).toFixed(2));
-            if (gameFinished && props.userId && notUpdatedGame && score > 0) {
+            if (gameFinished && userId && notUpdatedGame && score > 0) {
                 await post(`/api/update_user_pastgames`, {
-                    userId: props.userId,
+                    userId: userId,
                     score: TOTAL_QUESTIONS,
                     time: round_time - roundTimer,
                 });
                 setNotUpdatedGame(false);
             }
-            if (gameFinished && !props.userId) {
+            if (gameFinished && !userId) {
                 setNotUpdatedGame(false);
             }
         };
@@ -354,7 +366,7 @@ const Race = (props) => {
 
     const playAgain = async () => {
         // console.log("Play again stuff");
-        navigate(`../race?id=${newShortenedRoundIDRef.current}`, { replace: true});
+        navigate(`../race?id=${newShortenedRoundIDRef.current}`, {state: {userId: userId}});
         navigate(0);
     } 
 
@@ -386,11 +398,12 @@ const Race = (props) => {
             const shortenedRoundID = createdRoundID.slice(-6).toUpperCase();
             newShortenedRoundIDRef.current = shortenedRoundID;
             // navigate(`/race?id=${createdRoundID}`);
-            socket.emit("newGame", gameIDRef.current);
+            socket.emit("newGame", gameIDRef.current, shortenedRoundID);
             setHostMadeNewGame(true);
             console.log(shortenedRoundID);
             hostMadeNewGameRef.current = true;
-            navigate(`../race?id=${shortenedRoundID}`, { replace: true});
+            navigate(`../race?id=${shortenedRoundID}`, {state: {userId: userId}});
+            // navigate(`../race?id=${shortenedRoundID}`, { userId: userId, replace: true});
             navigate(0);
             // NavigationActions.push({ id: shortenedRoundID })
             // props.navigation.push('race', {
@@ -438,16 +451,19 @@ const Race = (props) => {
                             ))}
                           </div>
                           <>
-                            { (isHost && preGameTimer === 0 && !raceStarted && !preGameTimerStarted) ? 
-                              <div> <button className="Race-start-button" onClick={startGameButton}>Press enter to start game!</button> </div> 
-                              : <div className="Race-waiting-for-host">Waiting for host to start game...</div>}
+                            { (preGameTimer === 0 && !raceStarted && !preGameTimerStarted) ? 
+                            <>
+                                { isHost ? <div> <button className="Race-start-button" onClick={startGameButton}>Press enter to start game!</button> </div> : 
+                                <div className="Race-waiting-for-host">Waiting for host to start game...</div>}
+                            </>
+                            : null }
                           </>
                           <>
                             { preGameTimer !== 0 ? <div className="Race-pregame-timer" style={{ opacity: preGameTimerOpacity }}>{ preGameTimer }</div> : null }
                           </>
                           {!gameFinished && <MultiQuestion
                               gameID={gameIDRef.current}
-                              userID={props.userId}
+                              userID={userId}
                               score={score}
                               setScore={setScore}
                               setIsHost={setIsHost}
@@ -480,7 +496,7 @@ const Race = (props) => {
                                 ) : (<div></div>)}  
                                 </div>
                                 <div className="Race-leaderboard">
-                                  <Leaderboard userId={props.userId}/>
+                                  <Leaderboard userId={userId}/>
                                 </div>
                             </>
                           ) : (<div></div>)}  

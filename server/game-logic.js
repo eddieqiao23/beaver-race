@@ -17,7 +17,7 @@ const spawnPlayer = (id, username, gameID) => {
             winner: null,
             started: false,
             start_time: null, // maybe??
-            new_game: false,
+            new_game: null,
         };
     }
     console.log(gameState);
@@ -62,8 +62,8 @@ const finishGame = (gameID, userID) => {
 
 const updateGameState = () => {};
 
-const newGame = (gameID) => {
-    gameState[gameID]["new_game"] = true;
+const newGame = (gameID, shortenedRoundID) => {
+    gameState[gameID]["new_game"] = shortenedRoundID;
 }
 
 module.exports = {
