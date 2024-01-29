@@ -4,7 +4,6 @@ import "./Question.css";
 
 // Page that displays all elements of a multiplayer race
 const Question = (props) => {
-    // const [currProblem, setCurrProblem] = useState(0);
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState([]);
     const [doneLoading, setDoneLoading] = useState(false);

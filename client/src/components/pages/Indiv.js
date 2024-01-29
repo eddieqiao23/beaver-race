@@ -1,49 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
-import Timer from "../modules/Timer.js";
 import Question from "../modules/Question.js";
-import MultiQuestion from "../modules/MultiQuestion.js";
-import RoundEndScoreboard from "../modules/RoundEndScoreboard.js";
-import { Link } from "react-router-dom";
 
 import beaver_image from "../../public/assets/beavers/beaver_picture.png";
 import logs from "../../public/assets/beavers/logs.png";
 
+import { post } from "../../utilities.js";
+
 import "../../utilities.css";
 import "./Indiv.css";
 
-import { get, post } from "../../utilities.js";
-
 import Leaderboard from "../modules/Leaderboard.js";
+
+import { getRandomProblem } from "./Home";
 
 const TOTAL_QUESTIONS = 10;
 const ROUND_TIME = 120;
-
-const getRandomProblem = () => {
-    let sign = Math.floor(Math.random() * 2); // 0 = +, *, 1 = -, /
-    let num1 = 0;
-    let num2 = 0;
-    if (sign === 0) {
-        num1 = Math.floor(Math.random() * 98) + 2;
-        num2 = Math.floor(Math.random() * 98) + 2;
-    } else {
-        num1 = Math.floor(Math.random() * 10) + 2;
-        num2 = Math.floor(Math.random() * 98) + 2;
-    }
-
-    if (sign === 0) {
-        if (Math.floor(Math.random() * 2) === 0) {
-            return { question: `${num1} + ${num2}`, answer: `${num1 + num2}` };
-        } else {
-            return { question: `${num1 + num2} - ${num1}`, answer: `${num2}` };
-        }
-    } else {
-        if (Math.floor(Math.random() * 2) === 0) {
-            return { question: `${num1} x ${num2}`, answer: `${num1 * num2}` };
-        } else {
-            return { question: `${num1 * num2} ÷ ${num1}`, answer: `${num2}` };
-        }
-    }
-};
 
 // Page that displays all elements of a multiplayer race
 const Indiv = (props) => {
@@ -55,7 +26,6 @@ const Indiv = (props) => {
     const [spqScore, setSpqScore] = useState(0);
     const [score, setScore] = useState(0);
     const [notUpdatedGame, setNotUpdatedGame] = useState(true);
-    // const [updateLeaderboard, setUpdateLeaderboard] = useState(false);
     const [createdNewRound, setCreatedNewRound] = useState(false);
     const roundFinishedRef = useRef(roundFinished);
 

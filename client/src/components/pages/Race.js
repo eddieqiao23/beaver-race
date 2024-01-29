@@ -11,37 +11,10 @@ import { get, post } from "../../utilities";
 import "./Race.css";
 
 import Leaderboard from "../modules/Leaderboard.js";
+import { getRandomProblem } from "./Home"
 
-const TOTAL_QUESTIONS = 10;
+const TOTAL_QUESTIONS = 2;
 const round_time = 120;
-
-const getRandomProblem = () => {
-    let sign = Math.floor(Math.random() * 2); // 0 = +, *, 1 = -, /
-    let num1 = 0;
-    let num2 = 0;
-    if (sign === 0) {
-        num1 = Math.floor(Math.random() * 98) + 2;
-        num2 = Math.floor(Math.random() * 98) + 2;
-    } else {
-        num1 = Math.floor(Math.random() * 10) + 2;
-        num2 = Math.floor(Math.random() * 98) + 2;
-    }
-
-    if (sign === 0) {
-        if (Math.floor(Math.random() * 2) === 0) {
-            return { question: `${num1} + ${num2}`, answer: `${num1 + num2}` };
-        } else {
-            return { question: `${num1 + num2} - ${num1}`, answer: `${num2}` };
-        }
-    } else {
-        if (Math.floor(Math.random() * 2) === 0) {
-            return { question: `${num1} x ${num2}`, answer: `${num1 * num2}` };
-        } else {
-            return { question: `${num1 * num2} ÷ ${num1}`, answer: `${num2}` };
-        }
-    }
-};
-
 
 // Page that displays all elements of a multiplayer race
 const Race = (props) => {
