@@ -39,7 +39,7 @@ const Question = (props) => {
     }, []);
 
     const handleInputChange = (event) => {
-        if (event.target.value === answers[score]) {
+        if (event.target.value.toLowerCase() === answers[score].toLowerCase()) {
             setTimeout(() => {
                 setScore(score + 1);
                 // setCurrProblem(currProblem + 1);

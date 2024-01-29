@@ -21,7 +21,7 @@ const MultiQuestion = (props) => {
     }, [doneLoading, props.raceStarted]);
 
     const handleInputChange = (event) => {
-        if (event.target.value === answers[score]) { // Checks if correct
+        if (event.target.value.toLowerCase() === answers[score].toLowerCase()) { // Checks if correct
             setTimeout(() => {
                 setScore(score + 1);
                 event.target.value = "";

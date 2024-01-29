@@ -78,18 +78,9 @@ const Race = (props) => {
     const [roundID, setGameID] = useState(null);
     const roundIDRef = useRef(roundID);
 
-    const fetchGameID = async () => {
-        console.log("RUNNING NOW");
-        await get(`/api/get_round_by_shortID`, { shortID: shortenedGameID }).then((res) => {
-            if (res.error) {
-                console.error("Error: bad round ID");
-                navigate("/");
-            } else {
-                setGameID(res);
-                roundIDRef.current = res;
-            }
-        });
-    };
+    const [game, setGame] = useState({});
+    const { game_url } = useParams();
+
 
     const getRoundInfo = async () => {
         get("/api/get_round_by_id", { roundID: roundIDRef.current }).then((round) => {
@@ -113,12 +104,41 @@ const Race = (props) => {
         });
     };
 
+    const fetchGameID = async () => {
+        console.log("RUNNING NOW");
+        await get(`/api/get_round_by_shortID`, { shortID: shortenedGameID }).then((res) => {
+            if (res.error) {
+                console.error("Error: bad round ID");
+                navigate("/");
+            } else {
+                setGameID(res);
+                roundIDRef.current = res;
+            }
+        });
+    };
+    
     useEffect(() => {
         fetchGameID().then(() => {
             if (roundIDRef.current) {
                 getRoundInfo();
             }
         });
+
+        get("/api/get_game_by_url", { url: game_url })
+            .then((newGame) => {
+                setGame(newGame);
+                console.log(game);
+                console.log(newGame);
+            })
+            .catch((error) => {
+                console.error("Error fetching game:", error);
+                const newGame = {title: "Math", url: "zetamac"};
+                setGame(newGame);
+            });
+
+        console.log("Game: ");
+        console.log(game);
+        console.log("Round ID: " + roundIDRef.current);
     }, []);
 
     useEffect(() => {

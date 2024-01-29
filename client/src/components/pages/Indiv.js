@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useParams } from 'react-router-dom';
 import Question from "../modules/Question.js";
 
 import beaver_image from "../../public/assets/beavers/beaver_picture.png";
 import logs from "../../public/assets/beavers/logs.png";
 
-import { post } from "../../utilities.js";
+import { get, post } from "../../utilities.js";
 
 import "../../utilities.css";
 import "./Indiv.css";
@@ -28,7 +29,23 @@ const Indiv = (props) => {
     const [notUpdatedGame, setNotUpdatedGame] = useState(true);
     const [createdNewRound, setCreatedNewRound] = useState(false);
     const roundFinishedRef = useRef(roundFinished);
+    const [game, setGame] = useState({});
+    const { game_url } = useParams();
 
+    useEffect(() => {
+        get("/api/get_game_by_url", { url: game_url })
+            .then((newGame) => {
+                setGame(newGame);
+                console.log(game);
+                console.log(newGame);
+            })
+            .catch((error) => {
+                console.error("Error fetching game:", error);
+                const newGame = {title: "Math", url: "zetamac"};
+                setGame(newGame);
+            });
+    }, []);
+    
     // Timer for the round (120 sec)
     useEffect(() => {
         let intervalTimer;
@@ -165,7 +182,7 @@ const Indiv = (props) => {
             let questions = [];
             let answers = [];
             for (let i = 0; i < 20; i++) {
-                let newQuestion = getRandomProblem();
+                let newQuestion = getRandomProblem(game);
                 questions.push(newQuestion.question);
                 answers.push(newQuestion.answer);
             }
@@ -192,7 +209,7 @@ const Indiv = (props) => {
             }
         };
 
-        if (!createdNewRound) {
+        if (!createdNewRound && Object.keys(game).length !== 0) {
             const changeRoundID = async () => {
                 let createdRoundID = await createProblemSetAndRound();
                 setNewRoundID(createdRoundID);
@@ -205,7 +222,7 @@ const Indiv = (props) => {
                 location.reload();
             }
         }
-    }, [newRoundID]);
+    }, [newRoundID, game]);
 
     return (
         <div className="Indiv-container">

@@ -7,6 +7,12 @@ import "./OtherGames.css";
 import { get, post } from "../../utilities";
 
 const OtherGames = (props) => {
+    useEffect(() => {
+        post("/api/create_game").then((res) => {
+            console.log(res);
+        });
+    }, []);
+
     return (
         <div>
             hi

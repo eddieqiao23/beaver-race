@@ -208,6 +208,30 @@ router.post("/delete_round_by_id", (req, res) => {
     });
 });
 
+router.post("/create_game", (req, res) => {
+    const newGame = new Game({
+        title: "US Capitals",
+        url: "us-capitals",
+        skip_time: 10,
+        questions_per_round: 10,
+        time_per_round: 120,
+        verified: true,
+        questions: ["Capital of Alabama?", "Capital of Alaska?", "Capital of Arizona?", "Capital of Arkansas?", "Capital of California?", "Capital of Colorado?", "Capital of Connecticut?", "Capital of Delaware?", "Capital of Florida?", "Capital of Georgia?", "Capital of Hawaii?", "Capital of Idaho?", "Capital of Illinois?", "Capital of Indiana?", "Capital of Iowa?", "Capital of Kansas?", "Capital of Kentucky?", "Capital of Louisiana?", "Capital of Maine?", "Capital of Maryland?", "Capital of Massachusetts?", "Capital of Michigan?", "Capital of Minnesota?", "Capital of Mississippi?", "Capital of Missouri?", "Capital of Montana?", "Capital of Nebraska?", "Capital of Nevada?", "Capital of New Hampshire?", "Capital of New Jersey?", "Capital of New Mexico?", "Capital of New York?", "Capital of North Carolina?", "Capital of North Dakota?", "Capital of Ohio?", "Capital of Oklahoma?", "Capital of Oregon?", "Capital of Pennsylvania?", "Capital of Rhode Island?", "Capital of South Carolina?", "Capital of South Dakota?", "Capital of Tennessee?", "Capital of Texas?", "Capital of Utah?", "Capital of Vermont?", "Capital of Virginia?", "Capital of Washington?", "Capital of West Virginia?", "Capital of Wisconsin?", "Capital of Wyoming?" ],
+        answers: ["Montgomery", "Juneau", "Phoenix", "Little Rock", "Sacramento", "Denver", "Hartford", "Dover", "Tallahassee", "Atlanta", "Honolulu", "Boise", "Springfield", "Indianapolis", "Des Moines", "Topeka", "Frankfort", "Baton Rouge", "Augusta", "Annapolis", "Boston", "Lansing", "St. Paul", "Jackson", "Jefferson City", "Helena", "Lincoln", "Carson City", "Concord", "Trenton", "Santa Fe", "Albany", "Raleigh", "Bismarck", "Columbus", "Oklahoma City", "Salem", "Harrisburg", "Providence", "Columbia", "Pierre", "Nashville", "Austin", "Salt Lake City", "Montpelier", "Richmond", "Olympia", "Charleston", "Madison", "Cheyenne"]
+    });
+
+    newGame.save().then((game) => res.send(game));
+})
+
+router.get("/get_game_by_url", (req, res) => {
+    Game.findOne({ url: req.query.url }).then((game) => {
+        res.send(game);
+    })
+    .catch((error) => {
+        res.send({ error: "Game not found" });
+    });
+});
+
 
 // router.get("/activeUsers", (req, res) => {
 //     res.send({ activeUsers: socketManager.getAllConnectedUsers() });

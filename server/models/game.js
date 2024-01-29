@@ -10,3 +10,5 @@ const GameSchema = new mongoose.Schema({
     questions: [String],
     answers: [String],
 });
+
+module.exports = mongoose.model("game", GameSchema);

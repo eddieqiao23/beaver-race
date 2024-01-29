@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
+import { useParams } from "react-router-dom";
 
 import "../../utilities.css";
 import "./Home.css";
@@ -16,30 +18,36 @@ import { get, post } from "../../utilities";
 
 import Leaderboard from "../modules/Leaderboard.js";
 
-export const getRandomProblem = () => {
-    let sign = Math.floor(Math.random() * 2); // 0 = +, *, 1 = -, /
-    let num1 = 0;
-    let num2 = 0;
-    if (sign === 0) {
-        num1 = Math.floor(Math.random() * 98) + 2;
-        num2 = Math.floor(Math.random() * 98) + 2;
-    } else {
-        num1 = Math.floor(Math.random() * 10) + 2;
-        num2 = Math.floor(Math.random() * 98) + 2;
+export const getRandomProblem = (game) => {
+    if (game.title === "Math") {
+        let sign = Math.floor(Math.random() * 2); // 0 = +, *, 1 = -, /
+        let num1 = 0;
+        let num2 = 0;
+        if (sign === 0) {
+            num1 = Math.floor(Math.random() * 98) + 2;
+            num2 = Math.floor(Math.random() * 98) + 2;
+        } else {
+            num1 = Math.floor(Math.random() * 10) + 2;
+            num2 = Math.floor(Math.random() * 98) + 2;
+        }
+    
+        if (sign === 0) {
+            if (Math.floor(Math.random() * 2) === 0) {
+                return { question: `${num1} + ${num2}`, answer: `${num1 + num2}` };
+            } else {
+                return { question: `${num1 + num2} - ${num1}`, answer: `${num2}` };
+            }
+        } else {
+            if (Math.floor(Math.random() * 2) === 0) {
+                return { question: `${num1} x ${num2}`, answer: `${num1 * num2}` };
+            } else {
+                return { question: `${num1 * num2} ÷ ${num1}`, answer: `${num2}` };
+            }
+        }    
     }
-
-    if (sign === 0) {
-        if (Math.floor(Math.random() * 2) === 0) {
-            return { question: `${num1} + ${num2}`, answer: `${num1 + num2}` };
-        } else {
-            return { question: `${num1 + num2} - ${num1}`, answer: `${num2}` };
-        }
-    } else {
-        if (Math.floor(Math.random() * 2) === 0) {
-            return { question: `${num1} x ${num2}`, answer: `${num1 * num2}` };
-        } else {
-            return { question: `${num1 * num2} ÷ ${num1}`, answer: `${num2}` };
-        }
+    else {
+        let index = Math.floor(Math.random() * game.questions.length);
+        return { question: game.questions[index], answer: game.answers[index] };
     }
 };
 
@@ -51,11 +59,29 @@ const Home = (props) => {
     const [signInPrompt, setSignInPrompt] = useState(false);
     const [roundCode, setGameCode] = useState("");
     const [roundID, setRoundID] = useState("");
+    const [game, setGame] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
     // const [updateLeaderboard, setUpdateLeaderboard] = useState(false);
 
     let userId = props.userId;
 
     const navigate = useNavigate();
+
+    let game_url = useParams().game_url;
+    useEffect(() => {
+        if (game_url === undefined) {
+            const newGame = {title: "Math", url: "zetamac"};
+            setGame(newGame);
+            setIsLoading(false);
+        }
+        else {
+            get(`/api/get_game_by_url`, { url: game_url }).then((game) => {
+                setGame(game);
+                console.log(game);
+                setIsLoading(false);
+            });
+        }
+    }, []);
 
     useEffect(() => {
         if (userId) {
@@ -148,7 +174,7 @@ const Home = (props) => {
         let questions = [];
         let answers = [];
         for (let i = 0; i < 20; i++) {
-            let newQuestion = getRandomProblem();
+            let newQuestion = getRandomProblem(game);
             questions.push(newQuestion.question);
             answers.push(newQuestion.answer);
         }
@@ -170,15 +196,18 @@ const Home = (props) => {
             // post("/api/initsocket", { socketid: socket.id });
             const shortenedRoundID = createdRoundID.slice(-6).toUpperCase();
             // navigate(`/race?id=${createdRoundID}`);
-            navigate(`/race?id=${shortenedRoundID}`);
+            navigate(`/race/${game.url}/?id=${shortenedRoundID}`);
         } catch (error) {
             console.log(error);
             console.log("error creating problem set or round :(");
         }
     };
 
+
     return (
         <>
+            { isLoading ? null : 
+            <>
             {showSuccess && (
                 <div className="Home-fade-div Home-username-text">
                     {" "}
@@ -232,7 +261,7 @@ const Home = (props) => {
                 </div>
                 <div className="Home-main-rounded-div Home-multiplayer-random">
                     <div className="Home-headline-text">
-                        Beaver Racer - The MIT Mathing Competition
+                        Beaver Racer - The { game.title } Competition
                     </div>
                     <div className="Home-subheadline-text">
                         Increase your mathing speed while racing against other beavers!
@@ -249,11 +278,9 @@ const Home = (props) => {
                 </div>
                 <div className="Home-two-divs">
                     <div className="Home-main-rounded-div Home-individual">
-                        <div className="Home-headline-text">Mathing Test</div>
-                        <div className="Home-subheadline-text">
-                            Practice your mathing skills on your own!
-                        </div>
-                        <Link to="/indiv">
+                        <div className="Home-headline-text">{ game.title } Test</div>
+                        <div className="Home-subheadline-text"> Practice your { game.title } skills on your own! </div>
+                        <Link to={`/indiv/${game.url}`}>
                             <button className="u-pointer Home-button Home-practice-yourself-button">
                                 Individual Practice
                             </button>
@@ -313,6 +340,8 @@ const Home = (props) => {
                     <Leaderboard userId={userId} current_username={current_username} />
                 </div>
             </div>
+            </>
+            }
         </>
     );
 };
