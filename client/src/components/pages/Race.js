@@ -17,7 +17,7 @@ import "./Race.css";
 import Leaderboard from "../modules/Leaderboard.js";
 
 const TOTAL_QUESTIONS = 10;
-const round_time = 120
+const round_time = 120;
 
 const getRandomProblem = () => {
     let sign = Math.floor(Math.random() * 2); // 0 = +, *, 1 = -, /
@@ -60,7 +60,7 @@ const Race = (props) => {
     const isHostRef = useRef(isHost);
     const [raceStarted, setRaceStarted] = useState(false);
     const raceStartedRef = useRef(raceStarted);
-    const [gameFinished, setGameFinished] = useState(false);
+    const [roundFinished, setGameFinished] = useState(false);
     const [placements, setPlacements] = useState(0);
     const [emittedPlacing, setEmittedPlacing] = useState(false);
     const emittedPlacingRef = useRef(emittedPlacing);
@@ -89,34 +89,40 @@ const Race = (props) => {
     const newShortenedRoundIDRef = useRef(newShortenedRoundID);
 
     let userId = props.userId;
+    console.log(userId);
     console.log(useLocation());
+
     if (!userId) {
-        userId = useLocation().state.userId;
+        try {
+            userId = useLocation().state.userId;
+        }
+        catch {
+            navigate("/");
+        }
     }
 
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
-    // const gameID = searchParams.get("id");
+    // const roundID = searchParams.get("id");
     const shortenedGameID = searchParams.get("id");
-    const [gameID, setGameID] = useState(null);
-    const gameIDRef = useRef(gameID);
+    const [roundID, setGameID] = useState(null);
+    const roundIDRef = useRef(roundID);
 
     const fetchGameID = async () => {
-      console.log("RUNNING NOW")
-      await get(`/api/get_round_by_shortID`, { shortID: shortenedGameID })
-        .then(res => {
-          if (res.error) {
-            console.error('Error: bad game ID');
-            navigate("/")
-          } else {
-            setGameID(res);
-            gameIDRef.current = res;
-          }
+        console.log("RUNNING NOW");
+        await get(`/api/get_round_by_shortID`, { shortID: shortenedGameID }).then((res) => {
+            if (res.error) {
+                console.error("Error: bad round ID");
+                navigate("/");
+            } else {
+                setGameID(res);
+                roundIDRef.current = res;
+            }
         });
     };
 
     const getRoundInfo = async () => {
-        get("/api/get_round_by_id", { roundID: gameIDRef.current }).then((round) => {
+        get("/api/get_round_by_id", { roundID: roundIDRef.current }).then((round) => {
             console.log("This displays the round for ID " + round.problem_set_id);
             console.log("User ID: " + userId);
             console.log("Players: ");
@@ -138,18 +144,18 @@ const Race = (props) => {
     };
 
     useEffect(() => {
-      fetchGameID().then(() => {
-        if (gameIDRef.current) {
-          getRoundInfo()
-        }
-      });
+        fetchGameID().then(() => {
+            if (roundIDRef.current) {
+                getRoundInfo();
+            }
+        });
     }, []);
 
     useEffect(() => {
-    let intervalTimer;
+        let intervalTimer;
         if (raceStarted && !everyoneFinished) {
             intervalTimer = setInterval(() => {
-            setRoundTimer((roundTimer) => roundTimer - 0.01);
+                setRoundTimer((roundTimer) => roundTimer - 0.01);
             }, 10);
         }
 
@@ -160,42 +166,47 @@ const Race = (props) => {
             everyoneFinishedRef.current = true;
             setEveryoneFinished(true);
             setRoundTimer(0);
-            post("/api/delete_problem_set_by_id", { problem_set_id: gameIDRef.current });
-            post("/api/delete_round_by_id", { round_id: gameIDRef.current });
-            console.log("game finished");
-        }    
+            post("/api/delete_problem_set_by_id", { problem_set_id: roundIDRef.current });
+            post("/api/delete_round_by_id", { round_id: roundIDRef.current });
+            console.log("round finished");
+        }
 
         // Cleanup the interval on component unmount
         return () => clearInterval(intervalTimer);
     }, [roundTimer, raceStarted]);
 
-
     useEffect(() => {
-      console.log("CHECKING IF LOGGED IN AND GAME ID")
-      // console.log(loggedIn, gameIDRef.current)
-        if (loggedIn && gameIDRef.current) {
+        console.log("CHECKING IF LOGGED IN AND GAME ID");
+        // console.log(loggedIn, roundIDRef.current)
+        if (loggedIn && roundIDRef.current) {
             console.log("this is logged in");
             // Gets info about the user and joins the socket room
             get("/api/get_user_by_id", { userId: userId }).then((user) => {
                 let username = user.username;
-                socket.emit("joinGame", gameIDRef.current, username);
+                socket.emit("joinGame", roundIDRef.current, username);
                 // setFinishedJoinGame(true);
                 finishedJoinGameRef.current = true;
                 // setFinishedJoinGame(true);
                 console.log("JOIN GAME WAS EMITTED");
             });
-            // socket.emit("joinGame", gameIDRef.current);
+            // socket.emit("joinGame", roundIDRef.current);
 
             socket.on("update", (update) => {
                 // Data about the players, usernames, and scores
                 console.log(update);
-                // console.log(gameIDRef.current);
+                // console.log(roundIDRef.current);
                 if (finishedJoinGameRef.current) {
-                    if (update[gameIDRef.current]["new_game"] !== null) {
-                        newShortenedRoundIDRef.current = update[gameIDRef.current]["new_game"];
-                        hostMadeNewGameRef.current = true;
+                    let data;
+                    try {
+                        if (update[roundIDRef.current]["new_round"] !== null) {
+                            newShortenedRoundIDRef.current = update[roundIDRef.current]["new_round"];
+                            hostMadeNewGameRef.current = true;
+                        }
+                        data = update[roundIDRef.current]["players"];    
                     }
-                    let data = update[gameIDRef.current]["players"];
+                    catch {
+                        navigate("/");
+                    }
 
                     // Reads in the data from JSON format
                     let newPlayers = [];
@@ -203,7 +214,7 @@ const Race = (props) => {
                     let newUsernames = [];
                     // Format: key is player ID, value is placement (-1 if not finished)
                     let newPlacements = {};
-                    let finished = false; // Whether the game is over for this user
+                    let finished = false; // Whether the round is over for this user
                     // console.log(data);
                     for (let i = 0; i < data.length; i++) {
                         // Extract data from JSON
@@ -211,9 +222,10 @@ const Race = (props) => {
                         newScores.push(data[i]["score"]);
                         newUsernames.push(data[i]["username"]);
 
-                        if (!emittedPlacingRef.current) { // Checks if game is over
+                        if (!emittedPlacingRef.current) {
+                            // Checks if round is over
                             if (data[i]["id"] === userId && data[i]["score"] >= TOTAL_QUESTIONS) {
-                                socket.emit("finishGame", gameIDRef.current, userId);
+                                socket.emit("finishGame", roundIDRef.current, userId);
                                 finished = true;
                                 setGameFinished(true);
                                 setEmittedPlacing(true);
@@ -224,7 +236,7 @@ const Race = (props) => {
                     }
 
                     // Do some scuffed parsing to get the placements
-                    let placings_data = update[gameIDRef.current]["placings"];
+                    let placings_data = update[roundIDRef.current]["placings"];
                     for (let i = 0; i < placings_data.length; i++) {
                         newPlacements[placings_data[i]] = i + 1;
                     }
@@ -243,16 +255,15 @@ const Race = (props) => {
                     setScores(newScores);
                     setUsernames(newUsernames);
 
-                    // Time until start_time to calculate pre-game timer
-                    let timeUntil = new Date(update[gameIDRef.current]["start_time"]) - new Date();
-                    // If "Start Game" clicked but game hasn't started
+                    // Time until start_time to calculate pre-round timer
+                    let timeUntil = new Date(update[roundIDRef.current]["start_time"]) - new Date();
+                    // If "Start Game" clicked but round hasn't started
                     // preGameTimer = 0 means don't show the timer
-                    if (timeUntil > 0 && update[gameIDRef.current]["started"]) {
+                    if (timeUntil > 0 && update[roundIDRef.current]["started"]) {
                         setPreGameTimer(Math.floor(timeUntil / 1000) + 1);
-                        setPreGameTimerOpacity(Math.abs((timeUntil % 1000)-0.5)/1000)
-                        // console.log("updating pregame timer");
-                    } 
-                    else if (timeUntil <= 0 && update[gameIDRef.current]["started"]) {
+                        setPreGameTimerOpacity(Math.abs((timeUntil % 1000) - 0.5) / 1000);
+                        // console.log("updating preround timer");
+                    } else if (timeUntil <= 0 && update[roundIDRef.current]["started"]) {
                         setPreGameTimer(0);
                         setRaceStarted(true);
                         raceStartedRef.current = true;
@@ -264,16 +275,15 @@ const Race = (props) => {
 
             socket.on("alreadyInGame", () => {
                 // setShowGame(false);
-                navigate("/")
+                navigate("/");
             });
         }
 
         return () => {
             socket.off("update");
             socket.off("alreadyInGame");
-        }
-
-    }, [loggedIn, gameIDRef.current]);
+        };
+    }, [loggedIn, roundIDRef.current]);
 
     useEffect(() => {
         setLoggedIn(userId);
@@ -291,47 +301,55 @@ const Race = (props) => {
     //     loginModal = <div> Pleas`e Login First! </div>;
     // }
 
-    // After the game is over, update the user's past games
+    // After the round is over, update the user's past rounds
     useEffect(() => {
         const updatePastGames = async () => {
-            console.log(round_time, roundTimer, score)
+            console.log(round_time, roundTimer, score);
             setSpqScore(((round_time - roundTimer) / TOTAL_QUESTIONS).toFixed(2));
-            if (gameFinished && userId && notUpdatedGame && score > 0) {
-                await post(`/api/update_user_pastgames`, {
+            if (roundFinished && userId && notUpdatedGame && score > 0) {
+                await post(`/api/update_user_pastrounds`, {
                     userId: userId,
                     score: TOTAL_QUESTIONS,
                     time: round_time - roundTimer,
                 });
                 setNotUpdatedGame(false);
             }
-            if (gameFinished && !userId) {
+            if (roundFinished && !userId) {
                 setNotUpdatedGame(false);
             }
         };
 
         updatePastGames();
-    }, [gameFinished]);
+    }, [roundFinished]);
 
     const startGameButton = () => {
-      if (gameIDRef.current) {
-        socket.emit("startGame", gameIDRef.current);
-        setPreGameTimerStarted(true);
-        preGameTimerStartedRef.current = true;
-      }
-    }
+        if (roundIDRef.current) {
+            socket.emit("startGame", roundIDRef.current);
+            setPreGameTimerStarted(true);
+            preGameTimerStartedRef.current = true;
+        }
+    };
 
     useEffect(() => {
         const handleKeyDown = (event) => {
-          console.log(isHost, preGameTimer, preGameTimerStarted, raceStarted)
-            if (event.key === "Enter" && isHostRef.current && !raceStartedRef.current && !preGameTimerStartedRef.current && gameIDRef.current) {
-                socket.emit("startGame", gameIDRef.current);
+            console.log(isHost, preGameTimer, preGameTimerStarted, raceStarted);
+            if (
+                event.key === "Enter" &&
+                isHostRef.current &&
+                !raceStartedRef.current &&
+                !preGameTimerStartedRef.current &&
+                roundIDRef.current
+            ) {
+                socket.emit("startGame", roundIDRef.current);
                 setPreGameTimerStarted(true);
                 preGameTimerStartedRef.current = true;
             }
         };
         window.addEventListener("keydown", handleKeyDown);
 
-        return () => {window.removeEventListener("keydown", handleKeyDown);};
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
     }, []);
 
     useEffect(() => {
@@ -342,33 +360,42 @@ const Race = (props) => {
             }
         };
         window.addEventListener("keydown", handleKeyDown);
-        
-        return () => {window.removeEventListener("keydown", handleKeyDown);};
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
     }, []);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
             // console.log(isHost, preGameTimer, preGameTimerStarted, raceStarted)
-            if (event.key === "Enter" && hostMadeNewGameRef.current && !isHostRef.current && everyoneFinishedRef.current) {
-                playAgain();  
+            if (
+                event.key === "Enter" &&
+                hostMadeNewGameRef.current &&
+                !isHostRef.current &&
+                everyoneFinishedRef.current
+            ) {
+                playAgain();
             }
         };
         window.addEventListener("keydown", handleKeyDown);
-        
-        return () => {window.removeEventListener("keydown", handleKeyDown);};
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
     }, []);
 
     const getOrdinal = (n) => {
-      const s = ["th", "st", "nd", "rd"];
-      const v = n % 100;
-      return n + (s[(v - 20) % 10] || s[v] || s[0]) + " place";
-    }
+        const s = ["th", "st", "nd", "rd"];
+        const v = n % 100;
+        return n + (s[(v - 20) % 10] || s[v] || s[0]) + " place";
+    };
 
     const playAgain = async () => {
         // console.log("Play again stuff");
-        navigate(`../race?id=${newShortenedRoundIDRef.current}`, {state: {userId: userId}});
+        navigate(`../race?id=${newShortenedRoundIDRef.current}`, { state: { userId: userId } });
         navigate(0);
-    } 
+    };
 
     const makeNewRound = async () => {
         console.log("started...");
@@ -398,17 +425,17 @@ const Race = (props) => {
             const shortenedRoundID = createdRoundID.slice(-6).toUpperCase();
             newShortenedRoundIDRef.current = shortenedRoundID;
             // navigate(`/race?id=${createdRoundID}`);
-            socket.emit("newGame", gameIDRef.current, shortenedRoundID);
+            socket.emit("newGame", roundIDRef.current, shortenedRoundID);
             setHostMadeNewGame(true);
             console.log(shortenedRoundID);
             hostMadeNewGameRef.current = true;
-            navigate(`../race?id=${shortenedRoundID}`, {state: {userId: userId}});
+            navigate(`../race?id=${shortenedRoundID}`, { state: { userId: userId } });
             // navigate(`../race?id=${shortenedRoundID}`, { userId: userId, replace: true});
             navigate(0);
             // NavigationActions.push({ id: shortenedRoundID })
             // props.navigation.push('race', {
             //     id: shortenedRoundID,
-            //   }); 
+            //   });
             // const goToNewParam = () => {
             //   navigate(`/race/${shortenedRoundID}`);
             // };
@@ -421,89 +448,132 @@ const Race = (props) => {
 
     return (
         <>
-            {(loggedIn) ? (
+            {loggedIn ? (
                 <div className="Race-container">
                     <div className="Race-headline-text">
-                      {gameFinished ? (
-                        <div className="u-inlineBlock">Great job beaver!</div>
-                      ) : (
-                        <div className="u-inlineBlock">{preGameTimerStarted ? "Get to the logs asap!" : `Game Code: ${shortenedGameID}`}</div>
-                      )}
-                      <div className="u-inlineBlock">Remaining time: {roundTimer.toFixed(0)}</div>
+                        {roundFinished ? (
+                            <div className="u-inlineBlock">Great job beaver!</div>
+                        ) : (
+                            <div className="u-inlineBlock">
+                                {preGameTimerStarted
+                                    ? "Get to the logs asap!"
+                                    : `Game Code: ${shortenedGameID}`}
+                            </div>
+                        )}
+                        <div className="u-inlineBlock">Remaining time: {roundTimer.toFixed(0)}</div>
                     </div>
                     {showGame ? (
-                      <> 
                         <>
-                        <div className="Race-beaver-river">
-                          {players.map((player, index) => (
-                            <div className="Race-beaver-bar">
-                                <div style={{ marginLeft: `${scores[index] * 58}px` }}>
-                                    <img src={beaver_image} className="Race-beaver-image" />
-                                    <div className="Race-username">{usernames[index]}</div>
-                                </div>
-                                <div className="Race-log">
-                                    <img src={logs} className="Race-log-image" />
-                                    <div className="Race-position-text"> 
-                                      {placements[index] === -1 ? null : placements[index] === -1 ? null : getOrdinal(placements[index])}
-                                    </div>
-                                </div>
-                            </div>
-                            ))}
-                          </div>
-                          <>
-                            { (preGameTimer === 0 && !raceStarted && !preGameTimerStarted) ? 
                             <>
-                                { isHost ? <div> <button className="Race-start-button" onClick={startGameButton}>Press enter to start game!</button> </div> : 
-                                <div className="Race-waiting-for-host">Waiting for host to start game...</div>}
+                                <div className="Race-beaver-river">
+                                    {players.map((player, index) => (
+                                        <div className="Race-beaver-bar">
+                                            <div style={{ marginLeft: `${scores[index] * 58}px` }}>
+                                                <img
+                                                    src={beaver_image}
+                                                    className="Race-beaver-image"
+                                                />
+                                                <div className="Race-username">
+                                                    {usernames[index]}
+                                                </div>
+                                            </div>
+                                            <div className="Race-log">
+                                                <img src={logs} className="Race-log-image" />
+                                                <div className="Race-position-text">
+                                                    {placements[index] === -1
+                                                        ? null
+                                                        : placements[index] === -1
+                                                          ? null
+                                                          : getOrdinal(placements[index])}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <>
+                                    {preGameTimer === 0 && !raceStarted && !preGameTimerStarted ? (
+                                        <>
+                                            {isHost ? (
+                                                <div>
+                                                    {" "}
+                                                    <button
+                                                        className="Race-start-button"
+                                                        onClick={startGameButton}
+                                                    >
+                                                        Press enter to start round!
+                                                    </button>{" "}
+                                                </div>
+                                            ) : (
+                                                <div className="Race-waiting-for-host">
+                                                    Waiting for host to start round...
+                                                </div>
+                                            )}
+                                        </>
+                                    ) : null}
+                                </>
+                                <>
+                                    {preGameTimer !== 0 ? (
+                                        <div
+                                            className="Race-preround-timer"
+                                            style={{ opacity: preGameTimerOpacity }}
+                                        >
+                                            {preGameTimer}
+                                        </div>
+                                    ) : null}
+                                </>
+                                {!roundFinished && (
+                                    <MultiQuestion
+                                        roundID={roundIDRef.current}
+                                        userID={userId}
+                                        score={score}
+                                        setScore={setScore}
+                                        setIsHost={setIsHost}
+                                        raceStarted={raceStarted}
+                                        doneLoading={doneLoading}
+                                        questions={questions}
+                                        answers={answers}
+                                    />
+                                )}
+                                {roundFinished ? (
+                                    <>
+                                        <div className="Race-finished-container">
+                                            <div className="Race-your-score">
+                                                Score: {spqScore} spq
+                                            </div>
+                                            {everyoneFinished && isHost ? (
+                                                <button
+                                                    className="u-pointer Race-play-again-button"
+                                                    onClick={makeNewRound}
+                                                >
+                                                    Press enter to create a new round!
+                                                </button>
+                                            ) : (
+                                                <div></div>
+                                            )}
+                                            {everyoneFinished &&
+                                            !isHostRef.current &&
+                                            hostMadeNewGameRef.current ? (
+                                                <button
+                                                    className="u-pointer Race-play-again-button"
+                                                    onClick={playAgain}
+                                                >
+                                                    Press enter to join new round!
+                                                </button>
+                                            ) : (
+                                                <div></div>
+                                            )}
+                                        </div>
+                                        <div className="Race-leaderboard">
+                                            <Leaderboard userId={userId} />
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div></div>
+                                )}
                             </>
-                            : null }
-                          </>
-                          <>
-                            { preGameTimer !== 0 ? <div className="Race-pregame-timer" style={{ opacity: preGameTimerOpacity }}>{ preGameTimer }</div> : null }
-                          </>
-                          {!gameFinished && <MultiQuestion
-                              gameID={gameIDRef.current}
-                              userID={userId}
-                              score={score}
-                              setScore={setScore}
-                              setIsHost={setIsHost}
-                              raceStarted={raceStarted}
-                              doneLoading={doneLoading}
-                              questions={questions}
-                              answers={answers}
-                          />}
-                          {gameFinished ? (
-                            <>
-                              <div className="Race-finished-container">
-                                <div className="Race-your-score">
-                                  Score: {spqScore} spq
-                                </div>
-                                {(everyoneFinished && isHost) ? (
-                                  <button
-                                  className="u-pointer Race-play-again-button"
-                                    onClick={ makeNewRound }
-                                    >
-                                      Press enter to create a new game!
-                                  </button>
-                                ) : (<div></div>)}  
-                                {(everyoneFinished && !isHostRef.current && hostMadeNewGameRef.current) ? (
-                                  <button
-                                  className="u-pointer Race-play-again-button"
-                                    onClick={ playAgain }
-                                    >
-                                      Press enter to join new game!
-                                  </button>
-                                ) : (<div></div>)}  
-                                </div>
-                                <div className="Race-leaderboard">
-                                  <Leaderboard userId={userId}/>
-                                </div>
-                            </>
-                          ) : (<div></div>)}  
-                          </>
                         </>
                     ) : (
-                        <div> You already joined this game! Please only join on one tab. </div>
+                        <div> You already joined this round! Please only join on one tab. </div>
                     )}
                 </div>
             ) : (
@@ -511,7 +581,6 @@ const Race = (props) => {
             )}
         </>
     );
-
 
     // return (
     //     <div className="Race-container">

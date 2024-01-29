@@ -49,7 +49,7 @@ const Home = (props) => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showFailure, setShowFailure] = useState(false);
     const [signInPrompt, setSignInPrompt] = useState(false);
-    const [gameCode, setGameCode] = useState("");
+    const [roundCode, setGameCode] = useState("");
     const [roundID, setRoundID] = useState("");
     // const [updateLeaderboard, setUpdateLeaderboard] = useState(false);
 
@@ -66,7 +66,7 @@ const Home = (props) => {
     }, [userId]);
 
     const tryGameCode = () => {
-        navigate(`/race?id=${gameCode}`);
+        navigate(`/race?id=${roundCode}`);
         setGameCode("");
     };
 
@@ -97,30 +97,44 @@ const Home = (props) => {
     };
 
     useEffect(() => {
-        const konamiCodeSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a', 'Enter'];
+        const konamiCodeSequence = [
+            "ArrowUp",
+            "ArrowUp",
+            "ArrowDown",
+            "ArrowDown",
+            "ArrowLeft",
+            "ArrowRight",
+            "ArrowLeft",
+            "ArrowRight",
+            "b",
+            "a",
+            "Enter",
+        ];
         let currentInput = [];
 
         const handleKeyDown = (event) => {
-        currentInput.push(event.key);
+            currentInput.push(event.key);
 
-        // Ensure the length of current input does not exceed the Konami Code length
-        currentInput = currentInput.slice(-konamiCodeSequence.length);
+            // Ensure the length of current input does not exceed the Konami Code length
+            currentInput = currentInput.slice(-konamiCodeSequence.length);
 
-        if (JSON.stringify(currentInput) === JSON.stringify(konamiCodeSequence)) {
-            
-            // Change CSS variable when Konami Code is entered
-            if (getComputedStyle(document.documentElement).getPropertyValue("--secondary") == '#a688fa') {
-                document.documentElement.style.setProperty('--secondary', '#FF8C00');
-            } else {
-                document.documentElement.style.setProperty('--secondary', '#a688fa');
+            if (JSON.stringify(currentInput) === JSON.stringify(konamiCodeSequence)) {
+                // Change CSS variable when Konami Code is entered
+                if (
+                    getComputedStyle(document.documentElement).getPropertyValue("--secondary") ==
+                    "#a688fa"
+                ) {
+                    document.documentElement.style.setProperty("--secondary", "#FF8C00");
+                } else {
+                    document.documentElement.style.setProperty("--secondary", "#a688fa");
+                }
             }
-        }
         };
 
-        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener("keydown", handleKeyDown);
 
         return () => {
-        window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener("keydown", handleKeyDown);
         };
     }, []);
 
@@ -128,7 +142,6 @@ const Home = (props) => {
     //     setUpdateLeaderboard(true);
     //     setUpdateLeaderboard(false);
     // }, [current_username]);
-
 
     const createMultiplayerRound = async () => {
         console.log("started...");
@@ -209,8 +222,10 @@ const Home = (props) => {
                             ></input>
                         </>
                     ) : (
-                        <div className="u-inlineBlock Home-subheadline-text"
-                        onClick={showSignInPrompt}>
+                        <div
+                            className="u-inlineBlock Home-subheadline-text"
+                            onClick={showSignInPrompt}
+                        >
                             Sign in to change your username and view your stats!
                         </div>
                     )}
@@ -251,28 +266,28 @@ const Home = (props) => {
                             Create or join a river and race your beaver friends!
                         </div>
                         {/* <Link to={`/race/${roundID}`}> */}
-                        {userId ?(
+                        {userId ? (
                             <>
-                                {gameCode ? (
+                                {roundCode ? (
                                     <button
                                         className="u-pointer Home-button Home-create-party-button"
                                         onClick={tryGameCode}
-                                        >
-                                            Join Party
+                                    >
+                                        Join Party
                                     </button>
                                 ) : (
                                     <button
                                         className="u-pointer Home-button Home-create-party-button"
                                         onClick={createMultiplayerRound}
-                                        >
-                                            Create Party
+                                    >
+                                        Create Party
                                     </button>
                                 )}
                                 <input
-                                    className="u-inlineBlock Home-game-code Home-white-placeholder"
+                                    className="u-inlineBlock Home-round-code Home-white-placeholder"
                                     placeholder="Enter Code"
                                     type="text"
-                                    value={gameCode}
+                                    value={roundCode}
                                     onChange={(e) => setGameCode(e.target.value)}
                                     onKeyDown={(e) => {
                                         if (e.key === "Enter") {
@@ -283,7 +298,8 @@ const Home = (props) => {
                                 ></input>
                             </>
                         ) : (
-                            <button className="u-pointer Home-party-sign-in"
+                            <button
+                                className="u-pointer Home-party-sign-in"
                                 onClick={showSignInPrompt}
                             >
                                 Sign in to create or join party!

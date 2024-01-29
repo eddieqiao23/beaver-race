@@ -13,6 +13,7 @@ const express = require("express");
 const User = require("./models/user");
 const Round = require("./models/round");
 const ProblemSet = require("./models/problem_set");
+const Game = require("./models/game");
 
 // import authentication library
 const auth = require("./auth");
@@ -59,20 +60,20 @@ router.post("/updateusername", (req, res) => {
     }
 });
 
-router.post("/update_user_pastgames", (req, res) => {
+router.post("/update_user_pastrounds", (req, res) => {
     const { userId, score, time } = req.body;
-    const gameResult = time / score;
-    if (gameResult > 0.1) {
+    const roundResult = time / score;
+    if (roundResult > 0.1) {
         User.findByIdAndUpdate(
             userId,
-            { $push: { pastGames: gameResult } },
+            { $push: { pastGames: roundResult } },
             { new: true },
             (err, user) => {
                 if (err || !user) {
                     res.send({ success: false });
                 } else {
                     res.send({ success: true });
-                    console.log("updated past games with score", { gameResult });
+                    console.log("updated past rounds with score", { roundResult });
                 }
             }
         );
@@ -103,9 +104,13 @@ router.get("/get_top_users", (req, res) => {
             // Default to sorting by average
             usersWithScore = users.map((user) => {
                 const totalScore =
-                    user.pastGames.length === 0 ? 999 : user.pastGames.slice(-5).reduce((a, b) => a + b, 0);
+                    user.pastGames.length === 0
+                        ? 999
+                        : user.pastGames.slice(-5).reduce((a, b) => a + b, 0);
                 const averageScore =
-                    user.pastGames.length === 0 ? 999 : totalScore / user.pastGames.slice(-5).length;
+                    user.pastGames.length === 0
+                        ? 999
+                        : totalScore / user.pastGames.slice(-5).length;
                 return { ...user._doc, averageScore };
             });
             usersWithScore.sort((a, b) => a.averageScore - b.averageScore);
@@ -157,12 +162,14 @@ router.get("/get_round_by_id", (req, res) => {
 router.get("/get_round_by_shortID", (req, res) => {
     // find round by shortID
     const shortID = req.query.shortID;
-    console.log(shortID)
+    console.log(shortID);
     Round.find({}).then((rounds) => {
-        const matchingRounds = rounds.filter(round => round._id.toString().toUpperCase().endsWith(shortID.toUpperCase()));
+        const matchingRounds = rounds.filter((round) =>
+            round._id.toString().toUpperCase().endsWith(shortID.toUpperCase())
+        );
         console.log("matching rounds", matchingRounds);
         if (!matchingRounds || matchingRounds.length === 0) {
-            return res.send({ error : "no matching rounds" });
+            return res.send({ error: "no matching rounds" });
         } else {
             return res.send(matchingRounds[0]._id); // return the first match
         }
@@ -200,6 +207,7 @@ router.post("/delete_round_by_id", (req, res) => {
         }
     });
 });
+
 
 // router.get("/activeUsers", (req, res) => {
 //     res.send({ activeUsers: socketManager.getAllConnectedUsers() });

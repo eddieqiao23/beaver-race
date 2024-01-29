@@ -18,9 +18,9 @@ const fillRectangle = (context, x, y, width, height, color) => {
     context.fillRect(x, y, width, height);
 };
 
-export const drawCanvas = (drawState, canvasRef, gameID) => {
-    canvas = document.getElementById(`game-canvas-${gameID}`);
-    console.log("accessing canvas " + gameID);
+export const drawCanvas = (drawState, canvasRef, roundID) => {
+    canvas = document.getElementById(`round-canvas-${roundID}`);
+    console.log("accessing canvas " + roundID);
     if (!canvas) return;
     console.log("hii");
     const context = canvas.getContext("2d");
@@ -28,13 +28,13 @@ export const drawCanvas = (drawState, canvasRef, gameID) => {
 
     fillRectangle(context, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, primaryColor);
     fillRectangle(context, CANVAS_WIDTH * 0.9, 0, 45, CANVAS_WIDTH, highlightColor);
-    Object.values(drawState[gameID]["players"]).forEach((p) => {
+    Object.values(drawState[roundID]["players"]).forEach((p) => {
         // fillRectangle(context, p.score / 20 * 580 + 120, 120 + drawState.players.indexOf(p) * 80, 100, 40, "black");
         if (img.complete) {
             context.drawImage(
                 img,
                 (p.score / TOTAL_QUESTIONS) * CANVAS_WIDTH * 0.85 + CANVAS_WIDTH * 0.05,
-                CANVAS_HEIGHT * 0.1 + drawState[gameID]["players"].indexOf(p) * CANVAS_HEIGHT * 0.2,
+                CANVAS_HEIGHT * 0.1 + drawState[roundID]["players"].indexOf(p) * CANVAS_HEIGHT * 0.2,
                 BEAVER_WIDTH,
                 BEAVER_HEIGHT
             );

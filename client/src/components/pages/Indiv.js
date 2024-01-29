@@ -50,20 +50,20 @@ const Indiv = (props) => {
     const [roundTimer, setRoundTimer] = useState(ROUND_TIME);
     const [newProblemSetID, setNewProblemSetID] = useState("");
     const [newRoundID, setNewRoundID] = useState("");
-    const [gameStarted, setGameStarted] = useState(false);
-    const [gameFinished, setGameFinished] = useState(false);
+    const [roundStarted, setGameStarted] = useState(false);
+    const [roundFinished, setGameFinished] = useState(false);
     const [spqScore, setSpqScore] = useState(0);
     const [score, setScore] = useState(0);
     const [notUpdatedGame, setNotUpdatedGame] = useState(true);
     // const [updateLeaderboard, setUpdateLeaderboard] = useState(false);
     const [createdNewRound, setCreatedNewRound] = useState(false);
-    const gameFinishedRef = useRef(gameFinished);
+    const roundFinishedRef = useRef(roundFinished);
 
     // Timer for the round (120 sec)
     useEffect(() => {
         let intervalTimer;
         // Start when the race starts, end when it's finished
-        if (gameStarted && !gameFinished) { 
+        if (roundStarted && !roundFinished) {
             intervalTimer = setInterval(() => {
                 setRoundTimer((roundTimer) => roundTimer - 0.01);
             }, 10); // Update every 0.01 sec
@@ -71,11 +71,11 @@ const Indiv = (props) => {
 
         // Stop the timer if it reaches 0
         if (roundTimer <= 0) {
-            // Restart states when the game finishes
+            // Restart states when the round finishes
             clearInterval(intervalTimer);
             setGameFinished(true);
             setRoundTimer(0);
-            gameFinishedRef.current = true;
+            roundFinishedRef.current = true;
 
             // Clear from MongoDB
             post("/api/delete_problem_set_by_id", { problem_set_id: newProblemSetID });
@@ -84,17 +84,17 @@ const Indiv = (props) => {
 
         // Cleanup the interval on component unmount
         return () => clearInterval(intervalTimer);
-    }, [roundTimer, gameStarted]);
+    }, [roundTimer, roundStarted]);
 
-    // Check if the game is over
+    // Check if the round is over
     useEffect(() => {
         if (score === TOTAL_QUESTIONS) {
             setGameFinished(true);
-            gameFinishedRef.current = true;
+            roundFinishedRef.current = true;
         }
     }, [score]);
 
-    // Enter is how the game starts
+    // Enter is how the round starts
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.key === "Enter" && score === 0) {
@@ -134,12 +134,12 @@ const Indiv = (props) => {
         setRoundTimer(ROUND_TIME);
         setNotUpdatedGame(true);
         setCreatedNewRound(false);
-        gameFinishedRef.current = false;
+        roundFinishedRef.current = false;
     };
 
-    // Command + Enter to reset the game quickly
+    // Command + Enter to reset the round quickly
     useEffect(() => {
-        const handleKeyDown = (event) => {  
+        const handleKeyDown = (event) => {
             if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
                 resetRound();
                 setGameStarted(true);
@@ -154,10 +154,10 @@ const Indiv = (props) => {
         };
     }, []);
 
-    // Enter to reset the game
+    // Enter to reset the round
     useEffect(() => {
         const handleKeyDown = (event) => {
-            if (event.key === "Enter" && gameFinishedRef.current) {
+            if (event.key === "Enter" && roundFinishedRef.current) {
                 resetRound();
             }
         };
@@ -170,25 +170,25 @@ const Indiv = (props) => {
         };
     }, []);
 
-    // After the game is over, update the user's past games
+    // After the round is over, update the user's past rounds
     useEffect(() => {
         const updatePastGames = async () => {
             setSpqScore(((ROUND_TIME - roundTimer) / TOTAL_QUESTIONS).toFixed(2));
-            if (gameFinished && props.userId && notUpdatedGame && score > 0) {
-                await post(`/api/update_user_pastgames`, {
+            if (roundFinished && props.userId && notUpdatedGame && score > 0) {
+                await post(`/api/update_user_pastrounds`, {
                     userId: props.userId,
                     score: TOTAL_QUESTIONS,
                     time: ROUND_TIME - roundTimer,
                 });
                 setNotUpdatedGame(false);
             }
-            if (gameFinished && !props.userId || score === 0) {
+            if ((roundFinished && !props.userId) || score === 0) {
                 setNotUpdatedGame(false);
             }
         };
 
         updatePastGames();
-    }, [gameFinished]);
+    }, [roundFinished]);
 
     useEffect(() => {
         const createProblemSetAndRound = async () => {
@@ -239,14 +239,14 @@ const Indiv = (props) => {
 
     return (
         <div className="Indiv-container">
-            <div className="Indiv-game">
+            <div className="Indiv-round">
                 {newRoundID === "" ? (
                     <div></div>
                 ) : (
                     <div>
                         <div className="Indiv-roundTimer Indiv-headline-text">
                             <div className="u-inlineBlock">
-                                {!gameFinished ? "Get to the logs asap!" : "Great job beaver!"}
+                                {!roundFinished ? "Get to the logs asap!" : "Great job beaver!"}
                             </div>
                             <div className="u-inlineBlock">
                                 Remaining time: {roundTimer.toFixed(0)}
@@ -257,16 +257,18 @@ const Indiv = (props) => {
                                 <div style={{ marginLeft: `${score * 50}px` }}>
                                     <img src={beaver_image} className="Indiv-beaver-image" />
                                 </div>
-                                <div className={`${score === TOTAL_QUESTIONS ? "Indiv-highlighted-log" : "Indiv-log"}`}>
+                                <div
+                                    className={`${score === TOTAL_QUESTIONS ? "Indiv-highlighted-log" : "Indiv-log"}`}
+                                >
                                     <img src={logs} className="Indiv-log-image" />
                                 </div>
                             </div>
                         </div>
-                        {gameStarted && !gameFinished && (
+                        {roundStarted && !roundFinished && (
                             <Question roundID={newRoundID} score={score} setScore={setScore} />
                         )}
-                        {!gameStarted ? (
-                            <div className="Indiv-game-start-container">
+                        {!roundStarted ? (
+                            <div className="Indiv-round-start-container">
                                 <button
                                     className="u-pointer Indiv-start-play-button"
                                     onClick={() => {
@@ -282,21 +284,16 @@ const Indiv = (props) => {
                     </div>
                 )}
             </div>
-            {gameFinished ? (
+            {roundFinished ? (
                 <>
-                    <div className="Indiv-game-finished-container">
+                    <div className="Indiv-round-finished-container">
                         Score: {spqScore} spq
-                        <button
-                            className="u-pointer Indiv-play-again-button"
-                            onClick={resetRound}
-                        >
+                        <button className="u-pointer Indiv-play-again-button" onClick={resetRound}>
                             Press enter to play again!
                         </button>
                     </div>
                     <div className="Indiv-leaderboard">
-                        {!notUpdatedGame && (
-                            <Leaderboard userId={props.userId}/>
-                        )}
+                        {!notUpdatedGame && <Leaderboard userId={props.userId} />}
                     </div>
                 </>
             ) : (

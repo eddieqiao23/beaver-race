@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import NavBar from "./pages/NavBar.js";
 import Footer from "./pages/Footer.js";
@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound.js";
 import Home from "./pages/Home.js";
 import Race from "./pages/Race.js";
 import Indiv from "./pages/Indiv.js";
+import OtherGames from "./pages/OtherGames.js";
 
 import "../utilities.css";
 
@@ -71,6 +72,7 @@ const App = () => {
                 <Route path="/" element={<Home path="/" userId={userId} />} />
                 <Route path="/race" element={<Race path="/race" userId={userId} />} />
                 <Route path="/indiv" element={<Indiv path="/indiv" userId={userId} />} />
+                <Route path="/other_games" element={<OtherGames path="/indiv" userId={userId} />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
             {/* <Footer userId={userId} /> */}

@@ -20,7 +20,7 @@ const MultiQuestion = (props) => {
     let doneLoading = props.doneLoading;
 
     // const getRoundInfo = async () => {
-    //     get("/api/get_round_by_id", { roundID: props.gameID }).then((round) => {
+    //     get("/api/get_round_by_id", { roundID: props.roundID }).then((round) => {
     //         console.log("This displays the round for ID " + round.problem_set_id);
     //         console.log("User ID: " + props.userID);
     //         console.log("Players: ");
@@ -41,7 +41,7 @@ const MultiQuestion = (props) => {
     // };
 
     useEffect(() => {
-        const roundID = props.gameID;
+        const roundID = props.roundID;
         const userID = props.userID;
 
         // console.log("Round ID: " + roundID);

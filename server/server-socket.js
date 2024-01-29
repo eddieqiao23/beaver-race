@@ -16,16 +16,16 @@ const getGameFromSocketID = (socketid) => socketToGameMap[socketid];
 const getGameFromUserID = (userid) => userToGameMap[userid];
 const getUsernameFromUserID = (userid) => userToUsernameMap[userid];
 
-const sendGameState = (gameID) => {
-    // console.log("updates emitted to " + gameID);
-    // console.log(gameLogic.gameState);
-    io.to(gameID).emit("update", gameLogic.gameState);
+const sendGameState = (roundID) => {
+    // console.log("updates emitted to " + roundID);
+    // console.log(gameLogic.roundState);
+    io.to(roundID).emit("update", gameLogic.roundState);
 };
 
-const startRunningGame = (gameID) => {
+const startRunningGame = (roundID) => {
     let intervalId = setInterval(() => {
         gameLogic.updateGameState();
-        sendGameState(gameID);
+        sendGameState(roundID);
     }, 1000 / 20); // 1 fps right now
 
     // setTimeout(() => {
@@ -41,7 +41,7 @@ const addUser = (user, socket) => {
         delete socketToUserMap[oldSocket.id];
     }
 
-    // Initializes stuff for the game
+    // Initializes stuff for the round
     console.log("ADDING!! " + user._id + " and " + socket.id);
     userToSocketMap[user._id] = socket;
     socketToUserMap[socket.id] = user;
@@ -60,12 +60,12 @@ module.exports = {
 
         io.on("connection", (socket) => {
             console.log(`socket has connected ${socket.id}`);
-            let gameID = null;
-            console.log("this is the game ID: " + gameID);
+            let roundID = null;
+            console.log("this is the round ID: " + roundID);
             socket.on("joinGame", (newGameID, username) => {
-                console.log("new game: " + newGameID);
+                console.log("new round: " + newGameID);
                 console.log("socket: " + socket.id);
-                console.log("game to socket mapping");
+                console.log("round to socket mapping");
                 console.log(socketToGameMap);
                 // can access user immediately
                 let currGame = null;
@@ -80,7 +80,7 @@ module.exports = {
                     console.log(socketToUserMap);
                     const userID = getUserFromSocketID(socket.id)._id;
 
-                    gameID = newGameID;
+                    roundID = newGameID;
                     socket.join(newGameID);
                     socketToGameMap[socket.id] = newGameID;
                     userToGameMap[userID] = newGameID;
@@ -93,33 +93,33 @@ module.exports = {
                     gameLogic.spawnPlayer(userID, username, newGameID);
                     startRunningGame(newGameID);
                 } else {
-                    // gameLogic.gameInProgress();
-                    console.log("rip already in game");
+                    // gameLogic.roundInProgress();
+                    console.log("rip already in round");
                     socket.emit("alreadyInGame");
                     //
                 }
             });
-            socket.on("leaveGame", (gameID) => {
-                socket.leave(gameID);
+            socket.on("leaveGame", (roundID) => {
+                socket.leave(roundID);
                 // delete socketToGameMap[socket.id];
-                // removeUser(getUserFromSocketID(socket.id), socket, gameID);
+                // removeUser(getUserFromSocketID(socket.id), socket, roundID);
             });
-            socket.on("finishGame", (gameID, userID) => {
-                gameLogic.finishGame(gameID, userID);
+            socket.on("finishGame", (roundID, userID) => {
+                gameLogic.finishGame(roundID, userID);
             });
             socket.on("disconnect", (reason) => {
                 // const user = getUserFromSocketID(socket.id);
-                // removeUser(user, socket, gameID);
+                // removeUser(user, socket, roundID);
             });
             socket.on("move", () => {
                 const user = getUserFromSocketID(socket.id);
-                if (user) gameLogic.movePlayer(user._id, gameID);
+                if (user) gameLogic.movePlayer(user._id, roundID);
             });
-            socket.on("startGame", (gameID) => {
-                gameLogic.startGame(gameID);
+            socket.on("startGame", (roundID) => {
+                gameLogic.startGame(roundID);
             });
-            socket.on("newGame", (gameID, shortenedRoundID) => {
-                gameLogic.newGame(gameID, shortenedRoundID);
+            socket.on("newGame", (roundID, shortenedRoundID) => {
+                gameLogic.newGame(roundID, shortenedRoundID);
             });
         });
     },

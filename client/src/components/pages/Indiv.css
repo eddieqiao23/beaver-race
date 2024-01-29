@@ -33,7 +33,7 @@
     width: 720px;
 }
 
-.Indiv-game-finished-container {
+.Indiv-round-finished-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -74,7 +74,7 @@
     margin-top: 10px;
 }
 
-.Indiv-game-start-container {
+.Indiv-round-start-container {
     display: flex;
     flex-direction: column;
     align-items: center;

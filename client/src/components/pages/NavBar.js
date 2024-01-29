@@ -24,20 +24,10 @@ const NavBar = ({ userId, handleLogin, handleLogout }) => {
                     <div className="u-inlineBlock NavBar-align-top NavBar-title-race">Race</div>
                 </Link>
 
-                <a
-                    href="https://www.youtube.com/watch?v=xvFZjo5PgG0"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <button className="NavBar-button">individual race</button>
-                </a>
-                <a
-                    href="https://www.youtube.com/watch?v=xvFZjo5PgG0"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <button className="NavBar-button">multiplayer race</button>
-                </a>
+                <Link to="/other_rounds">
+                    <button className="NavBar-button">Play More Games!</button>
+                </Link>
+
                 <a
                     href="https://forms.gle/hhnryvakyackzM467"
                     target="_blank"
