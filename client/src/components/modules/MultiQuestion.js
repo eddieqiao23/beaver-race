@@ -6,49 +6,13 @@ import { move } from "../../client-socket";
 // Page that displays all elements of a multiplayer race
 const MultiQuestion = (props) => {
     const [currProblem, setCurrProblem] = useState(0);
-    // const [questions, setQuestions] = useState([]);
-    // const [answers, setAnswers] = useState([]);
-    // const [doneLoading, setDoneLoading] = useState(false);
     const inputRef = useRef();
 
     let score = props.score;
     let setScore = props.setScore;
-
     let questions = props.questions;
     let answers = props.answers;
-
     let doneLoading = props.doneLoading;
-
-    // const getRoundInfo = async () => {
-    //     get("/api/get_round_by_id", { roundID: props.roundID }).then((round) => {
-    //         console.log("This displays the round for ID " + round.problem_set_id);
-    //         console.log("User ID: " + props.userID);
-    //         console.log("Players: ");
-    //         console.log(round.players);
-    //         if (round.players[0] === props.userID) {
-    //             props.setIsHost(true);
-    //         }
-    //         get("/api/get_problem_set_by_id", { problemSetID: round.problem_set_id }).then(
-    //             (problemSet) => {
-    //                 console.log("This displays the problem set for ID " + problemSet._id);
-    //                 setQuestions(problemSet.questions);
-    //                 setAnswers(problemSet.answers);
-    //                 setDoneLoading(true);
-    //                 console.log(questions);
-    //             }
-    //         );
-    //     });
-    // };
-
-    useEffect(() => {
-        const roundID = props.roundID;
-        const userID = props.userID;
-
-        // console.log("Round ID: " + roundID);
-        // console.log("User ID: " + userID);
-
-        // getRoundInfo();
-    }, []);
 
     useEffect(() => {
         if (doneLoading && props.raceStarted) {
@@ -57,11 +21,11 @@ const MultiQuestion = (props) => {
     }, [doneLoading, props.raceStarted]);
 
     const handleInputChange = (event) => {
-        if (event.target.value === answers[score]) {
+        if (event.target.value === answers[score]) { // Checks if correct
             setTimeout(() => {
                 setScore(score + 1);
                 event.target.value = "";
-            }, 50);
+            }, 50); // 50 ms delay to make it smoother
             move();
         }
     };
@@ -95,8 +59,6 @@ const MultiQuestion = (props) => {
             )}
         </div>
     );
-
-    return <div>hi</div>;
 };
 
 export default MultiQuestion;

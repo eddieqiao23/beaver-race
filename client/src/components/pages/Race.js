@@ -2,9 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { socket } from "../../client-socket.js";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import Scoreboard from "../modules/Scoreboard.js";
-// import Timer from "../modules/Timer.js";
-// import Question from "../modules/Question.js";
 import MultiQuestion from "../modules/MultiQuestion.js";
 
 import beaver_image from "../../public/assets/beavers/beaver_picture.png";
@@ -12,7 +9,6 @@ import logs from "../../public/assets/beavers/logs.png";
 
 import { get, post } from "../../utilities";
 import "./Race.css";
-// import { drawCanvas } from "../../canvasManager";
 
 import Leaderboard from "../modules/Leaderboard.js";
 
@@ -45,6 +41,7 @@ const getRandomProblem = () => {
         }
     }
 };
+
 
 // Page that displays all elements of a multiplayer race
 const Race = (props) => {
@@ -175,27 +172,21 @@ const Race = (props) => {
         return () => clearInterval(intervalTimer);
     }, [roundTimer, raceStarted]);
 
+    // The one with literally everything
     useEffect(() => {
-        console.log("CHECKING IF LOGGED IN AND GAME ID");
-        // console.log(loggedIn, roundIDRef.current)
         if (loggedIn && roundIDRef.current) {
-            console.log("this is logged in");
-            // Gets info about the user and joins the socket room
+            // If logged in, emits socket message to log in
             get("/api/get_user_by_id", { userId: userId }).then((user) => {
                 let username = user.username;
                 socket.emit("joinGame", roundIDRef.current, username);
-                // setFinishedJoinGame(true);
                 finishedJoinGameRef.current = true;
-                // setFinishedJoinGame(true);
-                console.log("JOIN GAME WAS EMITTED");
             });
-            // socket.emit("joinGame", roundIDRef.current);
 
+            // Updates received from socket very often
             socket.on("update", (update) => {
                 // Data about the players, usernames, and scores
-                console.log(update);
-                // console.log(roundIDRef.current);
                 if (finishedJoinGameRef.current) {
+                    // Used to determine if the "Play Again" button was pressed
                     let data;
                     try {
                         if (update[roundIDRef.current]["new_round"] !== null) {
@@ -215,7 +206,8 @@ const Race = (props) => {
                     // Format: key is player ID, value is placement (-1 if not finished)
                     let newPlacements = {};
                     let finished = false; // Whether the round is over for this user
-                    // console.log(data);
+
+                    // Extracts information from the strange format of update
                     for (let i = 0; i < data.length; i++) {
                         // Extract data from JSON
                         newPlayers.push(data[i]["id"]);
@@ -279,6 +271,7 @@ const Race = (props) => {
             });
         }
 
+        // Cleanup the socket things on component unmount
         return () => {
             socket.off("update");
             socket.off("alreadyInGame");
@@ -287,19 +280,7 @@ const Race = (props) => {
 
     useEffect(() => {
         setLoggedIn(userId);
-        // console.log("CHECK HERE")
-        // console.log(userId)
     }, [userId]);
-
-    // useEffect(() => {
-    //     console.log(emittedPlacing)
-
-    // }, [emittedPlacing]);
-
-    // let loginModal = null;
-    // if (!userId) {
-    //     loginModal = <div> Pleas`e Login First! </div>;
-    // }
 
     // After the round is over, update the user's past rounds
     useEffect(() => {
@@ -322,6 +303,7 @@ const Race = (props) => {
         updatePastGames();
     }, [roundFinished]);
 
+    // Is run when the "Start Game" button is prepped
     const startGameButton = () => {
         if (roundIDRef.current) {
             socket.emit("startGame", roundIDRef.current);
@@ -330,9 +312,17 @@ const Race = (props) => {
         }
     };
 
+    // Runs once the page loads in
     useEffect(() => {
+        // Fetches information about the game
+        fetchGameID().then(() => {
+            if (roundIDRef.current) {
+                getRoundInfo();
+            }
+        });
+
         const handleKeyDown = (event) => {
-            console.log(isHost, preGameTimer, preGameTimerStarted, raceStarted);
+            // Enter for host to start game
             if (
                 event.key === "Enter" &&
                 isHostRef.current &&
@@ -344,31 +334,13 @@ const Race = (props) => {
                 setPreGameTimerStarted(true);
                 preGameTimerStartedRef.current = true;
             }
-        };
-        window.addEventListener("keydown", handleKeyDown);
 
-        return () => {
-            window.removeEventListener("keydown", handleKeyDown);
-        };
-    }, []);
-
-    useEffect(() => {
-        const handleKeyDown = (event) => {
-            // console.log(isHost, preGameTimer, preGameTimerStarted, raceStarted)
+            // Enter for host to create new game
             if (event.key === "Enter" && isHostRef.current && everyoneFinishedRef.current) {
                 makeNewRound();
             }
-        };
-        window.addEventListener("keydown", handleKeyDown);
 
-        return () => {
-            window.removeEventListener("keydown", handleKeyDown);
-        };
-    }, []);
-
-    useEffect(() => {
-        const handleKeyDown = (event) => {
-            // console.log(isHost, preGameTimer, preGameTimerStarted, raceStarted)
+            // Enter for non-host to join new game
             if (
                 event.key === "Enter" &&
                 hostMadeNewGameRef.current &&
@@ -385,18 +357,20 @@ const Race = (props) => {
         };
     }, []);
 
+    // For 1st, 2nd, 3rd, etc.
     const getOrdinal = (n) => {
         const s = ["th", "st", "nd", "rd"];
         const v = n % 100;
         return n + (s[(v - 20) % 10] || s[v] || s[0]) + " place";
     };
 
+    // When non-hosts press the "Play Again" button
     const playAgain = async () => {
-        // console.log("Play again stuff");
         navigate(`../race?id=${newShortenedRoundIDRef.current}`, { state: { userId: userId } });
         navigate(0);
     };
 
+    // When hosts create a new game
     const makeNewRound = async () => {
         console.log("started...");
         let questions = [];
@@ -419,27 +393,14 @@ const Race = (props) => {
                 problem_set_id: problemSetID,
             });
             const createdRoundID = newRoundRes._id;
-            // setRoundID(createdRoundID);
-            console.log("Round: " + createdRoundID);
-            // post("/api/initsocket", { socketid: socket.id });
             const shortenedRoundID = createdRoundID.slice(-6).toUpperCase();
             newShortenedRoundIDRef.current = shortenedRoundID;
-            // navigate(`/race?id=${createdRoundID}`);
             socket.emit("newGame", roundIDRef.current, shortenedRoundID);
             setHostMadeNewGame(true);
-            console.log(shortenedRoundID);
             hostMadeNewGameRef.current = true;
+
             navigate(`../race?id=${shortenedRoundID}`, { state: { userId: userId } });
-            // navigate(`../race?id=${shortenedRoundID}`, { userId: userId, replace: true});
             navigate(0);
-            // NavigationActions.push({ id: shortenedRoundID })
-            // props.navigation.push('race', {
-            //     id: shortenedRoundID,
-            //   });
-            // const goToNewParam = () => {
-            //   navigate(`/race/${shortenedRoundID}`);
-            // };
-            // goToNewParam();
         } catch (error) {
             console.log(error);
             console.log("error creating problem set or round :(");
@@ -462,8 +423,6 @@ const Race = (props) => {
                         )}
                         <div className="u-inlineBlock">Remaining time: {roundTimer.toFixed(0)}</div>
                     </div>
-                    {showGame ? (
-                        <>
                             <>
                                 <div className="Race-beaver-river">
                                     {players.map((player, index) => (
@@ -571,10 +530,6 @@ const Race = (props) => {
                                     <div></div>
                                 )}
                             </>
-                        </>
-                    ) : (
-                        <div> You already joined this round! Please only join on one tab. </div>
-                    )}
                 </div>
             ) : (
                 <div className="Race-container Race-login-prompt">Please login first!</div>
