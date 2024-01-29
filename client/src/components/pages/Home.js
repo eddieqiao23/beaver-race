@@ -92,7 +92,7 @@ const Home = (props) => {
     }, [userId]);
 
     const tryGameCode = () => {
-        navigate(`/race?id=${roundCode}`);
+        navigate(`/race/${game.url}/?id=${roundCode}`);
         setGameCode("");
     };
 
@@ -315,7 +315,7 @@ const Home = (props) => {
                                     placeholder="Enter Code"
                                     type="text"
                                     value={roundCode}
-                                    onChange={(e) => setGameCode(e.target.value)}
+                                    onChange={(e) => setGameCode(e.target.value.toUpperCase())}
                                     onKeyDown={(e) => {
                                         if (e.key === "Enter") {
                                             e.preventDefault(); // prevent form submission

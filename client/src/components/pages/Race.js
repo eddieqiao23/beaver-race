@@ -359,7 +359,7 @@ const Race = (props) => {
 
     // When non-hosts press the "Play Again" button
     const playAgain = async () => {
-        navigate(`../race?id=${newShortenedRoundIDRef.current}`, { state: { userId: userId } });
+        navigate(`../race/${game.url}/?id=${newShortenedRoundIDRef.current}`, { state: { userId: userId } });
         navigate(0);
     };
 
@@ -392,7 +392,7 @@ const Race = (props) => {
             setHostMadeNewGame(true);
             hostMadeNewGameRef.current = true;
 
-            navigate(`../race?id=${shortenedRoundID}`, { state: { userId: userId } });
+            navigate(`../race/${game.url}/?id=${shortenedRoundID}`, { state: { userId: userId } });
             navigate(0);
         } catch (error) {
             console.log(error);
