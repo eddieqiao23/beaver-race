@@ -13,7 +13,7 @@ import "./Race.css";
 import Leaderboard from "../modules/Leaderboard.js";
 import { getRandomProblem } from "./Home"
 
-const TOTAL_QUESTIONS = 2;
+const TOTAL_QUESTIONS = 10;
 const round_time = 120;
 
 // Page that displays all elements of a multiplayer race
@@ -59,15 +59,16 @@ const Race = (props) => {
     const newShortenedRoundIDRef = useRef(newShortenedRoundID);
 
     let userId = props.userId;
-    console.log(userId);
-    console.log(useLocation());
+    // console.log(userId);
+    // console.log(useLocation());
 
     if (!userId) {
         try {
             userId = useLocation().state.userId;
         }
         catch {
-            navigate("/");
+
+            // navigate("/");
         }
     }
 
@@ -79,7 +80,9 @@ const Race = (props) => {
     const roundIDRef = useRef(roundID);
 
     const [game, setGame] = useState({});
-    const { game_url } = useParams();
+    const [gameURL, setGameURL] = useState(null);
+    let gameRef = useRef(game);
+    // const { game_url } = useParams();
 
 
     const getRoundInfo = async () => {
@@ -92,6 +95,7 @@ const Race = (props) => {
                 setIsHost(true);
                 isHostRef.current = true;
             }
+            setGameURL(round.game_url);
             get("/api/get_problem_set_by_id", { problemSetID: round.problem_set_id }).then(
                 (problemSet) => {
                     console.log("This displays the problem set for ID " + problemSet._id);
@@ -123,23 +127,31 @@ const Race = (props) => {
                 getRoundInfo();
             }
         });
-
-        get("/api/get_game_by_url", { url: game_url })
-            .then((newGame) => {
-                setGame(newGame);
-                console.log(game);
-                console.log(newGame);
-            })
-            .catch((error) => {
-                console.error("Error fetching game:", error);
-                const newGame = {title: "Math", url: "zetamac"};
-                setGame(newGame);
-            });
-
-        console.log("Game: ");
-        console.log(game);
-        console.log("Round ID: " + roundIDRef.current);
     }, []);
+
+    useEffect(() => {
+        console.log(gameURL);
+        if (gameURL !== null) {
+            console.log(gameURL);
+            get("/api/get_game_by_url", { url: gameURL })
+                .then((newGame) => {
+                    setGame(newGame);
+                    gameRef.current = newGame;
+                    console.log(game);
+                    console.log(newGame);
+                })
+                .catch((error) => {
+                    console.error("Error fetching game:", error);
+                    const newGame = {title: "Math", url: "zetamac"};
+                    setGame(newGame);
+                    gameRef.current = newGame;
+                });
+
+            console.log("Game: ");
+            console.log(game);
+            console.log("Round ID: " + roundIDRef.current);
+        }
+    }, [gameURL]);
 
     useEffect(() => {
         let intervalTimer;
@@ -282,9 +294,10 @@ const Race = (props) => {
             setSpqScore(((round_time - roundTimer) / TOTAL_QUESTIONS).toFixed(2));
             if (roundFinished && userId && notUpdatedGame && score > 0) {
                 await post(`/api/update_user_pastrounds`, {
-                    userId: userId,
-                    score: TOTAL_QUESTIONS,
-                    time: round_time - roundTimer,
+                  userId: userId,
+                  score: TOTAL_QUESTIONS,
+                  time: round_time - roundTimer,
+                  gameTitle: game.title
                 });
                 setNotUpdatedGame(false);
             }
@@ -359,7 +372,7 @@ const Race = (props) => {
 
     // When non-hosts press the "Play Again" button
     const playAgain = async () => {
-        navigate(`../race/${game.url}/?id=${newShortenedRoundIDRef.current}`, { state: { userId: userId } });
+        navigate(`../race/?id=${newShortenedRoundIDRef.current}`, { state: { userId: userId } });
         navigate(0);
     };
 
@@ -369,7 +382,7 @@ const Race = (props) => {
         let questions = [];
         let answers = [];
         for (let i = 0; i < 20; i++) {
-            let newQuestion = getRandomProblem();
+            let newQuestion = getRandomProblem(gameRef.current);
             questions.push(newQuestion.question);
             answers.push(newQuestion.answer);
         }
@@ -384,6 +397,7 @@ const Race = (props) => {
 
             const newRoundRes = await post("/api/create_indiv_round", {
                 problem_set_id: problemSetID,
+                game_url: gameURL,
             });
             const createdRoundID = newRoundRes._id;
             const shortenedRoundID = createdRoundID.slice(-6).toUpperCase();
@@ -392,7 +406,7 @@ const Race = (props) => {
             setHostMadeNewGame(true);
             hostMadeNewGameRef.current = true;
 
-            navigate(`../race/${game.url}/?id=${shortenedRoundID}`, { state: { userId: userId } });
+            navigate(`../race/?id=${shortenedRoundID}`, { state: { userId: userId } });
             navigate(0);
         } catch (error) {
             console.log(error);
@@ -400,134 +414,125 @@ const Race = (props) => {
         }
     };
 
+
+    const [title, setTitle] = useState(null);
+    useEffect(() => {
+        setTitle(<div> {game.title} Race </div>);
+    }, [game])
     return (
-        <>
-            {loggedIn ? (
-                <div className="Race-container">
-                    <div className="Race-headline-text">
-                        {roundFinished ? (
-                            <div className="u-inlineBlock">Great job beaver!</div>
-                        ) : (
-                            <div className="u-inlineBlock">
-                                {preGameTimerStarted
-                                    ? "Get to the logs asap!"
-                                    : `Game Code: ${shortenedGameID}`}
-                            </div>
-                        )}
-                        <div className="u-inlineBlock">Remaining time: {roundTimer.toFixed(0)}</div>
-                    </div>
-                            <>
-                                <div className="Race-beaver-river">
-                                    {players.map((player, index) => (
-                                        <div className="Race-beaver-bar">
-                                            <div style={{ marginLeft: `${scores[index] * 58}px` }}>
-                                                <img
-                                                    src={beaver_image}
-                                                    className="Race-beaver-image"
-                                                />
-                                                <div className="Race-username">
-                                                    {usernames[index]}
-                                                </div>
-                                            </div>
-                                            <div className="Race-log">
-                                                <img src={logs} className="Race-log-image" />
-                                                <div className="Race-position-text">
-                                                    {placements[index] === -1
-                                                        ? null
-                                                        : placements[index] === -1
-                                                          ? null
-                                                          : getOrdinal(placements[index])}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                                <>
-                                    {preGameTimer === 0 && !raceStarted && !preGameTimerStarted ? (
-                                        <>
-                                            {isHost ? (
-                                                <div>
-                                                    {" "}
-                                                    <button
-                                                        className="Race-start-button"
-                                                        onClick={startGameButton}
-                                                    >
-                                                        Press enter to start round!
-                                                    </button>{" "}
-                                                </div>
-                                            ) : (
-                                                <div className="Race-waiting-for-host">
-                                                    Waiting for host to start round...
-                                                </div>
-                                            )}
-                                        </>
-                                    ) : null}
-                                </>
-                                <>
-                                    {preGameTimer !== 0 ? (
-                                        <div
-                                            className="Race-preround-timer"
-                                            style={{ opacity: preGameTimerOpacity }}
-                                        >
-                                            {preGameTimer}
-                                        </div>
-                                    ) : null}
-                                </>
-                                {!roundFinished && (
-                                    <MultiQuestion
-                                        roundID={roundIDRef.current}
-                                        userID={userId}
-                                        score={score}
-                                        setScore={setScore}
-                                        setIsHost={setIsHost}
-                                        raceStarted={raceStarted}
-                                        doneLoading={doneLoading}
-                                        questions={questions}
-                                        answers={answers}
-                                    />
-                                )}
-                                {roundFinished ? (
-                                    <>
-                                        <div className="Race-finished-container">
-                                            <div className="Race-your-score">
-                                                Score: {spqScore} spq
-                                            </div>
-                                            {everyoneFinished && isHost ? (
-                                                <button
-                                                    className="u-pointer Race-play-again-button"
-                                                    onClick={makeNewRound}
-                                                >
-                                                    Press enter to create a new round!
-                                                </button>
-                                            ) : (
-                                                <div></div>
-                                            )}
-                                            {everyoneFinished &&
-                                            !isHostRef.current &&
-                                            hostMadeNewGameRef.current ? (
-                                                <button
-                                                    className="u-pointer Race-play-again-button"
-                                                    onClick={playAgain}
-                                                >
-                                                    Press enter to join new round!
-                                                </button>
-                                            ) : (
-                                                <div></div>
-                                            )}
-                                        </div>
-                                        <div className="Race-leaderboard">
-                                            <Leaderboard userId={userId} />
-                                        </div>
-                                    </>
-                                ) : (
-                                    <div></div>
-                                )}
-                            </>
+      <>
+        {loggedIn ? (
+          <div className="Race-container">
+            <div className="Race-header">{title}</div>
+            <div className="Race-headline-text">
+              {roundFinished ? (
+                <div className="u-inlineBlock">Great job beaver!</div>
+              ) : (
+                <div className="u-inlineBlock">
+                  {!preGameTimerStarted ? `Game Code: ${shortenedGameID}` : null}
+                  {(!roundFinished && preGameTimerStarted) ? "Get to the logs asap!" : null}
+                  {roundFinished ? 
+                    <Link to={`/${game.url}`}>
+                        
+                        where to find game.url?
+
+                        Return to game page
+                    </Link> : null}
                 </div>
-            ) : (
-                <div className="Race-container Race-login-prompt">Please login first!</div>
-            )}
-        </>
+              )}
+              <div className="u-inlineBlock">Remaining time: {roundTimer.toFixed(0)}</div>
+            </div>
+            <>
+              <div className="Race-beaver-river">
+                {players.map((player, index) => (
+                  <div className="Race-beaver-bar">
+                    <div style={{ marginLeft: `${scores[index] * 58}px` }}>
+                      <img src={beaver_image} className="Race-beaver-image" />
+                      <div className="Race-username">{usernames[index]}</div>
+                    </div>
+                    <div className="Race-log">
+                      <img src={logs} className="Race-log-image" />
+                      <div className="Race-position-text">
+                        {placements[index] === -1
+                          ? null
+                          : placements[index] === -1
+                          ? null
+                          : getOrdinal(placements[index])}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <>
+                {preGameTimer === 0 && !raceStarted && !preGameTimerStarted ? (
+                  <>
+                    {isHost ? (
+                      <div>
+                        {" "}
+                        <button className="Race-start-button" onClick={startGameButton}>
+                          Press enter to start round!
+                        </button>{" "}
+                      </div>
+                    ) : (
+                      <div className="Race-waiting-for-host">
+                        Waiting for host to start round...
+                      </div>
+                    )}
+                  </>
+                ) : null}
+              </>
+              <>
+                {preGameTimer !== 0 ? (
+                  <div className="Race-preround-timer" style={{ opacity: preGameTimerOpacity }}>
+                    {preGameTimer}
+                  </div>
+                ) : null}
+              </>
+              {!roundFinished && (
+                <MultiQuestion
+                  roundID={roundIDRef.current}
+                  userID={userId}
+                  score={score}
+                  setScore={setScore}
+                  setIsHost={setIsHost}
+                  raceStarted={raceStarted}
+                  doneLoading={doneLoading}
+                  questions={questions}
+                  answers={answers}
+                />
+              )}
+              {roundFinished ? (
+                <>
+                  <div className="Race-finished-container">
+                    <div className="Race-your-score">Score: {spqScore} spq</div>
+                    {everyoneFinished && isHost ? (
+                      <button className="u-pointer Race-play-again-button" onClick={makeNewRound}>
+                        Press enter to create a new round!
+                      </button>
+                    ) : (
+                      <div></div>
+                    )}
+                    {everyoneFinished && !isHostRef.current && hostMadeNewGameRef.current ? (
+                      <button className="u-pointer Race-play-again-button" onClick={playAgain}>
+                        Press enter to join new round!
+                      </button>
+                    ) : (
+                      <div></div>
+                    )}
+                  </div>
+                  <div className="Race-leaderboard">
+                    <Leaderboard userId={userId} gameTitle={game.title} />
+                  </div>
+                </>
+              ) : (
+                <div></div>
+              )}
+            </>
+          </div>
+        ) : (
+          <div className="Race-container Race-login-prompt">Please login first!</div>
+        )}
+      </>
     );
 
     // return (

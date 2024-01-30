@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from 'react-router-dom';
+import { useParams, Link, useNavigate } from "react-router-dom";
 import Question from "../modules/Question.js";
 
 import beaver_image from "../../public/assets/beavers/beaver_picture.png";
@@ -14,7 +14,7 @@ import Leaderboard from "../modules/Leaderboard.js";
 
 import { getRandomProblem } from "./Home";
 
-const TOTAL_QUESTIONS = 10;
+const TOTAL_QUESTIONS = 2;
 const ROUND_TIME = 120;
 
 // Page that displays all elements of a multiplayer race
@@ -161,15 +161,17 @@ const Indiv = (props) => {
     useEffect(() => {
         const updatePastGames = async () => {
             setSpqScore(((ROUND_TIME - roundTimer) / TOTAL_QUESTIONS).toFixed(2));
+            console.log(roundFinished + " " + props.userId + " " + notUpdatedGame + " " + score);
             if (roundFinished && props.userId && notUpdatedGame && score > 0) {
                 await post(`/api/update_user_pastrounds`, {
                     userId: props.userId,
                     score: TOTAL_QUESTIONS,
                     time: ROUND_TIME - roundTimer,
+                    gameTitle: game.title
                 });
                 setNotUpdatedGame(false);
             }
-            if ((roundFinished && !props.userId) || score === 0) {
+            if ((roundFinished && !props.userId) || (roundFinished && score === 0)) {
                 setNotUpdatedGame(false);
             }
         };
@@ -233,7 +235,13 @@ const Indiv = (props) => {
                     <div>
                         <div className="Indiv-roundTimer Indiv-headline-text">
                             <div className="u-inlineBlock">
-                                {!roundFinished ? "Get to the logs asap!" : "Great job beaver!"}
+                                {!roundFinished ? "Get to the logs asap!" : 
+                                <Link to={`/${game.url}`}>
+                                    <div className="Indiv-return-page">
+                                        Return to game page
+                                    </div>
+                                </Link>
+                                }
                             </div>
                             <div className="u-inlineBlock">
                                 Remaining time: {roundTimer.toFixed(0)}
@@ -280,7 +288,7 @@ const Indiv = (props) => {
                         </button>
                     </div>
                     <div className="Indiv-leaderboard">
-                        {!notUpdatedGame && <Leaderboard userId={props.userId} />}
+                        {!notUpdatedGame && <Leaderboard userId={props.userId} gameTitle={game.title}/>}
                     </div>
                 </>
             ) : (

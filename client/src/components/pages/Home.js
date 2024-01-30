@@ -75,6 +75,7 @@ const Home = (props) => {
             setIsLoading(false);
         }
         else {
+            console.log(game_url);
             get(`/api/get_game_by_url`, { url: game_url }).then((game) => {
                 setGame(game);
                 console.log(game);
@@ -92,8 +93,12 @@ const Home = (props) => {
     }, [userId]);
 
     const tryGameCode = () => {
-        navigate(`/race/${game.url}/?id=${roundCode}`);
+      if (roundCode.length !== 6) {
         setGameCode("");
+        return;
+      }
+      navigate(`/race/?id=${roundCode}`);
+      setGameCode("");
     };
 
     const updateUsername = () => {
@@ -186,9 +191,10 @@ const Home = (props) => {
             });
             const problemSetID = problemSetRes._id;
             console.log("Problem Set: " + problemSetID);
-
+            console.log("Game: " + game.url);
             const newRoundRes = await post("/api/create_indiv_round", {
                 problem_set_id: problemSetID,
+                game_url: game.url,
             });
             const createdRoundID = newRoundRes._id;
             setRoundID(createdRoundID);
@@ -196,7 +202,7 @@ const Home = (props) => {
             // post("/api/initsocket", { socketid: socket.id });
             const shortenedRoundID = createdRoundID.slice(-6).toUpperCase();
             // navigate(`/race?id=${createdRoundID}`);
-            navigate(`/race/${game.url}/?id=${shortenedRoundID}`);
+            navigate(`/race/?id=${shortenedRoundID}`);
         } catch (error) {
             console.log(error);
             console.log("error creating problem set or round :(");
@@ -205,144 +211,140 @@ const Home = (props) => {
 
 
     return (
-        <>
-            { isLoading ? null : 
-            <>
+      <>
+        {isLoading ? null : (
+          <>
             {showSuccess && (
-                <div className="Home-fade-div Home-username-text">
-                    {" "}
-                    <img src={successful_beaver} className="Home-fade-image" />{" "}
-                    <div>Hi {new_username}!</div>
-                </div>
+              <div className="Home-fade-div Home-username-text">
+                {" "}
+                <img src={successful_beaver} className="Home-fade-image" />{" "}
+                <div>Hi {new_username}!</div>
+              </div>
             )}
             {signInPrompt && (
-                <div className="Home-fade-div Home-username-text">
-                    {" "}
-                    <img src={successful_beaver} className="Home-fade-image" />{" "}
-                    <div>Sign in on the top right!</div>
-                </div>
+              <div className="Home-fade-div Home-username-text">
+                {" "}
+                <img src={successful_beaver} className="Home-fade-image" />{" "}
+                <div>Sign in on the top right!</div>
+              </div>
             )}
             {showFailure && (
-                <div className="Home-fade-div Home-username-text">
-                    {" "}
-                    <img src={unsuccessful_beaver} className="Home-fade-image" />{" "}
-                    <div>{new_username} is not valid</div>
-                </div>
+              <div className="Home-fade-div Home-username-text">
+                {" "}
+                <img src={unsuccessful_beaver} className="Home-fade-image" />{" "}
+                <div>{new_username} is not valid</div>
+              </div>
             )}
             <div className="Home-container">
-                <div className="Home-main-rounded-div Home-sign-in">
-                    {userId ? (
-                        <>
-                            <div className="u-inlineBlock Home-subheadline-text Home-username-text">
-                                Welcome to Beaver Race, {current_username}!
-                            </div>
-                            <input
-                                className="u-inlineBlock Home-username-button Home-white-placeholder Home-align-right Home-subheadline-text"
-                                placeholder="Enter Username"
-                                type="text"
-                                value={new_username}
-                                onChange={(e) => setNewUsername(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter") {
-                                        e.preventDefault(); // prevent form submission
-                                        updateUsername();
-                                    }
-                                }}
-                            ></input>
-                        </>
-                    ) : (
-                        <div
-                            className="u-inlineBlock Home-subheadline-text"
-                            onClick={showSignInPrompt}
-                        >
-                            Sign in to change your username and view your stats!
-                        </div>
-                    )}
+              <div className="Home-main-rounded-div Home-sign-in">
+                {userId ? (
+                  <>
+                    <div className="u-inlineBlock Home-subheadline-text Home-username-text">
+                      Welcome to Beaver Race, {current_username}!
+                    </div>
+                    <input
+                      className="u-inlineBlock Home-username-button Home-white-placeholder Home-align-right Home-subheadline-text"
+                      placeholder="Enter Username"
+                      type="text"
+                      value={new_username}
+                      onChange={(e) => setNewUsername(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault(); // prevent form submission
+                          updateUsername();
+                        }
+                      }}
+                    ></input>
+                  </>
+                ) : (
+                  <div className="u-inlineBlock Home-subheadline-text" onClick={showSignInPrompt}>
+                    Sign in to change your username and view your stats!
+                  </div>
+                )}
+              </div>
+              <div className="Home-main-rounded-div Home-multiplayer-random">
+                <div className="Home-headline-text">
+                  Beaver Racer - The {game.title} Competition
                 </div>
-                <div className="Home-main-rounded-div Home-multiplayer-random">
-                    <div className="Home-headline-text">
-                        Beaver Racer - The { game.title } Competition
-                    </div>
-                    <div className="Home-subheadline-text">
-                        Increase your mathing speed while racing against other beavers!
-                    </div>
-                    {/* <Link to="/race"> */}
+                <div className="Home-subheadline-text">
+                  Increase your {game.title}ing speed while racing against other beavers!
+                </div>
+                {/* <Link to="/race"> */}
+
+                {userId ? (
                     <button
-                        className="u-pointer Home-button Home-mathing-race-button"
-                        onClick={createMultiplayerRound}
+                    className="u-pointer Home-button Home-mathing-race-button"
+                    onClick={createMultiplayerRound}
                     >
-                        Random Game
+                    Create Party
                     </button>
-                    {/* </Link> */}
-                    {/* <img src={beaver_image} className="Home-multiplayer-random-image" /> */}
+                ) : (
+                  <button className="u-pointer Home-party-sign-in" onClick={showSignInPrompt}>
+                    Sign in to create a party!
+                  </button>
+                )}
+
+                {/* </Link> */}
+                {/* <img src={beaver_image} className="Home-multiplayer-random-image" /> */}
+              </div>
+              <div className="Home-two-divs">
+                <div className="Home-main-rounded-div Home-individual">
+                  <div className="Home-headline-text">{game.title} Test</div>
+                  <div className="Home-subheadline-text">
+                    {" "}
+                    Practice your skills on your own!{" "}
+                  </div>
+                  <Link to={`/${game.url}/indiv`}>
+                    <button className="u-pointer Home-button Home-practice-yourself-button">
+                      Individual Practice
+                    </button>
+                  </Link>
+                  {/* <img src={lonely_beaver} className="Home-individual-image" /> */}
                 </div>
-                <div className="Home-two-divs">
-                    <div className="Home-main-rounded-div Home-individual">
-                        <div className="Home-headline-text">{ game.title } Test</div>
-                        <div className="Home-subheadline-text"> Practice your { game.title } skills on your own! </div>
-                        <Link to={`/indiv/${game.url}`}>
-                            <button className="u-pointer Home-button Home-practice-yourself-button">
-                                Individual Practice
-                            </button>
-                        </Link>
-                        {/* <img src={lonely_beaver} className="Home-individual-image" /> */}
-                    </div>
-                    <div className="Home-main-rounded-div Home-multiplayer-party">
-                        <div className="Home-headline-text">Race Your Friends</div>
-                        <div className="Home-subheadline-text">
-                            Create or join a river and race your beaver friends!
-                        </div>
-                        {/* <Link to={`/race/${roundID}`}> */}
-                        {userId ? (
-                            <>
-                                {roundCode ? (
-                                    <button
-                                        className="u-pointer Home-button Home-create-party-button"
-                                        onClick={tryGameCode}
-                                    >
-                                        Join Party
-                                    </button>
-                                ) : (
-                                    <button
-                                        className="u-pointer Home-button Home-create-party-button"
-                                        onClick={createMultiplayerRound}
-                                    >
-                                        Create Party
-                                    </button>
-                                )}
-                                <input
-                                    className="u-inlineBlock Home-round-code Home-white-placeholder"
-                                    placeholder="Enter Code"
-                                    type="text"
-                                    value={roundCode}
-                                    onChange={(e) => setGameCode(e.target.value.toUpperCase())}
-                                    onKeyDown={(e) => {
-                                        if (e.key === "Enter") {
-                                            e.preventDefault(); // prevent form submission
-                                            tryGameCode();
-                                        }
-                                    }}
-                                ></input>
-                            </>
-                        ) : (
-                            <button
-                                className="u-pointer Home-party-sign-in"
-                                onClick={showSignInPrompt}
-                            >
-                                Sign in to create or join party!
-                            </button>
-                        )}
-                        {/* </Link> */}
-                        {/* <img src={three_beavers} className="Home-multiplayer-party-image" /> */}
-                    </div>
+                <div className="Home-main-rounded-div Home-multiplayer-party">
+                  <div className="Home-headline-text">Race Your Friends</div>
+                  <div className="Home-subheadline-text">
+                    Join a river to race your beaver friends!
+                  </div>
+                  {/* <Link to={`/race/${roundID}`}> */}
+                  {userId ? (
+                    <>
+                      <button
+                            className="u-pointer Home-button Home-create-party-button"
+                            onClick={tryGameCode}
+                        >
+                            Join Party
+                        </button>
+                      <input
+                        className="u-inlineBlock Home-round-code Home-white-placeholder"
+                        placeholder="Enter Code"
+                        type="text"
+                        value={roundCode}
+                        onChange={(e) => setGameCode(e.target.value.toUpperCase())}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault(); // prevent form submission
+                            tryGameCode();
+                          }
+                        }}
+                      ></input>
+                    </>
+                  ) : (
+                    <button className="u-pointer Home-party-sign-in" onClick={showSignInPrompt}>
+                      Sign in to join a party!
+                    </button>
+                  )}
+                  {/* </Link> */}
+                  {/* <img src={three_beavers} className="Home-multiplayer-party-image" /> */}
                 </div>
-                <div className="Home-main-rounded-div Home-headline-text Home-leaderboard">
-                    <Leaderboard userId={userId} current_username={current_username} />
-                </div>
+              </div>
+              <div className="Home-main-rounded-div Home-headline-text Home-leaderboard">
+                { game.title && <Leaderboard userId={userId} current_username={current_username} gameTitle={game.title} /> }
+              </div>
             </div>
-            </>
-            }
-        </>
+          </>
+        )}
+      </>
     );
 };
 

@@ -20,6 +20,13 @@
     color: var(--white);
 }
 
+.Race-header {
+    margin-bottom: 20px;
+    font-size: 40px;
+    font-weight: bold;
+    color: var(--white);
+}
+
 /* .Race-headline-text {
     border-radius: 20px;
     background-color: var(--primary);

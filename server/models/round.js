@@ -8,6 +8,7 @@ const RoundSchema = new mongoose.Schema({
     multiplayer: Boolean,
     started: Boolean,
     public: Boolean,
+    game_url: String,
 });
 
 // compile model from schema

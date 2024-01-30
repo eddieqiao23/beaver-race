@@ -11,6 +11,7 @@ import Home from "./pages/Home.js";
 import Race from "./pages/Race.js";
 import Indiv from "./pages/Indiv.js";
 import OtherGames from "./pages/OtherGames.js";
+import CreateGame from "./pages/CreateGame.js";
 
 import "../utilities.css";
 
@@ -69,11 +70,12 @@ const App = () => {
         <>
             <NavBar handleLogin={handleLogin} handleLogout={handleLogout} userId={userId} />
             <Routes>
-                <Route path="/" element={<Home path="/" userId={userId} game="us-capitals"/>} />
-                <Route path="/race/:game_url" element={<Race path="/race" userId={userId} />} />
-                <Route path="/indiv/:game_url" element={<Indiv path="/indiv/:game_url" userId={userId} />} />
-                <Route path="/other_games" element={<OtherGames path="/other_games" userId={userId} />} />
-                <Route path="/:game_url" element={<Home path="/other_games/:game_url" userId={userId} />} />
+                <Route path="/" element={<OtherGames path="/" userId={userId} />} />
+                <Route path="/race" element={<Race path="/race" userId={userId} />} />
+                <Route path="/:game_url/indiv" element={<Indiv path="/:game_url/indiv" userId={userId} />} />
+                {/* <Route path="/other_games" element={<OtherGames path="/other_games" userId={userId} />} /> */}
+                <Route path="/:game_url" element={<Home path="/:game_url" userId={userId} />} />
+                <Route path="/create_game" element={<CreateGame path="/create_game" userId={userId} />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
             {/* <Footer userId={userId} /> */}

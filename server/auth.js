@@ -27,6 +27,7 @@ function getOrCreateUser(user) {
             name: user.name,
             googleid: user.sub,
             username: "Guest Beaver",
+            pastGames: {},
         });
 
         return newUser.save();

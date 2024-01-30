@@ -24,7 +24,7 @@ const NavBar = ({ userId, handleLogin, handleLogout }) => {
                     <div className="u-inlineBlock NavBar-align-top NavBar-title-race">Race</div>
                 </Link>
 
-                <Link to="/other_games">
+                <Link to="/">
                     <button className="NavBar-button">Play More Games!</button>
                 </Link>
 

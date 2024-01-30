@@ -27,22 +27,6 @@ const socketManager = require("./server-socket");
 const Filter = require("bad-words");
 const filter = new Filter();
 
-// router.get("/test", (req, res) => {
-//   const newRound = new Round({
-//     id: '2',
-//     creator: '2',
-//     players: ['3', '2'],
-//     problems: '3',
-//     player_scores: [1, 2],
-//     multiplayer: true,
-//     started: true,
-//     public: true,
-//   });
-//   newRound.save().then((round) => res.send(round));
-
-//   // return res.send({});
-// });
-
 router.post("/updateusername", (req, res) => {
     const { userId, username } = req.body;
     console.log(userId, username);
@@ -61,16 +45,20 @@ router.post("/updateusername", (req, res) => {
 });
 
 router.post("/update_user_pastrounds", (req, res) => {
-    const { userId, score, time } = req.body;
+    const { userId, score, time, gameTitle } = req.body;
     const roundResult = time / score;
     if (roundResult > 0.1) {
+        let update = {};
+        update["pastGames." + gameTitle] = roundResult;
+
         User.findByIdAndUpdate(
             userId,
-            { $push: { pastGames: roundResult } },
+            { $push: update },
             { new: true },
             (err, user) => {
                 if (err || !user) {
                     res.send({ success: false });
+                    console.log("error updating past rounds", { err });
                 } else {
                     res.send({ success: true });
                     console.log("updated past rounds with score", { roundResult });
@@ -91,29 +79,48 @@ router.get("/get_user_by_id", (req, res) => {
 });
 
 router.get("/get_top_users", (req, res) => {
+    const gameTitle = req.query.gameTitle;
+    console.log("get top users called " + gameTitle + " " + req.query.sortMethod);
     User.find({}).then((users) => {
         let usersWithScore;
 
         if (req.query.sortMethod === "best") {
             usersWithScore = users.map((user) => {
-                const bestScore = user.pastGames.length === 0 ? 999 : Math.min(...user.pastGames);
+                let bestScore = 999;
+                if (user.pastGames.has(gameTitle)) {
+                    const gameScores = user.pastGames.get(gameTitle);
+                    bestScore = gameScores.length === 0 ? 999 : Math.min(...gameScores);
+                } else {
+                    bestScore = 999;
+                }
                 return { ...user._doc, bestScore };
             });
             usersWithScore.sort((a, b) => a.bestScore - b.bestScore);
+            usersWithScore = usersWithScore.filter((user) => user.bestScore !== 999);
         } else {
             // Default to sorting by average
+            console.log("nick");
             usersWithScore = users.map((user) => {
-                const totalScore =
-                    user.pastGames.length === 0
-                        ? 999
-                        : user.pastGames.slice(-5).reduce((a, b) => a + b, 0);
-                const averageScore =
-                    user.pastGames.length === 0
-                        ? 999
-                        : totalScore / user.pastGames.slice(-5).length;
+                let averageScore = 999;
+                console.log("asdf");
+                console.log(user.pastGames);
+                if (user.pastGames.has(gameTitle)) {
+                    console.log("hi");
+                    const gameScores = user.pastGames.get(gameTitle);
+                    console.log(gameScores);
+                    const totalScore =
+                    gameScores.length === 0 ? 999 : gameScores.slice(-5).reduce((a, b) => a + b, 0);
+                    averageScore =
+                    gameScores.length === 0 ? 999 : totalScore / gameScores.slice(-5).length;
+                    console.log(user + " " + averageScore + " " + totalScore + " " + gameScores);
+                } else {
+                    averageScore = 999;
+                }
                 return { ...user._doc, averageScore };
             });
+            console.log(usersWithScore);
             usersWithScore.sort((a, b) => a.averageScore - b.averageScore);
+            usersWithScore = usersWithScore.filter((user) => user.averageScore !== 999);
         }
 
         const topUsers = usersWithScore.slice(0, 10);
@@ -127,6 +134,18 @@ router.post("/create_problem_set", (req, res) => {
         answers: req.body.answers,
     });
     newProblemSet.save().then((problem_set) => res.send(problem_set));
+});
+
+router.post("/create_game", (req, res) => {
+    const newGame = new Game({
+        title: req.body.title,
+        url: req.body.url,
+        skipTime: req.body.skipTime,
+        questionsPerRound: req.body.questionsPerRound,
+        questions: req.body.questions,
+        answers: req.body.answers,
+    });
+    newGame.save().then((game) => res.send(game));
 });
 
 router.post("/create_indiv_round", (req, res) => {
@@ -144,6 +163,7 @@ router.post("/create_indiv_round", (req, res) => {
         multiplayer: false,
         started: true,
         public: false,
+        game_url: req.body.game_url,
     });
     newRound.save().then((round) => res.send(round));
 });
@@ -209,7 +229,7 @@ router.post("/delete_round_by_id", (req, res) => {
 });
 
 router.post("/create_game", (req, res) => {
-    const newGame = new Game({
+    const capitalGame = new Game({
         title: "US Capitals",
         url: "us-capitals",
         skip_time: 10,
@@ -220,7 +240,33 @@ router.post("/create_game", (req, res) => {
         answers: ["Montgomery", "Juneau", "Phoenix", "Little Rock", "Sacramento", "Denver", "Hartford", "Dover", "Tallahassee", "Atlanta", "Honolulu", "Boise", "Springfield", "Indianapolis", "Des Moines", "Topeka", "Frankfort", "Baton Rouge", "Augusta", "Annapolis", "Boston", "Lansing", "St. Paul", "Jackson", "Jefferson City", "Helena", "Lincoln", "Carson City", "Concord", "Trenton", "Santa Fe", "Albany", "Raleigh", "Bismarck", "Columbus", "Oklahoma City", "Salem", "Harrisburg", "Providence", "Columbia", "Pierre", "Nashville", "Austin", "Salt Lake City", "Montpelier", "Richmond", "Olympia", "Charleston", "Madison", "Cheyenne"]
     });
 
-    newGame.save().then((game) => res.send(game));
+    capitalGame.save();
+
+    const eddie = new Game({
+        title: "Eddie",
+        url: "eddie",
+        skip_time: 10,
+        questions_per_round: 10,
+        time_per_round: 120,
+        verified: true,
+        questions: ["Capital of Alabama?"],
+        answers: ["Montgomery"]
+    });
+
+    eddie.save();
+
+    const zetamacGame = new Game({
+        title: "Math",
+        url: "zetamac",
+        skip_time: 10,
+        questions_per_round: 10,
+        time_per_round: 120,
+        verified: true,
+        questions: [],
+        answers: []
+    });
+
+    zetamacGame.save().then((game) => res.send(game));
 })
 
 router.get("/get_game_by_url", (req, res) => {
@@ -229,6 +275,12 @@ router.get("/get_game_by_url", (req, res) => {
     })
     .catch((error) => {
         res.send({ error: "Game not found" });
+    });
+});
+
+router.get("/get_all_games", (req, res) => {
+    Game.find({}).then((games) => {
+        res.send({ success: true, games: games });
     });
 });
 
