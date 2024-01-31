@@ -249,7 +249,10 @@ const Race = (props) => {
                           newPlacements[placings_data[i]] = i + 1;
                         }
                       }
-                    } catch {}
+                    } catch {
+                      navigate("/");
+                      navigate(0);
+                    }
                     let placementsList = [];
                     if (newPlayers) {
                       for (let i = 0; i < newPlayers.length; i++) {
