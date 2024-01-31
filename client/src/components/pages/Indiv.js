@@ -207,7 +207,13 @@ const Indiv = (props) => {
             let questions = [];
             let answers = [];
             for (let i = 0; i < 20; i++) {
-                let newQuestion = getRandomProblem(game);
+                let newQuestion = ""
+                while (true) {
+                    newQuestion = getRandomProblem(game);
+                    if (!questions.includes(newQuestion.question)) {
+                        break;
+                    }
+                }
                 questions.push(newQuestion.question);
                 answers.push(newQuestion.answer);
             }

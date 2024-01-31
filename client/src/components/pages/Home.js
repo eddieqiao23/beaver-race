@@ -245,8 +245,15 @@ const Home = (props) => {
         // console.log("started...");
         let questions = [];
         let answers = [];
-        for (let i = 0; i < 20; i++) {
-            let newQuestion = getRandomProblem(game);
+        const num_questions = game.questions_per_round
+        for (let i = 0; i < num_questions+1; i++) {
+            let newQuestion = ""
+            while (true) {
+              newQuestion = getRandomProblem(game);
+              if (!questions.includes(newQuestion.question)) {
+                  break;
+              }
+            }
             questions.push(newQuestion.question);
             answers.push(newQuestion.answer);
         }
