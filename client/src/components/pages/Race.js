@@ -198,6 +198,8 @@ const Race = (props) => {
             socket.on("update", (update) => {
                 // Data about the players, usernames, and scores
                 if (finishedJoinGameRef.current) {
+                    // console.log(roundIDRef.current);
+                    // console.log(update);
                     // Used to determine if the "Play Again" button was pressed
                     let data;
                     try {
@@ -207,10 +209,7 @@ const Race = (props) => {
                         }
                         data = update[roundIDRef.current]["players"];    
                     }
-                    catch {
-                        navigate("/");
-                        navigate(0);
-                    }
+                    catch { }
 
                     // Reads in the data from JSON format
                     let newPlayers = [];
@@ -618,7 +617,7 @@ const Race = (props) => {
                     )}
                   </div>
                   <div className="Race-leaderboard">
-                    <Leaderboard userId={userId} gameTitle={game.title} notUpdatedgame={notUpdatedGame} everyoneFinished={everyoneFinished}/>
+                    <Leaderboard userId={userId} gameTitle={gameRef.current.title} notUpdatedgame={notUpdatedGame} everyoneFinished={everyoneFinished}/>
                   </div>
                 </>
               ) : (
