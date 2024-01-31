@@ -325,7 +325,7 @@ const Home = (props) => {
         const diff = 30
         const hashIndex = Math.abs(hashStringToNumber(game.url)) % (colorWheel.length-diff);
         const color1 = colorWheel[hashIndex];
-        const color2 = colorWheel[hashIndex+diff];
+        const color2 = "#6C574B";
         document.documentElement.style.setProperty("--primary", color1);
         document.documentElement.style.setProperty("--secondary", color2);  
         document.documentElement.style.setProperty("--primary--dim", color2);
@@ -379,7 +379,7 @@ const Home = (props) => {
               <div className="Home-main-rounded-div Home-sign-in">
                 {userId ? (
                   <>
-                    <div className="u-inlineBlock Home-subheadline-text Home-username-text">
+                    <div className="u-inlineBlock Home-subheadline-text Home-username-text Home-typing-animation">
                       Welcome to Beaver Race, {current_username}!
                     </div>
                     <input

@@ -43,9 +43,9 @@ const MultiQuestion = (props) => {
                             setScore(score + 1);
                             // setCurrProblem(currProblem + 1);
                             event.target.value = "";
-                        }, 50);    
+                            move();
+                        }, 50); 
                     }
-                    move();
                 }    
             } catch {}
         }

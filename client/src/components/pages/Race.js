@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { socket } from "../../client-socket.js";
+import { socket, move } from "../../client-socket.js";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import MultiQuestion from "../modules/MultiQuestion.js";
 
@@ -390,6 +390,7 @@ const Race = (props) => {
               setTimeout(() => {
                   setShowAnswer(false);
                   skipQuestion();
+                  move();
               }, 5000);
           }
       };
