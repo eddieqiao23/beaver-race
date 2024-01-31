@@ -78,20 +78,23 @@ module.exports = {
                 if (currGame !== newGameID) {
                     // console.log("printing socket to user map");
                     // console.log(socketToUserMap);
-                    const userID = getUserFromSocketID(socket.id)._id;
+                    try {
+                        const userID = getUserFromSocketID(socket.id)._id;
 
-                    roundID = newGameID;
-                    socket.join(newGameID);
-                    socketToGameMap[socket.id] = newGameID;
-                    userToGameMap[userID] = newGameID;
-                    userToUsernameMap[userID] = username;
+                        roundID = newGameID;
+                        socket.join(newGameID);
+                        socketToGameMap[socket.id] = newGameID;
+                        userToGameMap[userID] = newGameID;
+                        userToUsernameMap[userID] = username;
 
-                    // console.log("S to U MAP!");
-                    // console.log(socketToUserMap);
-                    // console.log("Socket ID: " + socket.id);
+                        // console.log("S to U MAP!");
+                        // console.log(socketToUserMap);
+                        // console.log("Socket ID: " + socket.id);
 
-                    gameLogic.spawnPlayer(userID, username, newGameID);
-                    startRunningGame(newGameID);
+                        gameLogic.spawnPlayer(userID, username, newGameID);
+                        startRunningGame(newGameID);
+                    }
+                    catch {}
                 } else {
                     // gameLogic.roundInProgress();
                     // console.log("rip already in round");
