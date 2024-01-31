@@ -29,7 +29,7 @@ const filter = new Filter();
 
 router.post("/updateusername", (req, res) => {
     const { userId, username } = req.body;
-    console.log(userId, username);
+    (userId, username);
 
     if (filter.isProfane(username) || username.length < 2 || username.length > 20) {
         res.send({ success: false });
@@ -58,10 +58,10 @@ router.post("/update_user_pastrounds", (req, res) => {
             (err, user) => {
                 if (err || !user) {
                     res.send({ success: false });
-                    console.log("error updating past rounds", { err });
+                    ("error updating past rounds", { err });
                 } else {
                     res.send({ success: true });
-                    console.log("updated past rounds with score", { roundResult });
+                    ("updated past rounds with score", { roundResult });
                 }
             }
         );
@@ -80,7 +80,7 @@ router.get("/get_user_by_id", (req, res) => {
 
 router.get("/get_top_users", (req, res) => {
     const gameTitle = req.query.gameTitle;
-    console.log("get top users called " + gameTitle + " " + req.query.sortMethod);
+    ("get top users called " + gameTitle + " " + req.query.sortMethod);
     User.find({}).then((users) => {
         let usersWithScore;
 
@@ -99,26 +99,26 @@ router.get("/get_top_users", (req, res) => {
             usersWithScore = usersWithScore.filter((user) => user.bestScore !== 999);
         } else {
             // Default to sorting by average
-            console.log("nick");
+            ("nick");
             usersWithScore = users.map((user) => {
                 let averageScore = 999;
-                console.log("asdf");
-                console.log(user.pastGames);
+                ("asdf");
+                (user.pastGames);
                 if (user.pastGames.has(gameTitle)) {
-                    console.log("hi");
+                    ("hi");
                     const gameScores = user.pastGames.get(gameTitle);
-                    console.log(gameScores);
+                    (gameScores);
                     const totalScore =
                     gameScores.length === 0 ? 999 : gameScores.slice(-5).reduce((a, b) => a + b, 0);
                     averageScore =
                     gameScores.length === 0 ? 999 : totalScore / gameScores.slice(-5).length;
-                    console.log(user + " " + averageScore + " " + totalScore + " " + gameScores);
+                    (user + " " + averageScore + " " + totalScore + " " + gameScores);
                 } else {
                     averageScore = 999;
                 }
                 return { ...user._doc, averageScore };
             });
-            console.log(usersWithScore);
+            (usersWithScore);
             usersWithScore.sort((a, b) => a.averageScore - b.averageScore);
             usersWithScore = usersWithScore.filter((user) => user.averageScore !== 999);
         }
@@ -183,12 +183,12 @@ router.get("/get_round_by_id", (req, res) => {
 router.get("/get_round_by_shortID", (req, res) => {
     // find round by shortID
     const shortID = req.query.shortID;
-    console.log(shortID);
+    (shortID);
     Round.find({}).then((rounds) => {
         const matchingRounds = rounds.filter((round) =>
             round._id.toString().toUpperCase().endsWith(shortID.toUpperCase())
         );
-        console.log("matching rounds", matchingRounds);
+        ("matching rounds", matchingRounds);
         if (!matchingRounds || matchingRounds.length === 0) {
             return res.send({ error: "no matching rounds" });
         } else {
@@ -229,47 +229,6 @@ router.post("/delete_round_by_id", (req, res) => {
     });
 });
 
-router.post("/create_game", (req, res) => {
-    const capitalGame = new Game({
-        title: "US Capitals",
-        url: "us-capitals",
-        skip_time: 10,
-        questions_per_round: 10,
-        time_per_round: 120,
-        verified: true,
-        questions: ["Capital of Alabama?", "Capital of Alaska?", "Capital of Arizona?", "Capital of Arkansas?", "Capital of California?", "Capital of Colorado?", "Capital of Connecticut?", "Capital of Delaware?", "Capital of Florida?", "Capital of Georgia?", "Capital of Hawaii?", "Capital of Idaho?", "Capital of Illinois?", "Capital of Indiana?", "Capital of Iowa?", "Capital of Kansas?", "Capital of Kentucky?", "Capital of Louisiana?", "Capital of Maine?", "Capital of Maryland?", "Capital of Massachusetts?", "Capital of Michigan?", "Capital of Minnesota?", "Capital of Mississippi?", "Capital of Missouri?", "Capital of Montana?", "Capital of Nebraska?", "Capital of Nevada?", "Capital of New Hampshire?", "Capital of New Jersey?", "Capital of New Mexico?", "Capital of New York?", "Capital of North Carolina?", "Capital of North Dakota?", "Capital of Ohio?", "Capital of Oklahoma?", "Capital of Oregon?", "Capital of Pennsylvania?", "Capital of Rhode Island?", "Capital of South Carolina?", "Capital of South Dakota?", "Capital of Tennessee?", "Capital of Texas?", "Capital of Utah?", "Capital of Vermont?", "Capital of Virginia?", "Capital of Washington?", "Capital of West Virginia?", "Capital of Wisconsin?", "Capital of Wyoming?" ],
-        answers: ["Montgomery", "Juneau", "Phoenix", "Little Rock", "Sacramento", "Denver", "Hartford", "Dover", "Tallahassee", "Atlanta", "Honolulu", "Boise", "Springfield", "Indianapolis", "Des Moines", "Topeka", "Frankfort", "Baton Rouge", "Augusta", "Annapolis", "Boston", "Lansing", "St. Paul", "Jackson", "Jefferson City", "Helena", "Lincoln", "Carson City", "Concord", "Trenton", "Santa Fe", "Albany", "Raleigh", "Bismarck", "Columbus", "Oklahoma City", "Salem", "Harrisburg", "Providence", "Columbia", "Pierre", "Nashville", "Austin", "Salt Lake City", "Montpelier", "Richmond", "Olympia", "Charleston", "Madison", "Cheyenne"]
-    });
-
-    capitalGame.save();
-
-    const eddie = new Game({
-        title: "Eddie",
-        url: "eddie",
-        skip_time: 10,
-        questions_per_round: 10,
-        time_per_round: 120,
-        verified: true,
-        questions: ["Capital of Alabama?"],
-        answers: ["Montgomery"]
-    });
-
-    eddie.save();
-
-    const zetamacGame = new Game({
-        title: "Math",
-        url: "zetamac",
-        skip_time: 10,
-        questions_per_round: 10,
-        time_per_round: 120,
-        verified: true,
-        questions: [],
-        answers: []
-    });
-
-    zetamacGame.save().then((game) => res.send(game));
-})
-
 router.get("/get_game_by_url", (req, res) => {
     Game.findOne({ url: req.query.url }).then((game) => {
         res.send(game);
@@ -304,7 +263,7 @@ router.get("/whoami", (req, res) => {
 router.post("/initsocket", (req, res) => {
     // do nothing if user not logged in
     if (req.user) {
-        console.log("hi");
+        ("hi");
         socketManager.addUser(req.user, socketManager.getSocketFromSocketID(req.body.socketid));
     }
 
@@ -316,7 +275,7 @@ router.post("/initsocket", (req, res) => {
 // |------------------------------|
 
 // router.get("/test", (req, res) => {
-//  console.log(1);
+//  (1);
 //   // const newRound = new Round({
 //   //   id: '2',
 //   //   creator: '2',
@@ -333,7 +292,7 @@ router.post("/initsocket", (req, res) => {
 
 // anything else falls to this "not found" case
 router.all("*", (req, res) => {
-    console.log(`API route not found: ${req.method} ${req.url}`);
+    (`API route not found: ${req.method} ${req.url}`);
     res.status(404).send({ msg: "API route not found" });
 });
 

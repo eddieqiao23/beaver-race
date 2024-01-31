@@ -37,17 +37,17 @@ const NavBar = ({ userId, handleLogin, handleLogout }) => {
                     <button className="NavBar-button">Play More Games!</button>
                 </Link>
 
-                <Link to="/create_game">
+                <Link to="/create-game">
                     <button className="NavBar-button">Create Game</button>
                 </Link>
 
-                <a
+                {/* <a
                     href="https://forms.gle/hhnryvakyackzM467"
                     target="_blank"
                     rel="noopener noreferrer"
                 >
                     <button className="NavBar-button">Report Bug</button>
-                </a>
+                </a> */}
 
                 <div className="u-inlineBlock NavBar-auth-button">
                     {userId ? (

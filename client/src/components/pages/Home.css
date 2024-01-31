@@ -195,7 +195,7 @@
     height: 100%;
 }
 
-.Typing-animation {
+.Home-typing-animation {
     overflow: hidden;
     white-space: nowrap;
     animation: typing 2s steps(40, end),

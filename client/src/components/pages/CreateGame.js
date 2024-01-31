@@ -49,25 +49,29 @@ function CreateGame() {
         event.preventDefault();
         const url = title.replace(/\s/g, '-').toLowerCase();
         const urlExists = allGames.some(game => game.url === url);
-        if (!urlExists) {
-            const all_info = qna.split('\n').map(q => q.split('\t'));
-            const questions = all_info.map(q => q[0]);
-            const answers = all_info.map(q => q[1]);
-    
-            post("/api/create_game", {
-                title: title,
-                url: url,
-                // skipTime: skipTime,
-                questionsPerRound: questionsPerRound,
-                // timePerRound: timePerRound,
-                questions: questions,
-                answers: answers
-            }).then((res) => {
-                const new_url = `/${url}`;
-                navigate(new_url);
-            });
-        } else {
+        if (urlExists) {
             setTitle('title already taken :(')
+        } else {
+            if (url.length > 30) {
+                setTitle('title too long :(')
+            } else {
+                const all_info = qna.split('\n').map(q => q.split('\t'));
+                const questions = all_info.map(q => q[0]);
+                const answers = all_info.map(q => q[1]);
+        
+                post("/api/create_game", {
+                    title: title,
+                    url: url,
+                    // skipTime: skipTime,
+                    questionsPerRound: questionsPerRound,
+                    // timePerRound: timePerRound,
+                    questions: questions,
+                    answers: answers
+                }).then((res) => {
+                    const new_url = `/${url}`;
+                    navigate(new_url);
+                });
+            }
         }
     };
 

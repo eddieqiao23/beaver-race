@@ -86,10 +86,10 @@ const Race = (props) => {
 
     const getRoundInfo = async () => {
         get("/api/get_round_by_id", { roundID: roundIDRef.current }).then((round) => {
-            console.log("This displays the round for ID " + round.problem_set_id);
-            console.log("User ID: " + userId);
-            console.log("Players: ");
-            console.log(round.players);
+            // ("This displays the round for ID " + round.problem_set_id);
+            // ("User ID: " + userId);
+            // ("Players: ");
+            (round.players);
             if (round.players[0] === userId) {
                 setIsHost(true);
                 isHostRef.current = true;
@@ -97,18 +97,18 @@ const Race = (props) => {
             setGameURL(round.game_url);
             get("/api/get_problem_set_by_id", { problemSetID: round.problem_set_id }).then(
                 (problemSet) => {
-                    console.log("This displays the problem set for ID " + problemSet._id);
+                    ("This displays the problem set for ID " + problemSet._id);
                     setQuestions(problemSet.questions);
                     setAnswers(problemSet.answers);
                     setDoneLoading(true);
-                    console.log(questions);
+                    (questions);
                 }
             );
         });
     };
 
     const fetchGameID = async () => {
-        console.log("RUNNING NOW");
+        ("RUNNING NOW");
         await get(`/api/get_round_by_shortID`, { shortID: shortenedGameID }).then((res) => {
             if (res.error) {
                 console.error("Error: bad round ID");
@@ -129,17 +129,17 @@ const Race = (props) => {
     }, []);
 
     useEffect(() => {
-        console.log(gameURL);
+        (gameURL);
         if (gameURL !== null) {
-            console.log(gameURL);
+            (gameURL);
             get("/api/get_game_by_url", { url: gameURL })
                 .then((newGame) => {
                     setGame(newGame);
                     gameRef.current = newGame;
                     numQuestionsRef.current = newGame.questions_per_round;
-                    console.log(game);
-                    console.log(newGame);
-                    console.log(numQuestionsRef.current);
+                    (game);
+                    (newGame);
+                    (numQuestionsRef.current);
                 })
                 .catch((error) => {
                     console.error("Error fetching game:", error);
@@ -148,9 +148,9 @@ const Race = (props) => {
                     gameRef.current = newGame;
                 });
 
-            console.log("Game: ");
-            console.log(game);
-            console.log("Round ID: " + roundIDRef.current);
+            ("Game: ");
+            (game);
+            ("Round ID: " + roundIDRef.current);
         }
     }, [gameURL]);
 
@@ -171,7 +171,7 @@ const Race = (props) => {
             setRoundTimer(0);
             post("/api/delete_problem_set_by_id", { problem_set_id: roundIDRef.current });
             post("/api/delete_round_by_id", { round_id: roundIDRef.current });
-            console.log("round finished");
+            ("round finished");
         }
 
         // Cleanup the interval on component unmount
@@ -260,7 +260,7 @@ const Race = (props) => {
                     setPlayers(newPlayers);
                     setScores(newScores);
                     setUsernames(newUsernames);
-                    console.log(newScores);
+                    (newScores);
 
                     try {
                       // Time until start_time to calculate pre-round timer
@@ -270,7 +270,7 @@ const Race = (props) => {
                       if (timeUntil > 0 && update[roundIDRef.current]["started"]) {
                           setPreGameTimer(Math.floor(timeUntil / 1000) + 1);
                           setPreGameTimerOpacity(Math.abs((timeUntil % 1000) - 0.5) / 1000);
-                        console.log("updating preround timer");
+                        ("updating preround timer");
                       } else if (timeUntil <= 0 && update[roundIDRef.current]["started"]) {
                           setPreGameTimer(0);
                           setRaceStarted(true);
@@ -305,7 +305,7 @@ const Race = (props) => {
     // After the round is over, update the user's past rounds
     useEffect(() => {
         const updatePastGames = async () => {
-            console.log(round_time, roundTimer, score);
+            (round_time, roundTimer, score);
             setSpqScore(((round_time - roundTimer) / numQuestionsRef.current).toFixed(2));
             if (roundFinished && userId && notUpdatedGame && score > 0) {
                 await post(`/api/update_user_pastrounds`, {
@@ -417,7 +417,7 @@ const Race = (props) => {
 
     // When hosts create a new game
     const makeNewRound = async () => {
-        console.log("started...");
+        ("started...");
         let questions = [];
         let answers = [];
         for (let i = 0; i < 20; i++) {
@@ -432,7 +432,7 @@ const Race = (props) => {
                 answers: answers,
             });
             const problemSetID = problemSetRes._id;
-            console.log("Problem Set: " + problemSetID);
+            ("Problem Set: " + problemSetID);
 
             const newRoundRes = await post("/api/create_indiv_round", {
                 problem_set_id: problemSetID,
@@ -448,8 +448,8 @@ const Race = (props) => {
             navigate(`../race/?id=${shortenedRoundID}`, { state: { userId: userId } });
             navigate(0);
         } catch (error) {
-            console.log(error);
-            console.log("error creating problem set or round :(");
+            (error);
+            ("error creating problem set or round :(");
         }
     };
 

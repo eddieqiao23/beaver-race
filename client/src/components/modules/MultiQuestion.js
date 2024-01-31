@@ -25,18 +25,18 @@ const MultiQuestion = (props) => {
     }, [doneLoading, props.raceStarted]);
 
     const handleInputChange = (event) => {
-        console.log(answers);
+        // console.log(answers);
         if (answers[0] === "24" && answers[1] === "24" && answers[2] === "24") {
             let questionNumbers = questions[score].split(", ").map(Number);
             questionNumbers.sort((a, b) => a - b);
-            console.log(questionNumbers);
+            // console.log(questionNumbers);
 
             try {
-                console.log(math.evaluate(event.target.value));
+                // console.log(math.evaluate(event.target.value));
                 if (math.evaluate(event.target.value) == 24) {
                     let numbers = event.target.value.match(/\d+/g).map(Number);
                     numbers.sort((a, b) => a - b);
-                    console.log(numbers);
+                    // console.log(numbers);
                 
                     if (numbers.length === questionNumbers.length && numbers.every((value, index) => value === questionNumbers[index])) {
                         setTimeout(() => {
@@ -66,8 +66,8 @@ const MultiQuestion = (props) => {
         if (questions.length > 0) {
             // console.log(questions[score]);
             const questionLength = questions[score].length;
-            console.log(questions[score]);
-            console.log(questionLength);
+            // console.log(questions[score]);
+            // console.log(questionLength);
 
             if (questionLength < 10) {
                 fontSizeRef.current = 40;

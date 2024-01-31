@@ -20,7 +20,6 @@ import Leaderboard from "../modules/Leaderboard.js";
 // The code had issues with prob, so we fixed it
 function getNumberGame(target, length) {
 	// console.clear();
-  console.log(1);
 	var dataset = [];
 	var datavalue = 0;
 	var methods = {
@@ -57,23 +56,23 @@ function getNumberGame(target, length) {
 	}
 	delete dataset[0].method;
 	var data = dataset[0].value * 1;
-	console.log('Start with ' + data);
+	// console.log('Start with ' + data);
 	for (var i = 1; i < dataset.length; i++) {
 		data = methods[dataset[i].method](data, dataset[i].value);
-		console.log(dataset[i].method + " " + dataset[i].value + " to get " + data);
+		// console.log(dataset[i].method + " " + dataset[i].value + " to get " + data);
 	}
 	if (data > target) {
 		dataset.push({
 			value : Math.round(Math.abs(data - target)),
 			method : 'subtract'
 		});
-		console.log("subtract " + dataset[dataset.length - 1].value + " to get " + 24);
+		// console.log("subtract " + dataset[dataset.length - 1].value + " to get " + 24);
 	} else if (data < target) {
 		dataset.push({
 			value : Math.round(Math.abs(data - target)),
 			method : 'add'
 		});
-		console.log("add " + dataset[dataset.length - 1].value + " to get " + 24);
+		// console.log("add " + dataset[dataset.length - 1].value + " to get " + 24);
 	}
 	var returnArray = [];
 	while (dataset.length > 0) {
@@ -379,7 +378,7 @@ const Home = (props) => {
               <div className="Home-main-rounded-div Home-sign-in">
                 {userId ? (
                   <>
-                    <div className="u-inlineBlock Home-subheadline-text Home-username-text Typing-animation">
+                    <div className="u-inlineBlock Home-subheadline-text Home-username-text Home-typing-animation">
                       Welcome to Beaver World, {current_username}!
                     </div>
                     <input

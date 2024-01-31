@@ -48,19 +48,19 @@
 .OtherGames-headline-container {
     width: 60%;
     margin: 0 auto;
-    background-color: var(--primary);
+    /* background-color: var(--primary); */
     color: var(--text);
     border-radius: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 10px;
+    padding: 40px;
     margin-top: 15px;
 }
 
 .OtherGames-headline-text {
-    font-size: 32px;
+    font-size: 52px;
     font-weight: bold;
 }
 
@@ -68,12 +68,14 @@
     margin-top: 5px;
     font-size: 20px;
     font-weight: bold;
+    margin-top: 15px;
 }
 
 .OtherGames-search-bar {
+    font-family: 'IBM Plex Sans', sans-serif;
     width: 100%;
     padding: 12px 20px;
-    margin-top: 10px;
+    margin-top: 25px;
     box-sizing: border-box;
     border: none;
     border-radius: 25px;
@@ -91,7 +93,7 @@
 
 .OtherGames-input::placeholder, textarea::placeholder {
     font-family: 'IBM Plex Sans', sans-serif; /* Replace 'Your Font' with the name of your font */
-    font-size: 14px; /* Adjust the size as needed */
+    font-size: 16px; /* Adjust the size as needed */
     color: #999; /* Adjust the color as needed */
 }
 
@@ -139,4 +141,22 @@
     background-attachment: fixed;
     /* overflow: scroll; */
     height: 100%;
+}
+
+.OtherGames-typing-animation {
+    overflow: hidden;
+    white-space: nowrap;
+    animation: typing 1.5s steps(30, end),
+        blink-caret 0s step-end infinite;
+}
+
+/* Typing animation */
+@keyframes typing {
+    from {
+        width: 0
+    }
+
+    to {
+        width: 65%
+    }
 }

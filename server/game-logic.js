@@ -20,10 +20,10 @@ const spawnPlayer = (id, username, roundID) => {
             new_round: null,
         };
     }
-    console.log(roundState);
+    // console.log(roundState);
     if (!(id in roundState[roundID]["players"])) {
         roundState[roundID]["players"].push({ id: id, username: username, score: 0 });
-        console.log("spawned!");
+        // console.log("spawned!");
     }
 };
 
@@ -40,10 +40,10 @@ const removePlayer = (id, roundID) => {
 };
 
 const movePlayer = (id, roundID) => {
-    console.log(roundState);
-    console.log("moving...");
-    console.log(roundID);
-    console.log(roundState[roundID]);
+    // console.log(roundState);
+    // console.log("moving...");
+    // console.log(roundID);
+    // console.log(roundState[roundID]);
     for (let i = 0; i < roundState[roundID]["players"].length; i++) {
         if (roundState[roundID]["players"][i].id === id) {
             roundState[roundID]["players"][i].score += 1;
@@ -56,7 +56,6 @@ const doesPlayerExist = (userID) => {
 };
 
 const finishGame = (roundID, userID) => {
-    console.log("hi i am here");
     roundState[roundID]["placings"].push(userID);
 };
 

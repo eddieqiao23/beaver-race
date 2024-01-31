@@ -44,7 +44,7 @@ const Leaderboard = (props) => {
     return (
       <div className="Leaderboard-container">
         <div className="Leaderboard-header">
-          <div className="u-inlineBlock Leaderboard-title">Leaderboard</div>
+          <div className="u-inlineBlock Leaderboard-title">{gameTitle} Leaderboard</div>
           <div className="u-inlineBlock Leaderboard-sort">
             <button className="u-pointer Leaderboard-button" onClick={() => setSortMethod("avg")}>
               Sort by avg

@@ -76,7 +76,7 @@ const App = () => {
                 <Route path="/:game_url/indiv" element={<Indiv path="/:game_url/indiv" userId={userId} />} />
                 {/* <Route path="/other_games" element={<OtherGames path="/other_games" userId={userId} />} /> */}
                 <Route path="/:game_url" element={<Home path="/:game_url" userId={userId} />} />
-                <Route path="/create_game" element={<CreateGame path="/create_game" userId={userId} />} />
+                <Route path="/create-game" element={<CreateGame path="/create-game" userId={userId} />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
             {/* <Footer userId={userId} /> */}

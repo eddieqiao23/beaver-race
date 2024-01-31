@@ -13,7 +13,8 @@ import beaver_background from "../../public/assets/beavers/beaver-background.png
 const OtherGames = (props) => {
     const [allGames, setAllGames] = useState([]);
     const [gamesLoaded, setGamesLoaded] = useState(false);
-    const priorityUrls = ['24', 'arithmetic', 'taylor-swift-lyrics', 'mit-course-numbers', 'periodic-table-quiz'];
+    const priorityUrls = ['24', 'arithmetic', 'taylor-swift-lyrics', 'mit-course-numbers', 'periodic-table-quiz', 'us-capitals'];
+    const lastUrls = ['create-game']
 
     document.documentElement.style.setProperty("--primary", "#212121");
     document.documentElement.style.setProperty("--secondary", "#a688fa");
@@ -74,11 +75,17 @@ const OtherGames = (props) => {
             const sortedGames = res.games.sort((a, b) => {
                 const aIsPriority = priorityUrls.includes(a.url);
                 const bIsPriority = priorityUrls.includes(b.url);
+                const aIsLast = lastUrls.includes(a.url);
+                const bIsLast = lastUrls.includes(b.url);
 
                 if (aIsPriority && !bIsPriority) {
                     return -1;
                 } else if (!aIsPriority && bIsPriority) {
                     return 1;
+                } else if (aIsLast && !bIsLast) {
+                    return 1;
+                } else if (!aIsLast && bIsLast) {
+                    return -1;
                 } else {
                     return a.title.localeCompare(b.title);
                 }
@@ -93,7 +100,7 @@ const OtherGames = (props) => {
             // console.log(game.url);
             return require(`../../public/assets/beavers/${game.url}.png`).default;
         } catch (err) {
-            // console.log(err);
+            // (err);
             return require(`../../public/assets/beavers/default-game.png`).default;
         }
     }
@@ -118,18 +125,22 @@ const OtherGames = (props) => {
         };
     };
 
-    function checkScroll() {
-        const scrollPosition = window.pageYOffset;
-        const windowHeight = window.innerHeight;
-    
-        // Calculate the opacity based on the scroll position
-        const newOpacity = scrollPosition / (windowHeight * 3);
-    
-        // Set the opacity state variable
-        setOpacity(newOpacity);
-    }
-
     useEffect(() => {
+        function checkScroll() {
+            if (opacity < 0.1) {
+                const scrollPosition = window.pageYOffset;
+                const windowHeight = window.innerHeight;
+                
+                // Calculate the opacity based on the scroll position
+                const newOpacity = Math.min(Math.pow(scrollPosition / windowHeight, 1.3), 1);
+                
+                // Set the opacity state variable
+                setOpacity(newOpacity);
+            } else {
+                setOpacity(1);
+            }
+        }
+
         window.addEventListener('scroll', checkScroll);
     
         // Cleanup function to remove the event listener when the component unmounts
@@ -142,7 +153,7 @@ const OtherGames = (props) => {
         <>
             <div style={backgroundImageStyle()}className="OtherGames-background"></div>
             <div className="OtherGames-headline-container">
-                <div className="OtherGames-headline-text Typing-animation">
+                <div className="OtherGames-headline-text OtherGames-typing-animation">
                     Welcome to Beaver Race!
                 </div>
                 <div className="OtherGames-sub-text">
@@ -168,23 +179,11 @@ const OtherGames = (props) => {
                                 <div className="OtherGames-grid-item">
                                     {priorityUrls.includes(game.url) && <FaStar className="OtherGames-star" />} {/* Add this line */}
                                     <img src={image} alt={game.title}></img>
-                                    <div className="OtherGames-tile-name">{game.title}</div>
+                                    {game.url==="create-game" ?  null : <div className="OtherGames-tile-name">{game.title}</div>}
                                 </div>
                             </Link>
                         ) : null)})  
-                    : 
-                    allGames.map((game, index) => {
-                    const image = getImage(game);
-                    return (image ? (
-                        <Link to={`/${game.url}`} key={index}>
-                            <div className="OtherGames-grid-item">
-                                {priorityUrls.includes(game.url) && <FaStar className="OtherGames-star" />} {/* Add this line */}
-                                <img src={image} alt={game.title}></img>
-                                <div className="OtherGames-tile-name">{game.title}</div>
-                            </div>
-                        </Link>
-                    ) : null)})
-                }
+                    : null }
             </div>
             ) : (
                 <div className="OtherGames-loading"></div>
