@@ -140,8 +140,9 @@ router.post("/create_game", (req, res) => {
     const newGame = new Game({
         title: req.body.title,
         url: req.body.url,
-        skipTime: req.body.skipTime,
-        questionsPerRound: req.body.questionsPerRound,
+        skip_time: req.body.skipTime,
+        questions_per_round: req.body.questionsPerRound,
+        time_per_round: req.body.timePerRound,
         questions: req.body.questions,
         answers: req.body.answers,
     });
@@ -315,7 +316,7 @@ router.post("/initsocket", (req, res) => {
 // |------------------------------|
 
 // router.get("/test", (req, res) => {
-//   // console.log(1);
+//  console.log(1);
 //   // const newRound = new Round({
 //   //   id: '2',
 //   //   creator: '2',

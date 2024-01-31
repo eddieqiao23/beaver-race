@@ -37,7 +37,7 @@ const Indiv = (props) => {
             .then((newGame) => {
                 setGame(newGame);
                 console.log(game);
-                console.log(newGame);
+                // console.log(newGame);
             })
             .catch((error) => {
                 console.error("Error fetching game:", error);
@@ -161,7 +161,7 @@ const Indiv = (props) => {
     useEffect(() => {
         const updatePastGames = async () => {
             setSpqScore(((ROUND_TIME - roundTimer) / TOTAL_QUESTIONS).toFixed(2));
-            console.log(roundFinished + " " + props.userId + " " + notUpdatedGame + " " + score);
+            // console.log(roundFinished + " " + props.userId + " " + notUpdatedGame + " " + score);
             if (roundFinished && props.userId && notUpdatedGame && score > 0) {
                 await post(`/api/update_user_pastrounds`, {
                     userId: props.userId,
@@ -196,18 +196,18 @@ const Indiv = (props) => {
                 });
                 const problemSetID = problemSetRes._id;
                 setNewProblemSetID(problemSetID);
-                console.log("Problem Set: " + problemSetID);
+                // console.log("Problem Set: " + problemSetID);
 
                 const newRoundRes = await post("/api/create_indiv_round", {
                     problem_set_id: problemSetID,
                 });
                 const createdRoundID = newRoundRes._id;
-                console.log("Round: " + createdRoundID);
+                // console.log("Round: " + createdRoundID);
 
                 return createdRoundID;
             } catch (error) {
-                console.log(error);
-                console.log("error creating problem set or round :(");
+                // console.log(error);
+                // console.log("error creating problem set or round :(");
             }
         };
 
@@ -218,7 +218,7 @@ const Indiv = (props) => {
             };
 
             try {
-                changeRoundID().then(() => console.log("finished!"));
+                changeRoundID();
                 setCreatedNewRound(true);
             } catch (error) {
                 location.reload();

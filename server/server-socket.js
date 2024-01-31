@@ -17,8 +17,8 @@ const getGameFromUserID = (userid) => userToGameMap[userid];
 const getUsernameFromUserID = (userid) => userToUsernameMap[userid];
 
 const sendGameState = (roundID) => {
-    // console.log("updates emitted to " + roundID);
-    // console.log(gameLogic.roundState);
+   // // console.log("updates emitted to " + roundID);
+   // console.log(gameLogic.roundState);
     io.to(roundID).emit("update", gameLogic.roundState);
 };
 
@@ -42,14 +42,14 @@ const addUser = (user, socket) => {
     }
 
     // Initializes stuff for the round
-    console.log("ADDING!! " + user._id + " and " + socket.id);
+    // console.log("ADDING!! " + user._id + " and " + socket.id);
     userToSocketMap[user._id] = socket;
     socketToUserMap[socket.id] = user;
     // userToGameMap[user._id] = getGameFromSocketID(socket.id);
 };
 
 const removeUser = (user, socket) => {
-    console.log("DELETING!! " + user._id);
+    // console.log("DELETING!! " + user._id);
     if (user) delete userToSocketMap[user._id];
     delete socketToUserMap[socket.id];
 };
@@ -59,25 +59,25 @@ module.exports = {
         io = require("socket.io")(http);
 
         io.on("connection", (socket) => {
-            console.log(`socket has connected ${socket.id}`);
+            // console.log(`socket has connected ${socket.id}`);
             let roundID = null;
-            console.log("this is the round ID: " + roundID);
+            // console.log("this is the round ID: " + roundID);
             socket.on("joinGame", (newGameID, username) => {
-                console.log("new round: " + newGameID);
-                console.log("socket: " + socket.id);
-                console.log("round to socket mapping");
-                console.log(socketToGameMap);
+                // console.log("new round: " + newGameID);
+                // console.log("socket: " + socket.id);
+                // console.log("round to socket mapping");
+                // console.log(socketToGameMap);
                 // can access user immediately
                 let currGame = null;
                 try {
                     currGame = getGameFromUserID(getUserFromSocketID(socket.id)._id);
                 } catch (error) {
-                    console.log("lol didn't work");
+                    // console.log("lol didn't work");
                 }
 
                 if (currGame !== newGameID) {
-                    console.log("printing socket to user map");
-                    console.log(socketToUserMap);
+                    // console.log("printing socket to user map");
+                    // console.log(socketToUserMap);
                     const userID = getUserFromSocketID(socket.id)._id;
 
                     roundID = newGameID;
@@ -86,15 +86,15 @@ module.exports = {
                     userToGameMap[userID] = newGameID;
                     userToUsernameMap[userID] = username;
 
-                    console.log("S to U MAP!");
-                    console.log(socketToUserMap);
-                    console.log("Socket ID: " + socket.id);
+                    // console.log("S to U MAP!");
+                    // console.log(socketToUserMap);
+                    // console.log("Socket ID: " + socket.id);
 
                     gameLogic.spawnPlayer(userID, username, newGameID);
                     startRunningGame(newGameID);
                 } else {
                     // gameLogic.roundInProgress();
-                    console.log("rip already in round");
+                    // console.log("rip already in round");
                     socket.emit("alreadyInGame");
                     //
                 }

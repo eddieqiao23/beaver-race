@@ -64,17 +64,17 @@ const OtherGames = (props) => {
 
     useEffect(() => {
         get("/api/get_all_games").then((res) => {
-            setAllGames(res.games);
-            console.log(allGames);
+            const sortedGames = res.games.sort((a, b) => a.title.localeCompare(b.title));
+            setAllGames(sortedGames);
         });
     }, []);
 
     function getImage(game) {
         try {
-            console.log(game.url);
+            // console.log(game.url);
             return require(`../../public/assets/beavers/${game.url}.png`).default;
         } catch (err) {
-            console.log(err);
+            // console.log(err);
             return require(`../../public/assets/beavers/default-game.png`).default;
         }
     }
@@ -100,7 +100,7 @@ const OtherGames = (props) => {
                 </div>
                 <div>
                     <input
-                        className="OtherGames-search-bar"
+                        className="OtherGames-search-bar OtherGames-input"
                         type="text"
                         placeholder="Search..."
                         value={searchTerm}
@@ -113,7 +113,7 @@ const OtherGames = (props) => {
                     filteredGames.map((game, index) => {
                         const image = getImage(game);
                         return (image ? (
-                            <Link to={`/${game.url}`}>
+                            <Link to={`/${game.url}`} key={index}>
                                 <div className="OtherGames-grid-item">
                                     <img src={image} alt={game.title}></img>
                                     <div className="OtherGames-tile-name">{game.title}</div>
@@ -124,7 +124,7 @@ const OtherGames = (props) => {
                     allGames.map((game, index) => {
                     const image = getImage(game);
                     return (image ? (
-                        <Link to={`/${game.url}`}>
+                        <Link to={`/${game.url}`} key={index}>
                             <div className="OtherGames-grid-item">
                                 <img src={image} alt={game.title}></img>
                                 <div className="OtherGames-tile-name">{game.title}</div>

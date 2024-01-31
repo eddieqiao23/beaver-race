@@ -13,16 +13,16 @@ const Question = (props) => {
     let setScore = props.setScore;
 
     const getRoundInfo = async () => {
-        console.log("Check 1: " + props.roundID);
+        // console.log("Check 1: " + props.roundID);
         get("/api/get_round_by_id", { roundID: props.roundID }).then((round) => {
-            console.log("This displays the round for ID " + round.problem_set_id);
+            // console.log("This displays the round for ID " + round.problem_set_id);
             get("/api/get_problem_set_by_id", { problemSetID: round.problem_set_id }).then(
                 (problemSet) => {
-                    console.log("This displays the problem set for ID " + problemSet._id);
+                    // console.log("This displays the problem set for ID " + problemSet._id);
                     setQuestions(problemSet.questions);
                     setAnswers(problemSet.answers);
                     setDoneLoading(true);
-                    console.log(questions);
+                    // console.log(questions);
                 }
             );
         });

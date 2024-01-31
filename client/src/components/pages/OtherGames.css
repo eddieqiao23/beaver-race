@@ -6,7 +6,7 @@
     padding-top: 20px;
     max-width: 80%; /* Maximum width of the grid container */
     margin: auto; /* Center the container horizontally */
-    padding-bottom: 20px;
+    padding-bottom: 50px;
 }
 
 .OtherGames-grid-item {
@@ -62,6 +62,7 @@
 }
 
 .OtherGames-sub-text {
+    margin-top: 5px;
     font-size: 20px;
     font-weight: bold;
 }
@@ -78,9 +79,15 @@
     transition: box-shadow 0.3s;
     background-color: #333; /* Dark background */
     color: #fff; /* Light text */
-  }
+}
   
-  .OtherGames-search-bar:focus {
+.OtherGames-search-bar:focus {
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2);
     outline: 0;
-  }
+}
+
+.OtherGames-input::placeholder, textarea::placeholder {
+    font-family: 'IBM Plex Sans', sans-serif; /* Replace 'Your Font' with the name of your font */
+    font-size: 14px; /* Adjust the size as needed */
+    color: #999; /* Adjust the color as needed */
+}

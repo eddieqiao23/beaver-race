@@ -75,10 +75,10 @@ const Home = (props) => {
             setIsLoading(false);
         }
         else {
-            console.log(game_url);
+            // console.log(game_url);
             get(`/api/get_game_by_url`, { url: game_url }).then((game) => {
                 setGame(game);
-                console.log(game);
+                // console.log(game);
                 setIsLoading(false);
             });
         }
@@ -169,13 +169,8 @@ const Home = (props) => {
         };
     }, []);
 
-    // useEffect(() => {
-    //     setUpdateLeaderboard(true);
-    //     setUpdateLeaderboard(false);
-    // }, [current_username]);
-
     const createMultiplayerRound = async () => {
-        console.log("started...");
+        // console.log("started...");
         let questions = [];
         let answers = [];
         for (let i = 0; i < 20; i++) {
@@ -190,36 +185,34 @@ const Home = (props) => {
                 answers: answers,
             });
             const problemSetID = problemSetRes._id;
-            console.log("Problem Set: " + problemSetID);
-            console.log("Game: " + game.url);
+            // console.log("Problem Set: " + problemSetID);
+            // console.log("Game: " + game.url);
             const newRoundRes = await post("/api/create_indiv_round", {
                 problem_set_id: problemSetID,
                 game_url: game.url,
             });
             const createdRoundID = newRoundRes._id;
             setRoundID(createdRoundID);
-            console.log("Round: " + createdRoundID);
+            // console.log("Round: " + createdRoundID);
             // post("/api/initsocket", { socketid: socket.id });
             const shortenedRoundID = createdRoundID.slice(-6).toUpperCase();
             // navigate(`/race?id=${createdRoundID}`);
             navigate(`/race/?id=${shortenedRoundID}`);
         } catch (error) {
-            console.log(error);
-            console.log("error creating problem set or round :(");
+            // console.log(error);
+            // console.log("error creating problem set or round :(");
         }
     };
 
-    const BackgroundImageComponent = ({ imageUrl, children }) => {
-        const style = {
-            backgroundImage: `url(${imageUrl})`,
-            backgroundSize: 'cover', // Cover the entire space of the component
-            backgroundPosition: 'center', // Center the image
-            height: '100vh', // Set the height to fill the viewport
-            width: '100%', // Set the width to fill its container
-        };
-    
-        return <div style={style}>{children}</div>;
-    };
+    // const backgroundImageStyle = () => {
+    //     return {
+    //         backgroundImage: `url(${successful_beaver})`,
+    //         backgroundSize: 'cover',
+    //         backgroundPosition: 'center',
+    //         filter: 'blur(5px)',
+    //         zIndex: -1,
+    //     };
+    // };
 
     return (
       <>
@@ -246,7 +239,7 @@ const Home = (props) => {
                 <div>{new_username} is not valid</div>
               </div>
             )}
-            <BackgroundImageComponent imageUrl="../../public/assets/beavers/default-game.png">
+            {/* <div style={backgroundImageStyle()}> */}
             <div className="Home-container">
               <div className="Home-main-rounded-div Home-sign-in">
                 {userId ? (
@@ -276,10 +269,10 @@ const Home = (props) => {
               </div>
               <div className="Home-main-rounded-div Home-multiplayer-random">
                 <div className="Home-headline-text">
-                  Beaver Racer - The {game.title} Competition
+                  The {game.title} Race
                 </div>
                 <div className="Home-subheadline-text">
-                  Increase your {game.title} speed while racing against other beavers!
+                  Race your beaver friends in {game.title}!
                 </div>
                 {/* <Link to="/race"> */}
 
@@ -301,14 +294,13 @@ const Home = (props) => {
               </div>
               <div className="Home-two-divs">
                 <div className="Home-main-rounded-div Home-individual">
-                  <div className="Home-headline-text">{game.title} Test</div>
+                  <div className="Home-headline-text">Individual Practice</div>
                   <div className="Home-subheadline-text">
-                    {" "}
-                    Practice your skills on your own!{" "}
+                    Practice your skills on your own!
                   </div>
                   <Link to={`/${game.url}/indiv`}>
                     <button className="u-pointer Home-button Home-practice-yourself-button">
-                      Individual Practice
+                      Practice Race
                     </button>
                   </Link>
                   {/* <img src={lonely_beaver} className="Home-individual-image" /> */}
@@ -354,7 +346,7 @@ const Home = (props) => {
                 { game.title && <Leaderboard userId={userId} current_username={current_username} gameTitle={game.title} /> }
               </div>
             </div>
-            </BackgroundImageComponent>
+            {/* </div>   */}
           </>
         )}
       </>

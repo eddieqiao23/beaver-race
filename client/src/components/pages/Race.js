@@ -13,7 +13,6 @@ import "./Race.css";
 import Leaderboard from "../modules/Leaderboard.js";
 import { getRandomProblem } from "./Home"
 
-const TOTAL_QUESTIONS = 2;
 const round_time = 120;
 
 // Page that displays all elements of a multiplayer race
@@ -59,8 +58,6 @@ const Race = (props) => {
     const newShortenedRoundIDRef = useRef(newShortenedRoundID);
 
     let userId = props.userId;
-    // console.log(userId);
-    // console.log(useLocation());
 
     if (!userId) {
         try {
@@ -83,6 +80,10 @@ const Race = (props) => {
     const [gameURL, setGameURL] = useState(null);
     let gameRef = useRef(game);
     // const { game_url } = useParams();
+
+    const [numQuestions, setNumQuestions] = useState(10);
+    const numQuestionsRef = useRef(numQuestions);
+
 
 
     const getRoundInfo = async () => {
@@ -137,8 +138,10 @@ const Race = (props) => {
                 .then((newGame) => {
                     setGame(newGame);
                     gameRef.current = newGame;
+                    numQuestionsRef.current = newGame.questions_per_round;
                     console.log(game);
                     console.log(newGame);
+                    console.log(numQuestionsRef.current);
                 })
                 .catch((error) => {
                     console.error("Error fetching game:", error);
@@ -221,7 +224,7 @@ const Race = (props) => {
 
                         if (!emittedPlacingRef.current) {
                             // Checks if round is over
-                            if (data[i]["id"] === userId && data[i]["score"] >= TOTAL_QUESTIONS) {
+                            if (data[i]["id"] === userId && data[i]["score"] >= numQuestionsRef.current) {
                                 socket.emit("finishGame", roundIDRef.current, userId);
                                 finished = true;
                                 setGameFinished(true);
@@ -259,7 +262,7 @@ const Race = (props) => {
                     if (timeUntil > 0 && update[roundIDRef.current]["started"]) {
                         setPreGameTimer(Math.floor(timeUntil / 1000) + 1);
                         setPreGameTimerOpacity(Math.abs((timeUntil % 1000) - 0.5) / 1000);
-                        // console.log("updating preround timer");
+                       console.log("updating preround timer");
                     } else if (timeUntil <= 0 && update[roundIDRef.current]["started"]) {
                         setPreGameTimer(0);
                         setRaceStarted(true);
@@ -291,11 +294,11 @@ const Race = (props) => {
     useEffect(() => {
         const updatePastGames = async () => {
             console.log(round_time, roundTimer, score);
-            setSpqScore(((round_time - roundTimer) / TOTAL_QUESTIONS).toFixed(2));
+            setSpqScore(((round_time - roundTimer) / numQuestionsRef.current).toFixed(2));
             if (roundFinished && userId && notUpdatedGame && score > 0) {
                 await post(`/api/update_user_pastrounds`, {
                   userId: userId,
-                  score: TOTAL_QUESTIONS,
+                  score: numQuestionsRef.current,
                   time: round_time - roundTimer,
                   gameTitle: game.title
                 });
@@ -443,7 +446,7 @@ const Race = (props) => {
               <div className="Race-beaver-river">
                 {players.map((player, index) => (
                   <div className="Race-beaver-bar">
-                    <div style={{ marginLeft: `${scores[index] * 560/TOTAL_QUESTIONS}px` }}>
+                    <div style={{ marginLeft: `${scores[index] * 560/numQuestionsRef.current}px` }}>
                       <img src={beaver_image} className="Race-beaver-image" />
                       <div className="Race-username">{usernames[index]}</div>
                     </div>

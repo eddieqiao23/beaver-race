@@ -7,7 +7,8 @@ import { move } from "../../client-socket";
 const MultiQuestion = (props) => {
     const [currProblem, setCurrProblem] = useState(0);
     const inputRef = useRef();
-    const [fontSize, setFontSize] = useState(null);
+    const [fontSize, setFontSize] = useState(24);
+    const fontSizeRef = useRef(fontSize);
 
     let score = props.score;
     let setScore = props.setScore;
@@ -31,16 +32,28 @@ const MultiQuestion = (props) => {
         }
     };
 
+    let text = "";
     useEffect(() => {
+        // console.log(score);
+        console.log(questions);
         if (questions[score]) {
+            // console.log(questions[score]);
             const questionLength = questions[score].length;
-            if (questionLength < 30) {
-                setFontSize(24);
-            } else if (questionLength < 50) {
-                setFontSize(20);
-            } else {
-                setFontSize(12);
-            }    
+            console.log(questions[score]);
+            console.log(questionLength);
+
+            if (questionLength < 10) {
+                fontSizeRef.current = 40;
+            }
+            else if (questionLength < 30) {
+                fontSizeRef.current = 30;
+            } 
+            else if (questionLength < 50) {
+                fontSizeRef.current = 20;
+            } 
+            else {
+                fontSizeRef.current = 16;
+            }
         }
     }, [score]);
 
@@ -54,7 +67,7 @@ const MultiQuestion = (props) => {
                         <div>
                             <div className="MultiQuestion-container">
                                 <div className="MultiQuestion-score">Score: {score}</div>
-                                <div className="MultiQuestion-problem" style={{ fontSize: `${fontSize}pt`}}>{questions[score]}</div>
+                                <div className="MultiQuestion-problem" style={{ fontSize: `${fontSizeRef.current}pt`}}>{questions[score]}</div>
                                 <div className="MultiQuestion-answer-box">
                                     <input
                                         type="text"

@@ -1,40 +1,43 @@
-.form-container {
+.CreateGame-form-container {
     max-width: 500px;
     margin: 50px auto;
     padding: 20px;
-    background-color: #f9f9f9;
+    background-color: #333; /* Dark background */
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #000000; /* Light text */
 }
 
-.form-container label {
+.CreateGame-form-container label {
     display: block;
     margin-bottom: 8px;
-    color: #333;
+    color: #f9f9f9; /* Light text */
     font-weight: 500;
 }
 
-.form-container input[type="text"],
-.form-container input[type="number"],
-.form-container textarea {
+.CreateGame-form-container input[type="text"],
+.CreateGame-form-container input[type="number"],
+.CreateGame-form-container textarea {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
-    border: 1px solid #ccc;
+    border: 1px solid #555;
     border-radius: 4px;
     font-size: 16px;
     box-sizing: border-box;
+    background-color: #555; /* Dark input fields */
+    color: #f9f9f9; /* Light text */
 }
 
-.form-container textarea {
+.CreateGame-form-container textarea {
     height: 100px;
     resize: vertical;
 }
 
-.form-container button {
+.CreateGame-form-container button {
     width: 100%;
     padding: 10px 15px;
-    background-color: #007bff;
+    background-color: var(--secondary);
     color: white;
     border: none;
     border-radius: 4px;
@@ -43,6 +46,11 @@
     transition: background-color 0.3s ease;
 }
 
-.form-container button:hover {
-    background-color: #0056b3;
+.CreateGame-form-container button:hover {
+    background-color: var(--secondary-dim);
+}
+
+.CreateGame-small-description {
+    font-size: 14px; /* Small font size */
+    font-style: italic; /* Italic text */
 }
