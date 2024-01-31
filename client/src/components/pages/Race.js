@@ -292,9 +292,9 @@ const Race = (props) => {
         return () => {
             socket.off("update");
             socket.off("alreadyInGame");
-            // if (socket.readyState === 1) {
-            //   socket.close();
-            // }
+            if (socket.readyState === 1) {
+              socket.close();
+            }
         };
     }, [loggedIn, roundIDRef.current]);
 
