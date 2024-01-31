@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import Question from "../modules/Question.js";
 
 import beaver_image from "../../public/assets/beavers/beaver_picture.png";
+import beaver_background from "../../public/assets/beavers/beaver-background.png";
 import logs from "../../public/assets/beavers/logs.png";
 
 import { get, post } from "../../utilities.js";
@@ -255,7 +256,18 @@ const Indiv = (props) => {
         }
     }, [newRoundID, game]);
 
+    const backgroundImageStyle = () => {
+        return {
+          backgroundImage: `url(${beaver_background})`,
+          backgroundPosition: 'center',
+          filter: 'blur(3px)',
+          zIndex: -1,
+        };
+    };
+
     return (
+        <>
+        <div style={backgroundImageStyle()}className="Race-background"></div>
         <div className="Indiv-container">
             <div className="Indiv-round">
                 {newRoundID === "" ? (
@@ -334,6 +346,7 @@ const Indiv = (props) => {
                 </>
             }
         </div>
+        </>
     );
 };
 

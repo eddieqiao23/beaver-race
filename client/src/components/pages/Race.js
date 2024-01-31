@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import MultiQuestion from "../modules/MultiQuestion.js";
 
 import beaver_image from "../../public/assets/beavers/beaver_picture.png";
+import beaver_background from "../../public/assets/beavers/beaver-background.png";
 import logs from "../../public/assets/beavers/logs.png";
 
 import { get, post } from "../../utilities";
@@ -514,6 +515,14 @@ const Race = (props) => {
       }
     }, [game])
 
+    const backgroundImageStyle = () => {
+        return {
+          backgroundImage: `url(${beaver_background})`,
+          backgroundPosition: 'center',
+          filter: 'blur(3px)',
+          zIndex: -1,
+        };
+    };
 
     const [title, setTitle] = useState(null);
     useEffect(() => {
@@ -523,6 +532,7 @@ const Race = (props) => {
       <>
         {(loggedIn && finishedJoinGameRef.current) ? (
           <div className="Race-container">
+            <div style={backgroundImageStyle()}className="Race-background"></div>
             <div className="Race-header">{title}</div>
             <div className="Race-headline-text">
               {roundFinished ? (

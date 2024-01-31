@@ -283,22 +283,22 @@ const Home = (props) => {
         }
     };
 
-    function getImage(game) {
-      try {
-          // console.log(game.url);
-          return require(`../../public/assets/beavers/${game.url}.png`).default;
-      } catch (err) {
-          // console.log(err);
-          return require(`../../public/assets/beavers/default-game.png`).default;
-      }
-    }
+    // function getImage(game) {
+    //   try {
+    //       // console.log(game.url);
+    //       return require(`../../public/assets/beavers/${game.url}.png`).default;
+    //   } catch (err) {
+    //       // console.log(err);
+    //       return require(`../../public/assets/beavers/default-game.png`).default;
+    //   }
+    // }
 
     const backgroundImageStyle = () => {
         return {
           // backgroundImage: `url(${getImage(game)})`,
           backgroundImage: `url(${beaver_background})`,
           backgroundPosition: 'center',
-          // filter: 'blur(20px)',
+          filter: 'blur(1px)',
           zIndex: -1,
         };
     };
