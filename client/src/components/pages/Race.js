@@ -203,6 +203,7 @@ const Race = (props) => {
                     }
                     catch {
                         navigate("/");
+                        navigate(0);
                     }
 
                     // Reads in the data from JSON format

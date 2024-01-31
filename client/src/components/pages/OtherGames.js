@@ -15,6 +15,7 @@ const OtherGames = (props) => {
     const [gamesLoaded, setGamesLoaded] = useState(false);
     const priorityUrls = ['24', 'arithmetic', 'taylor-swift-lyrics', 'mit-course-numbers', 'periodic-table-quiz', 'us-capitals'];
     const lastUrls = ['create-game']
+    const navigate = useNavigate();
 
     document.documentElement.style.setProperty("--primary", "#212121");
     document.documentElement.style.setProperty("--secondary", "#a688fa");
@@ -125,22 +126,15 @@ const OtherGames = (props) => {
         };
     };
 
-    useEffect(() => {
-        function checkScroll() {
-            if (opacity < 0.1) {
-                const scrollPosition = window.pageYOffset;
-                const windowHeight = window.innerHeight;
-                
-                // Calculate the opacity based on the scroll position
-                const newOpacity = Math.min(Math.pow(scrollPosition / windowHeight, 1.3), 1);
-                
-                // Set the opacity state variable
-                setOpacity(newOpacity);
-            } else {
-                setOpacity(1);
-            }
-        }
+    function checkScroll() {
+        const scrollPosition = window.pageYOffset;
+        const windowHeight = window.innerHeight;
+    
+        const newOpacity = Math.min(Math.pow(scrollPosition / windowHeight, 1.1), 1);
+        setOpacity(newOpacity);
+    }
 
+    useEffect(() => {
         window.addEventListener('scroll', checkScroll);
     
         // Cleanup function to remove the event listener when the component unmounts
