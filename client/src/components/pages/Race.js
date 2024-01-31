@@ -515,8 +515,8 @@ const Race = (props) => {
 
     const [title, setTitle] = useState(null);
     useEffect(() => {
-        setTitle(<div> {game.title} Race </div>);
-    }, [game])
+        setTitle(<div> {gameRef.current.title} Race </div>);
+    }, [gameRef.current])
     return (
       <>
         {(loggedIn && finishedJoinGameRef.current) ? (
