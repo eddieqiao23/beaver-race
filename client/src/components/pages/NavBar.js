@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin, googleLogout } from "@react-oauth/google";
 
@@ -13,6 +13,16 @@ const GOOGLE_CLIENT_ID = "956478673522-odt9nc158u9obsuqpeb16s3uiabon4lf.apps.goo
  * The navigation bar at the top of all pages. Takes no props.
  */
 const NavBar = ({ userId, handleLogin, handleLogout }) => {
+    const [roundCode, setGameCode] = useState("");
+    const tryGameCode = () => {
+      if (roundCode.length !== 6) {
+        setGameCode("");
+        return;
+      }
+      navigate(`/race/?id=${roundCode}`);
+      setGameCode("");
+    };
+
     return (
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
             <nav className="NavBar-container">
@@ -28,16 +38,34 @@ const NavBar = ({ userId, handleLogin, handleLogout }) => {
                     <button className="NavBar-button">Play More Games!</button>
                 </Link>
 
+                <Link to="/create_game">
+                    <button className="NavBar-button">Create Game</button>
+                </Link>
+
                 <a
                     href="https://forms.gle/hhnryvakyackzM467"
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    <button className="NavBar-button">report bug</button>
+                    <button className="NavBar-button">Report Bug</button>
                 </a>
 
                 <div className="u-inlineBlock NavBar-auth-button">
                     {userId ? (
+                        <>
+                        <input
+                            className="u-inlineBlock NavBar-game-code Home-white-placeholder"
+                            placeholder="Enter Code"
+                            type="text"
+                            value={roundCode}
+                            onChange={(e) => setGameCode(e.target.value.toUpperCase())}
+                            onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault(); // prevent form submission
+                                tryGameCode();
+                            }
+                            }}
+                        ></input>
                         <button
                             className="u-pointer NavBar-sign-in-button"
                             onClick={() => {
@@ -47,6 +75,7 @@ const NavBar = ({ userId, handleLogin, handleLogout }) => {
                         >
                             Logout
                         </button>
+                        </>
                     ) : (
                         <GoogleLogin onSuccess={handleLogin} onError={(err) => console.log(err)} />
                     )}

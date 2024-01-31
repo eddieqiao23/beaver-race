@@ -41,7 +41,7 @@ const Indiv = (props) => {
             })
             .catch((error) => {
                 console.error("Error fetching game:", error);
-                const newGame = {title: "Math", url: "zetamac"};
+                const newGame = {title: "Arithmetic", url: "arithmetic"};
                 setGame(newGame);
             });
     }, []);
@@ -237,9 +237,9 @@ const Indiv = (props) => {
                             <div className="u-inlineBlock">
                                 {!roundFinished ? "Get to the logs asap!" : 
                                 <Link to={`/${game.url}`}>
-                                    <div className="Indiv-return-page">
+                                    <button className="Indiv-return-page">
                                         Return to game page
-                                    </div>
+                                    </button>
                                 </Link>
                                 }
                             </div>
@@ -249,7 +249,7 @@ const Indiv = (props) => {
                         </div>
                         <div className="Indiv-beaver-river">
                             <div className="Indiv-beaver-bar">
-                                <div style={{ marginLeft: `${score * 50}px` }}>
+                                <div style={{ marginLeft: `${score * 500/TOTAL_QUESTIONS}px` }}>
                                     <img src={beaver_image} className="Indiv-beaver-image" />
                                 </div>
                                 <div

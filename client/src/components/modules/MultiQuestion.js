@@ -7,6 +7,7 @@ import { move } from "../../client-socket";
 const MultiQuestion = (props) => {
     const [currProblem, setCurrProblem] = useState(0);
     const inputRef = useRef();
+    const [fontSize, setFontSize] = useState(null);
 
     let score = props.score;
     let setScore = props.setScore;
@@ -30,6 +31,19 @@ const MultiQuestion = (props) => {
         }
     };
 
+    useEffect(() => {
+        if (questions[score]) {
+            const questionLength = questions[score].length;
+            if (questionLength < 30) {
+                setFontSize(24);
+            } else if (questionLength < 50) {
+                setFontSize(20);
+            } else {
+                setFontSize(12);
+            }    
+        }
+    }, [score]);
+
     return (
         <div>
             {!doneLoading ? (
@@ -40,7 +54,7 @@ const MultiQuestion = (props) => {
                         <div>
                             <div className="MultiQuestion-container">
                                 <div className="MultiQuestion-score">Score: {score}</div>
-                                <div className="MultiQuestion-problem">{questions[score]}</div>
+                                <div className="MultiQuestion-problem" style={{ fontSize: `${fontSize}pt`}}>{questions[score]}</div>
                                 <div className="MultiQuestion-answer-box">
                                     <input
                                         type="text"

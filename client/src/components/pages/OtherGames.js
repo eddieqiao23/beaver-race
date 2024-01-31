@@ -21,6 +21,48 @@ const OtherGames = (props) => {
     // }, []);
 
     useEffect(() => {
+        const konamiCodeSequence = [
+            "ArrowUp",
+            "ArrowUp",
+            "ArrowDown",
+            "ArrowDown",
+            "ArrowLeft",
+            "ArrowRight",
+            "ArrowLeft",
+            "ArrowRight",
+            "b",
+            "a",
+            "Enter",
+        ];
+        let currentInput = [];
+
+        const handleKeyDown = (event) => {
+            currentInput.push(event.key);
+
+            // Ensure the length of current input does not exceed the Konami Code length
+            currentInput = currentInput.slice(-konamiCodeSequence.length);
+
+            if (JSON.stringify(currentInput) === JSON.stringify(konamiCodeSequence)) {
+                // Change CSS variable when Konami Code is entered
+                if (
+                    getComputedStyle(document.documentElement).getPropertyValue("--secondary") ==
+                    "#a688fa"
+                ) {
+                    document.documentElement.style.setProperty("--secondary", "#FF8C00");
+                } else {
+                    document.documentElement.style.setProperty("--secondary", "#a688fa");
+                }
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
+
+    useEffect(() => {
         get("/api/get_all_games").then((res) => {
             setAllGames(res.games);
             console.log(allGames);
@@ -29,27 +71,67 @@ const OtherGames = (props) => {
 
     function getImage(game) {
         try {
-            console.log();
+            console.log(game.url);
             return require(`../../public/assets/beavers/${game.url}.png`).default;
         } catch (err) {
-            return require(`../../public/assets/beavers/successful_beaver.png`).default;
+            console.log(err);
+            return require(`../../public/assets/beavers/default-game.png`).default;
         }
     }
+
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const handleChange = event => {
+        setSearchTerm(event.target.value);
+    };
+
+    const filteredGames = allGames.filter(game =>
+        game.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
     
     return (
         <>
-            <div className="grid-container">
-                {allGames.map((game, index) => {
+            <div className="OtherGames-headline-container">
+                <div className="OtherGames-headline-text">
+                    Welcome to Beaver Race!
+                </div>
+                <div className="OtherGames-sub-text">
+                    Select a game from below or create your own
+                </div>
+                <div>
+                    <input
+                        className="OtherGames-search-bar"
+                        type="text"
+                        placeholder="Search..."
+                        value={searchTerm}
+                        onChange={handleChange}
+                    />
+                </div>
+            </div>
+            <div className="OtherGames-grid-container">
+                { filteredGames ? 
+                    filteredGames.map((game, index) => {
+                        const image = getImage(game);
+                        return (image ? (
+                            <Link to={`/${game.url}`}>
+                                <div className="OtherGames-grid-item">
+                                    <img src={image} alt={game.title}></img>
+                                    <div className="OtherGames-tile-name">{game.title}</div>
+                                </div>
+                            </Link>
+                        ) : null)})  
+                    : 
+                    allGames.map((game, index) => {
                     const image = getImage(game);
-                    return image ? (
+                    return (image ? (
                         <Link to={`/${game.url}`}>
-                            <div className="grid-item">
+                            <div className="OtherGames-grid-item">
                                 <img src={image} alt={game.title}></img>
-                                <div className="tile-name">{game.title}</div>
+                                <div className="OtherGames-tile-name">{game.title}</div>
                             </div>
                         </Link>
-                    ) : null;
-                })}
+                    ) : null)})
+                }
             </div>
         </>
     )

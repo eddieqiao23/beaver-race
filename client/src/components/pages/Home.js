@@ -19,7 +19,7 @@ import { get, post } from "../../utilities";
 import Leaderboard from "../modules/Leaderboard.js";
 
 export const getRandomProblem = (game) => {
-    if (game.title === "Math") {
+    if (game.title === "Arithmetic") {
         let sign = Math.floor(Math.random() * 2); // 0 = +, *, 1 = -, /
         let num1 = 0;
         let num2 = 0;
@@ -70,7 +70,7 @@ const Home = (props) => {
     let game_url = useParams().game_url;
     useEffect(() => {
         if (game_url === undefined) {
-            const newGame = {title: "Math", url: "zetamac"};
+            const newGame = {title: "Arithmetic", url: "arithmetic"};
             setGame(newGame);
             setIsLoading(false);
         }
@@ -209,6 +209,17 @@ const Home = (props) => {
         }
     };
 
+    const BackgroundImageComponent = ({ imageUrl, children }) => {
+        const style = {
+            backgroundImage: `url(${imageUrl})`,
+            backgroundSize: 'cover', // Cover the entire space of the component
+            backgroundPosition: 'center', // Center the image
+            height: '100vh', // Set the height to fill the viewport
+            width: '100%', // Set the width to fill its container
+        };
+    
+        return <div style={style}>{children}</div>;
+    };
 
     return (
       <>
@@ -235,6 +246,7 @@ const Home = (props) => {
                 <div>{new_username} is not valid</div>
               </div>
             )}
+            <BackgroundImageComponent imageUrl="../../public/assets/beavers/default-game.png">
             <div className="Home-container">
               <div className="Home-main-rounded-div Home-sign-in">
                 {userId ? (
@@ -267,7 +279,7 @@ const Home = (props) => {
                   Beaver Racer - The {game.title} Competition
                 </div>
                 <div className="Home-subheadline-text">
-                  Increase your {game.title}ing speed while racing against other beavers!
+                  Increase your {game.title} speed while racing against other beavers!
                 </div>
                 {/* <Link to="/race"> */}
 
@@ -342,6 +354,7 @@ const Home = (props) => {
                 { game.title && <Leaderboard userId={userId} current_username={current_username} gameTitle={game.title} /> }
               </div>
             </div>
+            </BackgroundImageComponent>
           </>
         )}
       </>

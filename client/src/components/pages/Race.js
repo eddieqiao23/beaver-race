@@ -13,7 +13,7 @@ import "./Race.css";
 import Leaderboard from "../modules/Leaderboard.js";
 import { getRandomProblem } from "./Home"
 
-const TOTAL_QUESTIONS = 10;
+const TOTAL_QUESTIONS = 2;
 const round_time = 120;
 
 // Page that displays all elements of a multiplayer race
@@ -426,18 +426,15 @@ const Race = (props) => {
             <div className="Race-header">{title}</div>
             <div className="Race-headline-text">
               {roundFinished ? (
-                <div className="u-inlineBlock">Great job beaver!</div>
+                <Link to={`/${gameURL}`}>
+                    <button className="Race-return-page">
+                        Return to game page
+                    </button>
+                </Link>
               ) : (
                 <div className="u-inlineBlock">
                   {!preGameTimerStarted ? `Game Code: ${shortenedGameID}` : null}
                   {(!roundFinished && preGameTimerStarted) ? "Get to the logs asap!" : null}
-                  {roundFinished ? 
-                    <Link to={`/${game.url}`}>
-                        
-                        where to find game.url?
-
-                        Return to game page
-                    </Link> : null}
                 </div>
               )}
               <div className="u-inlineBlock">Remaining time: {roundTimer.toFixed(0)}</div>
@@ -446,7 +443,7 @@ const Race = (props) => {
               <div className="Race-beaver-river">
                 {players.map((player, index) => (
                   <div className="Race-beaver-bar">
-                    <div style={{ marginLeft: `${scores[index] * 58}px` }}>
+                    <div style={{ marginLeft: `${scores[index] * 560/TOTAL_QUESTIONS}px` }}>
                       <img src={beaver_image} className="Race-beaver-image" />
                       <div className="Race-username">{usernames[index]}</div>
                     </div>

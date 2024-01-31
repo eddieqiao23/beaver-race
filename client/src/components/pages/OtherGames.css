@@ -1,34 +1,36 @@
-.grid-container {
+.OtherGames-grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adjust the minmax values as needed */
-    gap: 80px; /* Increased gap between items */
-    padding: 20px;
+    row-gap: 30px;
+    column-gap: 80px;
+    padding-top: 20px;
     max-width: 80%; /* Maximum width of the grid container */
     margin: auto; /* Center the container horizontally */
+    padding-bottom: 20px;
 }
 
-.grid-item {
+.OtherGames-grid-item {
     position: relative; /* Allows absolute positioning inside */
     background-color: #333; /* Dark background for the tile */
     border-radius: 10px; /* Rounded corners for the tile */
     overflow: hidden; /* Ensures the image fits within the tile */
-    width: 300px; /* Width of the square tile */
-    height: 200px; /* Height of the square tile */
+    width: 300px;
+    height: 200px;
     margin: auto;
 }
 
-.grid-item img {
+.OtherGames-grid-item img {
     width: 100%;
     height: 100%; /* Makes the image cover the entire area of the tile */
     object-fit: cover; /* Ensures the image covers the tile area without stretching */
     transition: transform 0.3s ease-in-out; /* Smooth transition for hover effect */
 }
 
-.grid-item:hover img {
+.OtherGames-grid-item:hover img {
     transform: scale(1.1); /* Scales up the image on hover */
 }
 
-.tile-name {
+.OtherGames-tile-name {
     position: absolute;
     top: 50%; /* Adjust this value to move the banner up */
     left: 0;
@@ -39,3 +41,46 @@
     padding: 5px 0; /* Padding for the banner */
     font-size: 2em;
 }
+
+.OtherGames-headline-container {
+    width: 60%;
+    margin: 0 auto;
+    background-color: var(--primary);
+    color: var(--white);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    margin-top: 15px;
+}
+
+.OtherGames-headline-text {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.OtherGames-sub-text {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.OtherGames-search-bar {
+    width: 100%;
+    padding: 12px 20px;
+    margin-top: 10px;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 25px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    transition: box-shadow 0.3s;
+    background-color: #333; /* Dark background */
+    color: #fff; /* Light text */
+  }
+  
+  .OtherGames-search-bar:focus {
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2);
+    outline: 0;
+  }

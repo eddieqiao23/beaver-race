@@ -24,7 +24,7 @@
 }
 
 .NavBar-linkContainer {
-    margin-left: var(--l);
+    margin-left: 20px;
 }
 
 .NavBar-link,
@@ -99,4 +99,16 @@
     vertical-align: bottom;
     font-size: 20px;
     font-family: "IBM Plex Sans";
+    margin-right: 20px;
+}
+
+.NavBar-game-code {
+    margin-left: 10px;
+    font-size: 20px;
+    border-radius: 10px;
+    background-color: var(--secondary);
+    color: var(--button--text);
+    padding: 8px;
+    width: 150px;
+    margin-right: 15px;
 }
