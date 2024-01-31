@@ -39,7 +39,7 @@
     width: 100%;
     padding: 10px 15px;
     background-color: var(--secondary);
-    color: white;
+    /* color: white; */
     border: none;
     border-radius: 4px;
     font-size: 18px;
@@ -54,4 +54,8 @@
 .CreateGame-small-description {
     font-size: 14px; /* Small font size */
     font-style: italic; /* Italic text */
+}
+
+.CreateGame-submit-button {
+    color: var(--button--text);
 }

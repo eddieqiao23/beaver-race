@@ -120,7 +120,7 @@ function CreateGame() {
                     <textarea value={qna} onChange={e => setQna(e.target.value)}></textarea>
                 </label>
 
-                <button type="submit">Submit</button>
+                <button className="CreateGame-submit-button" type="submit">Submit</button>
             </form>
         </div>
     );
