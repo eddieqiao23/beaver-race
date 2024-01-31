@@ -95,15 +95,21 @@ const Race = (props) => {
                 isHostRef.current = true;
             }
             setGameURL(round.game_url);
-            get("/api/get_problem_set_by_id", { problemSetID: round.problem_set_id }).then(
-                (problemSet) => {
-                    ("This displays the problem set for ID " + problemSet._id);
-                    setQuestions(problemSet.questions);
-                    setAnswers(problemSet.answers);
-                    setDoneLoading(true);
-                    (questions);
-                }
-            );
+            try {
+              get("/api/get_problem_set_by_id", { problemSetID: round.problem_set_id }).then(
+                  (problemSet) => {
+                      ("This displays the problem set for ID " + problemSet._id);
+                      setQuestions(problemSet.questions);
+                      setAnswers(problemSet.answers);
+                      setDoneLoading(true);
+                      (questions);
+                  }
+              );
+            }
+            catch {
+              navigate(`/${gameRef.current.url}`);
+              navigate(0);
+            }
         });
     };
 
@@ -453,6 +459,58 @@ const Race = (props) => {
             ("error creating problem set or round :(");
         }
     };
+
+    function hashStringToNumber(s) {
+      let hash = 0;
+      for (let i = 0; i < s.length; i++) {
+          const char = s.charCodeAt(i);
+          hash = ((hash << 5) - hash) + char;
+          hash |= 0; // Convert to 32bit integer
+      }
+      return hash;
+    }
+
+    const colorWheel = [
+      '#4f6377', '#4f6377', '#506477', '#506477', '#506577', '#506577', '#516677', '#516677', '#516777', '#526776',
+      '#526776', '#526876', '#526876', '#536976', '#536976', '#536a76', '#546a76', '#546b76', '#546b76', '#546b76',
+      '#556c76', '#556c76', '#556d76', '#566d76', '#566e76', '#566e75', '#566f75', '#576f75', '#576f75', '#577075',
+      '#577075', '#587175', '#587175', '#587275', '#597275', '#597375', '#597375', '#597375', '#5a7475', '#5a7475',
+      '#5a7575', '#5b7575', '#5b7674', '#5b7674', '#5b7774', '#5c7774', '#5c7774', '#5c7874', '#5d7874', '#5d7974',
+      '#5d7974', '#5d7a74', '#5e7a74', '#5e7b74', '#5e7b74', '#5f7b74', '#5f7c74', '#5f7c74', '#5f7d73', '#607d73',
+      '#607e73', '#607e73', '#617f73', '#617f73', '#617f73', '#618073', '#628073', '#628173', '#628173', '#638273',
+      '#638273', '#638373', '#638373', '#648373', '#648473', '#648472', '#648572', '#658572', '#658672', '#658672',
+      '#668772', '#668772', '#668772', '#668872', '#678872', '#678972', '#678972', '#688a72', '#688a72', '#688b72',
+      '#688b72', '#698b71', '#698c71', '#698c71', '#6a8d71', '#6a8d71', '#6a8e71', '#6a8e71', '#6b8f71', '#6b8f71'
+    ];
+
+    useEffect(() => {
+      if (game.title) {
+        const diff = 30
+        const hashIndex = Math.abs(hashStringToNumber(game.url)) % (colorWheel.length-diff);
+        const color1 = colorWheel[hashIndex];
+        const color2 = "#6C574B";
+        document.documentElement.style.setProperty("--primary", color1);
+        document.documentElement.style.setProperty("--secondary", color2);  
+        document.documentElement.style.setProperty("--primary--dim", color2);
+        // Calculate the brightness of the color
+        const brightness1 = Math.round(((parseInt(color1[0]) * 299) +
+        (parseInt(color1[1]) * 587) +
+        (parseInt(color1[2]) * 114)) / 1000);
+
+        // If the color is bright, set --text to black, otherwise set it to white
+        const textColor1 = brightness1 > 125 ? 'black' : 'white';
+        document.documentElement.style.setProperty("--text", textColor1);
+
+        // Calculate the brightness of the color
+        const brightness2 = Math.round(((parseInt(color2[0]) * 299) +
+        (parseInt(color2[1]) * 587) +
+        (parseInt(color2[2]) * 114)) / 1000);
+
+        // If the color is bright, set --text to black, otherwise set it to white
+        const textColor2 = brightness2 > 125 ? 'black' : 'white';
+        document.documentElement.style.setProperty("--button--text", textColor2);
+      }
+    }, [game])
 
 
     const [title, setTitle] = useState(null);
