@@ -128,3 +128,15 @@
     z-index: 1;
     font-size: 30px;
 }
+
+.OtherGames-background {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-size: cover;
+    background-attachment: fixed;
+    /* overflow: scroll; */
+    height: 100%;
+}

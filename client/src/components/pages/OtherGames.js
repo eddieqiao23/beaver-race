@@ -108,19 +108,41 @@ const OtherGames = (props) => {
         game.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const [opacity, setOpacity] = useState(0);
     const backgroundImageStyle = () => {
         return {
           backgroundImage: `url(${beaver_background})`,
           backgroundPosition: 'center',
-        //   filter: 'blur(20px)',
+          opacity: opacity,
           zIndex: -1,
         };
     };
+
+    function checkScroll() {
+        const scrollPosition = window.pageYOffset;
+        const windowHeight = window.innerHeight;
+    
+        // Calculate the opacity based on the scroll position
+        const newOpacity = scrollPosition / (windowHeight * 3);
+    
+        // Set the opacity state variable
+        setOpacity(newOpacity);
+    }
+
+    useEffect(() => {
+        window.addEventListener('scroll', checkScroll);
+    
+        // Cleanup function to remove the event listener when the component unmounts
+        return () => {
+            window.removeEventListener('scroll', checkScroll);
+        };
+    }, []);
     
     return (
         <>
+            <div style={backgroundImageStyle()}className="OtherGames-background"></div>
             <div className="OtherGames-headline-container">
-                <div className="OtherGames-headline-text">
+                <div className="OtherGames-headline-text Typing-animation">
                     Welcome to Beaver Race!
                 </div>
                 <div className="OtherGames-sub-text">
@@ -138,7 +160,6 @@ const OtherGames = (props) => {
             </div>
             {(gamesLoaded) ? (
                 <div className="OtherGames-grid-container">
-                    {/* <div style={backgroundImageStyle()} className="Home-background"></div> */}
                 { filteredGames ? 
                     filteredGames.map((game, index) => {
                         const image = getImage(game);

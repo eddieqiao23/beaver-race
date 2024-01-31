@@ -379,8 +379,8 @@ const Home = (props) => {
               <div className="Home-main-rounded-div Home-sign-in">
                 {userId ? (
                   <>
-                    <div className="u-inlineBlock Home-subheadline-text Home-username-text Home-typing-animation">
-                      Welcome to Beaver Race, {current_username}!
+                    <div className="u-inlineBlock Home-subheadline-text Home-username-text Typing-animation">
+                      Welcome to Beaver World, {current_username}!
                     </div>
                     <input
                       className="u-inlineBlock Home-username-button Home-white-placeholder Home-align-right Home-subheadline-text"
