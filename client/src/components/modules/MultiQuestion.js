@@ -10,6 +10,7 @@ const MultiQuestion = (props) => {
     const inputRef = useRef();
     const [fontSize, setFontSize] = useState(24);
     const fontSizeRef = useRef(fontSize);
+    const [inputValue, setInputValue] = useState('');
 
     let score = props.score;
     let setScore = props.setScore;
@@ -60,6 +61,19 @@ const MultiQuestion = (props) => {
             }    
         }
     };
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            if (inputValue) {
+                if (inputValue.toLowerCase() === answers[score].toLowerCase()) {
+                    setScore(score + 1);
+                    setInputValue('');
+                }
+            }
+        }, 200);
+
+        return () => clearInterval(timer);
+    }, []);
 
     useEffect(() => {
         // console.log(score);

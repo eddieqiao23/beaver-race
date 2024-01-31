@@ -6,7 +6,7 @@ const GameSchema = new mongoose.Schema({
     skip_time: Number,
     questions_per_round: Number,
     time_per_round: Number,
-    verified: Boolean,
+    verified: String,
     questions: [String],
     answers: [String],
 });

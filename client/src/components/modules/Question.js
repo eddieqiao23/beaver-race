@@ -11,6 +11,8 @@ const Question = (props) => {
     const inputRef = useRef();
     const [fontSize, setFontSize] = useState(24);
     const fontSizeRef = useRef(fontSize);
+    const [inputValue, setInputValue] = useState('');
+
 
     let score = props.score;
     let setScore = props.setScore;
@@ -54,6 +56,7 @@ const Question = (props) => {
     // }, [props.showAnswer, doneLoading])
 
     const handleInputChange = (event) => {
+        setInputValue(event.target.value);
         if (answers[0] === "24" && answers[1] === "24" && answers[2] === "24") {
             let questionNumbers = questions[score].split(", ").map(Number);
             questionNumbers.sort((a, b) => a - b);
@@ -86,6 +89,19 @@ const Question = (props) => {
             }    
         }
     };
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            if (inputValue) {
+                if (inputValue.toLowerCase() === answers[score].toLowerCase()) {
+                    setScore(score + 1);
+                    setInputValue('');
+                }
+            }
+        }, 200);
+
+        return () => clearInterval(timer);
+    }, []);
 
     useEffect(() => {
         // console.log(score);

@@ -78,11 +78,17 @@ const OtherGames = (props) => {
                 const bIsPriority = priorityUrls.includes(b.url);
                 const aIsLast = lastUrls.includes(a.url);
                 const bIsLast = lastUrls.includes(b.url);
+                const aIsUnverified = a.verified == "false";
+                const bIsUnverified = b.verified == "false";
 
                 if (aIsPriority && !bIsPriority) {
                     return -1;
                 } else if (!aIsPriority && bIsPriority) {
                     return 1;
+                } else if (aIsUnverified && !bIsUnverified) {
+                    return 1;
+                } else if (!aIsUnverified && bIsUnverified) {
+                    return -1;
                 } else if (aIsLast && !bIsLast) {
                     return 1;
                 } else if (!aIsLast && bIsLast) {

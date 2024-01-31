@@ -145,6 +145,7 @@ router.post("/create_game", (req, res) => {
         time_per_round: req.body.timePerRound,
         questions: req.body.questions,
         answers: req.body.answers,
+        verified: "false",
     });
     newGame.save().then((game) => res.send(game));
 });

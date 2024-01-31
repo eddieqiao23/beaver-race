@@ -206,7 +206,7 @@ const Indiv = (props) => {
         const createProblemSetAndRound = async () => {
             let questions = [];
             let answers = [];
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < numQuestionsRef.current+1; i++) {
                 let newQuestion = ""
                 while (true) {
                     newQuestion = getRandomProblem(game);

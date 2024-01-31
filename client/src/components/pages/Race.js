@@ -429,7 +429,7 @@ const Race = (props) => {
         ("started...");
         let questions = [];
         let answers = [];
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < numQuestionsRef.current+1; i++) {
             let newQuestion = getRandomProblem(gameRef.current);
             questions.push(newQuestion.question);
             answers.push(newQuestion.answer);
