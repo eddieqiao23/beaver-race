@@ -39,7 +39,7 @@ const Leaderboard = (props) => {
         get("/api/get_top_users", { sortMethod: sortMethod, gameTitle: gameTitle }).then((res) => {
             setTopUsers(res.users);
         });
-    }, [sortMethod, props.current_username]);
+    }, [sortMethod, props.current_username, props.notUpdatedgame, props.everyoneFinished]);
 
     return (
       <div className="Leaderboard-container">

@@ -72,6 +72,7 @@ const App = () => {
             <Routes>
                 <Route path="/" element={<OtherGames path="/" userId={userId} />} />
                 <Route path="/race" element={<Race path="/race" userId={userId} />} />
+                <Route path="/404" element={<NotFound />} />
                 <Route path="/:game_url/indiv" element={<Indiv path="/:game_url/indiv" userId={userId} />} />
                 {/* <Route path="/other_games" element={<OtherGames path="/other_games" userId={userId} />} /> */}
                 <Route path="/:game_url" element={<Home path="/:game_url" userId={userId} />} />

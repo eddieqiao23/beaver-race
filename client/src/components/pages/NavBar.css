@@ -5,14 +5,14 @@
 }
 
 .NavBar-title-beaver {
-    color: var(--white);
+    color: var(--text);
     font-size: 30px;
     margin-right: 5px;
     font-weight: bold;
 }
 
 .NavBar-title-race {
-    color: var(--white);
+    color: var(--text);
     font-size: 30px;
     margin-right: 20px;
     background-color: var(--secondary);
@@ -29,7 +29,7 @@
 
 .NavBar-link,
 .NavBar-link:visited {
-    color: var(--white);
+    color: var(--text);
     opacity: 0.6;
     text-decoration: none;
 }
@@ -74,7 +74,7 @@
     transform: translate(-50%, -50%);
     border-radius: 20px;
     background-color: var(--primary--dim);
-    color: var(--white);
+    color: var(--text);
     margin-top: 20px;
     margin-bottom: 20px;
     padding: 20px;
@@ -91,7 +91,7 @@
 
 .NavBar-button {
     background-color: transparent;
-    color: var(--white);
+    color: var(--text);
     border: none;
     border-radius: 5px;
     padding: var(--s) var(--s);

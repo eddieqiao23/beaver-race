@@ -2,7 +2,7 @@
     padding: var(--s) var(--m);
     background-color: var(--primary);
     /* background: linear-gradient(var(--primary), var(--primary--dim)); */
-    color: var(--white);
+    color: var(--text);
     font-family: "IBM Plex Sans";
 
     text-align: center;

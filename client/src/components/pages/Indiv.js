@@ -14,8 +14,7 @@ import Leaderboard from "../modules/Leaderboard.js";
 
 import { getRandomProblem } from "./Home";
 
-const TOTAL_QUESTIONS = 2;
-const ROUND_TIME = 120;
+const ROUND_TIME = 240;
 
 // Page that displays all elements of a multiplayer race
 const Indiv = (props) => {
@@ -32,19 +31,20 @@ const Indiv = (props) => {
     const [game, setGame] = useState({});
     const { game_url } = useParams();
 
+    const [numQuestions, setNumQuestions] = useState(10);
+    const numQuestionsRef = useRef(numQuestions);
+
+    const [showAnswer, setShowAnswer] = useState(false);
+
     useEffect(() => {
-        get("/api/get_game_by_url", { url: game_url })
+        if (game_url) {
+            get("/api/get_game_by_url", { url: game_url })
             .then((newGame) => {
                 setGame(newGame);
-                console.log(game);
-                // console.log(newGame);
-            })
-            .catch((error) => {
-                console.error("Error fetching game:", error);
-                const newGame = {title: "Arithmetic", url: "arithmetic"};
-                setGame(newGame);
+                numQuestionsRef.current = newGame.questions_per_round;
             });
-    }, []);
+        }
+    }, [game_url]);
     
     // Timer for the round (120 sec)
     useEffect(() => {
@@ -75,7 +75,7 @@ const Indiv = (props) => {
 
     // Check if the round is over
     useEffect(() => {
-        if (score === TOTAL_QUESTIONS) {
+        if (score === numQuestionsRef.current) {
             setGameFinished(true);
             roundFinishedRef.current = true;
         }
@@ -141,6 +141,29 @@ const Indiv = (props) => {
         };
     }, []);
 
+    const skipQuestion = () => {
+        setRoundTimer(roundTimer - 5);
+        setScore(score + 1);
+    }
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === "Tab" && roundStarted && !roundFinished) {
+                setShowAnswer(true);    
+                setTimeout(() => {
+                    setShowAnswer(false);
+                    skipQuestion();
+                }, 2000);
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    })
+
     // Enter to reset the round
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -160,12 +183,12 @@ const Indiv = (props) => {
     // After the round is over, update the user's past rounds
     useEffect(() => {
         const updatePastGames = async () => {
-            setSpqScore(((ROUND_TIME - roundTimer) / TOTAL_QUESTIONS).toFixed(2));
+            setSpqScore(((ROUND_TIME - roundTimer) / numQuestionsRef.current).toFixed(2));
             // console.log(roundFinished + " " + props.userId + " " + notUpdatedGame + " " + score);
             if (roundFinished && props.userId && notUpdatedGame && score > 0) {
                 await post(`/api/update_user_pastrounds`, {
                     userId: props.userId,
-                    score: TOTAL_QUESTIONS,
+                    score: numQuestionsRef.current,
                     time: ROUND_TIME - roundTimer,
                     gameTitle: game.title
                 });
@@ -249,18 +272,18 @@ const Indiv = (props) => {
                         </div>
                         <div className="Indiv-beaver-river">
                             <div className="Indiv-beaver-bar">
-                                <div style={{ marginLeft: `${score * 500/TOTAL_QUESTIONS}px` }}>
+                                <div style={{ marginLeft: `${score * 500/numQuestionsRef.current}px` }}>
                                     <img src={beaver_image} className="Indiv-beaver-image" />
                                 </div>
                                 <div
-                                    className={`${score === TOTAL_QUESTIONS ? "Indiv-highlighted-log" : "Indiv-log"}`}
+                                    className={`${score === numQuestionsRef.current ? "Indiv-highlighted-log" : "Indiv-log"}`}
                                 >
                                     <img src={logs} className="Indiv-log-image" />
                                 </div>
                             </div>
                         </div>
                         {roundStarted && !roundFinished && (
-                            <Question roundID={newRoundID} score={score} setScore={setScore} />
+                            <Question roundID={newRoundID} score={score} setScore={setScore} showAnswer={showAnswer} game={game}/>
                         )}
                         {!roundStarted ? (
                             <div className="Indiv-round-start-container">
@@ -288,12 +311,22 @@ const Indiv = (props) => {
                         </button>
                     </div>
                     <div className="Indiv-leaderboard">
-                        {!notUpdatedGame && <Leaderboard userId={props.userId} gameTitle={game.title}/>}
+                        <Leaderboard userId={props.userId} gameTitle={game.title} notUpdatedGame={notUpdatedGame}/>
                     </div>
                 </>
             ) : (
                 <div></div>
             )}
+            {roundFinished ? null :
+                <>
+                    <div className="Race-key-presses">
+                        Tab to skip question and see answer (5 second penalty)
+                    </div>
+                    <div className="Race-key-presses">
+                        Ctrl or Cmd + Enter to restart
+                    </div>
+                </>
+            }
         </div>
     );
 };

@@ -20,22 +20,24 @@
     },
     "dependencies": {
         "@react-oauth/google": "^0.6.0",
+        "bad-words": "3.0.4",
         "connect-ensure-login": "^0.1.1",
         "core-js": "^3.27.2",
         "express": "^4.17.1",
         "express-session": "^1.17.1",
         "google-auth-library": "^8.7.0",
         "jwt-decode": "^3.1.2",
+        "mathjs": "^12.3.0",
         "mongodb": "^6.3.0",
         "mongoose": "^6.12.5",
         "nodemon": "^2.0.6",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
+        "react-icons": "^5.0.1",
         "react-router-dom": "^6.7.0",
         "socket.io": "^2.3.0",
         "socket.io-client": "^2.3.1",
-        "url-loader": "^4.1.1",
-        "bad-words": "3.0.4"
+        "url-loader": "^4.1.1"
     },
     "devDependencies": {
         "@babel/cli": "^7.23.4",

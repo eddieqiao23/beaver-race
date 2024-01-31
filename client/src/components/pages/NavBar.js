@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin, googleLogout } from "@react-oauth/google";
 
 import BeaverRaceLogo from "../../public/assets/beavers/BeaverIcon.png";
@@ -9,11 +9,10 @@ import "./NavBar.css";
 // This identifies your web application to Google's authentication service
 const GOOGLE_CLIENT_ID = "956478673522-odt9nc158u9obsuqpeb16s3uiabon4lf.apps.googleusercontent.com";
 
-/**
- * The navigation bar at the top of all pages. Takes no props.
- */
 const NavBar = ({ userId, handleLogin, handleLogout }) => {
     const [roundCode, setGameCode] = useState("");
+    const navigate = useNavigate();
+    
     const tryGameCode = () => {
       if (roundCode.length !== 6) {
         setGameCode("");

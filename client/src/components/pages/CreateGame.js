@@ -11,9 +11,9 @@ import { get, post } from "../../utilities";
 function CreateGame() {
     const [allGames, setAllGames] = useState([]);
     const [title, setTitle] = useState('');
-    const [skipTime, setSkipTime] = useState(10);
+    const [skipTime, setSkipTime] = useState(5);
     const [questionsPerRound, setQuestionsPerRound] = useState(10);
-    const [timePerRound, setTimePerRound] = useState(120);
+    const [timePerRound, setTimePerRound] = useState(240);
     const [qna, setQna] = useState('');
     const navigate = useNavigate();
 
@@ -57,9 +57,9 @@ function CreateGame() {
             post("/api/create_game", {
                 title: title,
                 url: url,
-                skipTime: skipTime,
+                // skipTime: skipTime,
                 questionsPerRound: questionsPerRound,
-                timePerRound: timePerRound,
+                // timePerRound: timePerRound,
                 questions: questions,
                 answers: answers
             }).then((res) => {
@@ -79,7 +79,7 @@ function CreateGame() {
                     <input type="text" value={title} onChange={e => setTitle(e.target.value)} />
                 </label>
 
-                <label>
+                {/* <label>
                     Skip Time
                     <div className="CreateGame-small-description">Time penalty for skipping a question (in seconds).</div>
                     <input type="number" value={skipTime} onChange={e => {
@@ -87,7 +87,7 @@ function CreateGame() {
                             setSkipTime(e.target.value)
                         }
                     }} placeholder="Default: 10" />
-                </label>
+                </label> */}
 
                 <label>
                     Questions per round
@@ -98,10 +98,10 @@ function CreateGame() {
                     }} placeholder="Default: 10" />
                 </label>
 
-                <label>
+                {/* <label>
                     Time per round
                     <input type="number" value={timePerRound} placeholder="Default: 120" />
-                </label>
+                </label> */}
 
                 <label>
                     Questions and answers

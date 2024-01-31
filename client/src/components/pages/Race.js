@@ -13,7 +13,7 @@ import "./Race.css";
 import Leaderboard from "../modules/Leaderboard.js";
 import { getRandomProblem } from "./Home"
 
-const round_time = 120;
+const round_time = 240;
 
 // Page that displays all elements of a multiplayer race
 const Race = (props) => {
@@ -83,8 +83,6 @@ const Race = (props) => {
 
     const [numQuestions, setNumQuestions] = useState(10);
     const numQuestionsRef = useRef(numQuestions);
-
-
 
     const getRoundInfo = async () => {
         get("/api/get_round_by_id", { roundID: roundIDRef.current }).then((round) => {
@@ -215,34 +213,42 @@ const Race = (props) => {
                     let newPlacements = {};
                     let finished = false; // Whether the round is over for this user
 
-                    // Extracts information from the strange format of update
-                    for (let i = 0; i < data.length; i++) {
-                        // Extract data from JSON
-                        newPlayers.push(data[i]["id"]);
-                        newScores.push(data[i]["score"]);
-                        newUsernames.push(data[i]["username"]);
+                    if (data) {
+                      // Extracts information from the strange format of update
+                      for (let i = 0; i < data.length; i++) {
+                          // Extract data from JSON
+                          newPlayers.push(data[i]["id"]);
+                          newScores.push(data[i]["score"]);
+                          newUsernames.push(data[i]["username"]);
 
-                        if (!emittedPlacingRef.current) {
-                            // Checks if round is over
-                            if (data[i]["id"] === userId && data[i]["score"] >= numQuestionsRef.current) {
-                                socket.emit("finishGame", roundIDRef.current, userId);
-                                finished = true;
-                                setGameFinished(true);
-                                setEmittedPlacing(true);
-                                emittedPlacingRef.current = true;
-                            }
-                        }
-                        newPlacements[data[i]["id"]] = -1;
+                          if (!emittedPlacingRef.current) {
+                              // Checks if round is over
+                              if (data[i]["id"] === userId && data[i]["score"] >= numQuestionsRef.current) {
+                                  socket.emit("finishGame", roundIDRef.current, userId);
+                                  finished = true;
+                                  setGameFinished(true);
+                                  setEmittedPlacing(true);
+                                  emittedPlacingRef.current = true;
+                              }
+                          }
+                          newPlacements[data[i]["id"]] = -1;
+                      }
                     }
 
                     // Do some scuffed parsing to get the placements
-                    let placings_data = update[roundIDRef.current]["placings"];
-                    for (let i = 0; i < placings_data.length; i++) {
-                        newPlacements[placings_data[i]] = i + 1;
-                    }
+                    try {
+                      let placings_data = update[roundIDRef.current]["placings"];
+                      if (placings_data) {
+                        for (let i = 0; i < placings_data.length; i++) {
+                          newPlacements[placings_data[i]] = i + 1;
+                        }
+                      }
+                    } catch {}
                     let placementsList = [];
-                    for (let i = 0; i < newPlayers.length; i++) {
+                    if (newPlayers) {
+                      for (let i = 0; i < newPlayers.length; i++) {
                         placementsList.push(newPlacements[newPlayers[i]]);
+                      }
                     }
                     if (!placementsList.includes(-1)) {
                         setEveryoneFinished(true);
@@ -254,22 +260,25 @@ const Race = (props) => {
                     setPlayers(newPlayers);
                     setScores(newScores);
                     setUsernames(newUsernames);
+                    console.log(newScores);
 
-                    // Time until start_time to calculate pre-round timer
-                    let timeUntil = new Date(update[roundIDRef.current]["start_time"]) - new Date();
-                    // If "Start Game" clicked but round hasn't started
-                    // preGameTimer = 0 means don't show the timer
-                    if (timeUntil > 0 && update[roundIDRef.current]["started"]) {
-                        setPreGameTimer(Math.floor(timeUntil / 1000) + 1);
-                        setPreGameTimerOpacity(Math.abs((timeUntil % 1000) - 0.5) / 1000);
-                       console.log("updating preround timer");
-                    } else if (timeUntil <= 0 && update[roundIDRef.current]["started"]) {
-                        setPreGameTimer(0);
-                        setRaceStarted(true);
-                        raceStartedRef.current = true;
-                    } else {
-                        setPreGameTimer(0);
-                    }
+                    try {
+                      // Time until start_time to calculate pre-round timer
+                      let timeUntil = new Date(update[roundIDRef.current]["start_time"]) - new Date();
+                      // If "Start Game" clicked but round hasn't started
+                      // preGameTimer = 0 means don't show the timer
+                      if (timeUntil > 0 && update[roundIDRef.current]["started"]) {
+                          setPreGameTimer(Math.floor(timeUntil / 1000) + 1);
+                          setPreGameTimerOpacity(Math.abs((timeUntil % 1000) - 0.5) / 1000);
+                        console.log("updating preround timer");
+                      } else if (timeUntil <= 0 && update[roundIDRef.current]["started"]) {
+                          setPreGameTimer(0);
+                          setRaceStarted(true);
+                          raceStartedRef.current = true;
+                      } else {
+                          setPreGameTimer(0);
+                      }
+                  } catch {}
                 }
             });
 
@@ -283,6 +292,9 @@ const Race = (props) => {
         return () => {
             socket.off("update");
             socket.off("alreadyInGame");
+            // if (socket.readyState === 1) {
+            //   socket.close();
+            // }
         };
     }, [loggedIn, roundIDRef.current]);
 
@@ -366,6 +378,29 @@ const Race = (props) => {
         };
     }, []);
 
+    const [showAnswer, setShowAnswer] = useState(false);
+    const skipQuestion = () => {
+        setRoundTimer(roundTimer - 5);
+        setScore(score + 1);
+    };
+    useEffect(() => {
+      const handleKeyDown = (event) => {
+          if (event.key === "Tab" && raceStarted && !roundFinished && gameURL != "24") {
+              setShowAnswer(true);    
+              setTimeout(() => {
+                  setShowAnswer(false);
+                  skipQuestion();
+              }, 5000);
+          }
+      };
+
+      window.addEventListener("keydown", handleKeyDown);
+
+      return () => {
+          window.removeEventListener("keydown", handleKeyDown);
+      };
+  })
+
     // For 1st, 2nd, 3rd, etc.
     const getOrdinal = (n) => {
         const s = ["th", "st", "nd", "rd"];
@@ -424,7 +459,7 @@ const Race = (props) => {
     }, [game])
     return (
       <>
-        {loggedIn ? (
+        {(loggedIn && finishedJoinGameRef.current) ? (
           <div className="Race-container">
             <div className="Race-header">{title}</div>
             <div className="Race-headline-text">
@@ -499,6 +534,8 @@ const Race = (props) => {
                   doneLoading={doneLoading}
                   questions={questions}
                   answers={answers}
+                  showAnswer={showAnswer}
+                  game={game}
                 />
               )}
               {roundFinished ? (
@@ -521,7 +558,7 @@ const Race = (props) => {
                     )}
                   </div>
                   <div className="Race-leaderboard">
-                    <Leaderboard userId={userId} gameTitle={game.title} />
+                    <Leaderboard userId={userId} gameTitle={game.title} notUpdatedgame={notUpdatedGame} everyoneFinished={everyoneFinished}/>
                   </div>
                 </>
               ) : (
@@ -530,19 +567,25 @@ const Race = (props) => {
             </>
           </div>
         ) : (
-          <div className="Race-container Race-login-prompt">Please login first!</div>
+          <>
+          {loggedIn ? null : <div className="Race-container Race-login-prompt">Please login first!</div>}
+          </>
         )}
+        {roundFinished ? null :
+          <>
+          { gameURL == "24" ? 
+            <div className="Race-key-presses">
+                No skipping questions in 24, all are solvable!
+            </div>
+            : 
+            <div className="Race-key-presses">
+                Tab to skip question and see answer (5 second penalty)
+            </div>
+            }
+          </>
+        }
       </>
     );
-
-    // return (
-    //     <div className="Race-container">
-    //         race will be here
-    //         {/* <Scoreboard user_ids={user_ids} scores={scores} /> */}
-    //         {/* <Timer /> */}
-    //         {/* <Question /> */}
-    //     </div>
-    // );
 };
 
 export default Race;
