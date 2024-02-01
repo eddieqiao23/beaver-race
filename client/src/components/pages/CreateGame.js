@@ -53,6 +53,12 @@ function CreateGame() {
         const questions = all_info.map(q => q[0]);
         const answers = all_info.map(q => q[1]);
         const num_questions = parseInt(questionsPerRound);
+        let bad = false;
+        for (let i = 0; i < answers.length; i++) {
+            if (answers[i] == null) {
+                bad = true;
+            }
+        }
         if (urlExists) {
             setTitle('title already taken :(')
         } else if (url.length > 30) {
@@ -63,7 +69,10 @@ function CreateGame() {
             setTitle('questions and answers do not match :(')
         } else if (new Set(questions).size !== questions.length) {
             setTitle('questions are not unique :(')
-        } else {
+        } else if (bad) {
+            setTitle('please follow the correct format :(')
+        }
+        else {
             post("/api/create_game", {
                 title: title,
                 url: url,
